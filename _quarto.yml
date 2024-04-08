@@ -2,13 +2,43 @@ project:
   type: website
 
 website:
-  title: "ISSS608VA"
+  title: "Visual Analytics"
   navbar:
     left:
+      - text: Hands-On Ex
+        menu: 
+          - text: Hands-On Ex 1
+            href: HandsOnEx/HandsOnEx1/handson_ex01.html
+          - text: Hands-On Ex 2
+            href: HandsOnEx/HandsOnEx2/handson_ex02.html
+          - text: Hands-On Ex 3
+            href: HandsOnEx/HandsOnEx3/Handson_ex03.html
+          - text: Hands-On Ex 4
+            href: HandsOnEx/HandsOnEx4/handson_ex04.html
+          - text: Hands-On Ex 5
+            href: HandsOnEx/HandsOnEx5/handson_ex05.html
+      - text: In-Class Ex
+        menu: 
+          - text: In-Class Ex 01
+            href: InClassEx/Ex01/inclass_ex01.html
+          - text: In-Class Ex 02
+            href: InClassEx/Ex02/inclass_ex02.html
+          - text: In-Class Ex 03
+            href: InClassEx/Ex03/Inclass_ex03.html
+          - text: In-Class Ex 04
+            href: InClassEx/Ex04/inclass_ex04.html
+          - text: In-Class Ex 05
+            href: InClassEx/Ex05/inclass_ex05.html
+      - text: Take-Home Ex
+        menu: 
+          - text: Take-Home Ex 01
+            href: TakehomeEx/Ex01/takehomeex1.html
+          - text: Take-Home Ex 02
+            href: TakehomeEx/Ex02/takehomeex2.html
+    right:
       - href: index.qmd
         text: Home
       - about.qmd
-
 format:
   html:
     theme: cosmo
