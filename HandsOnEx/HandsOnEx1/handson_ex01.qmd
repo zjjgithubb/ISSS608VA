@@ -27,20 +27,22 @@ head (exam_data)
 
 We use the `head()` to take a look at the columns - which comprise seven columns - 4 categorical (ID, Class, Gender and Race) and 3 continuous data (Scores for English, Maths and Science).
 
-## 1.3 Introducing ggplot 
+## 1.3 Introducing ggplot
 
 We will first look at [ggplot](https://ggplot2.tidyverse.org/).
 
-```{r}
-library (ggplot2)
-```
+ggplot cheat sheet:
 
-### 1.3.1 R Graphics vs ggplot 
+![](images/Untitled.png)
+
+![](images/Untitled-01.png)
+
+### 1.3.1 R Graphics vs ggplot
 
 Comparing the choice of using R Graphics vs ggplot:
 
 ::: panel-tabset
-## R Graphics 
+## R Graphics
 
 ```{r}
 hist(exam_data$MATHS)
@@ -60,7 +62,7 @@ ggplot(data=exam_data, aes(x = MATHS)) +
 
 Good to learn ggplot2 as it provides a more powerful tool that is customisable, although it means learning its way of language first. That said, we all need to do more customisation at some point in time - so just jump into it!
 
-## 1.4 Grammar of Graphics 
+## 1.4 Grammar of Graphics
 
 Grammar of Graphics is a general scheme for data visualization which breaks up graphs into semantic components such as scales and layers. It was introduced by Leland Wilkinson (1999) **Grammar of Graphics**, Springer. The grammar of graphics is an answer to a question:
 
@@ -106,7 +108,7 @@ When we use `ggplot()` , it initialises a ggplot object and creates a blank canv
 ggplot(data=exam_data)
 ```
 
-## 1.6 Aesthetic mappings 
+## 1.6 Aesthetic mappings
 
 Refer to this [link](https://ggplot2.tidyverse.org/articles/ggplot2-specs.html)for more info.
 
@@ -125,7 +127,7 @@ ggplot(data=exam_data,
 -   ggplot includes the x-axis and the axis’s label.
 :::
 
-## 1.7 geom 
+## 1.7 geom
 
 Geometric objects are the actual marks we put on a plot. Examples include:
 
@@ -192,7 +194,7 @@ ggplot(data=exam_data,
                      breaks = NULL)  
 ```
 
-### 1.7.3  Geometric Objects: `geom_histogram()`
+### 1.7.3 Geometric Objects: `geom_histogram()`
 
 In the code chunk below, [*geom_histogram()*](https://ggplot2.tidyverse.org/reference/geom_histogram.html) is used to create a simple histogram by using values in *MATHS* field of *exam_data*.
 
@@ -326,7 +328,7 @@ ggplot(data=exam_data,
              size = 0.5)        
 ```
 
-## 1.8 stat function 
+## 1.8 stat function
 
 The [Statistics functions](https://ggplot2.tidyverse.org/reference/#stats) statistically transform data, usually as some form of summary. For example:
 
@@ -438,7 +440,7 @@ ggplot(data=exam_data,
     facet_grid(~ CLASS)
 ```
 
-## 1.10 Coordinates 
+## 1.10 Coordinates
 
 The [*Coordinates* ](https://ggplot2.tidyverse.org/reference/index.html#coordinate-systems)functions map the position of objects onto the plane of the plot. There are a number of different possible coordinate systems to use, they are:
 
@@ -492,7 +494,7 @@ ggplot(data=exam_data,
                   ylim=c(0,100))
 ```
 
-## 1.11 Themes 
+## 1.11 Themes
 
 Themes control elements of the graph not related to the data. For example:
 
@@ -508,7 +510,7 @@ Built-in themes include: - `theme_gray()` (default) - `theme_bw()` - `theme_clas
 
 A list of theme can be found at this [link](https://ggplot2.tidyverse.org/reference/ggtheme.html). Each theme element can be conceived of as either a line (e.g. x-axis), a rectangle (e.g. graph background), or text (e.g. axis title).
 
-### 1.11.1 Working with Themes 
+### 1.11.1 Working with Themes
 
 The code chunk below plot a horizontal bar chart using `theme_gray()`.
 
@@ -553,3 +555,54 @@ ggplot(data=exam_data,
 -   [Learning ggplot2 on Paper – Layer](https://henrywang.nl/learning-ggplot2-on-paper-layer/)
 
 -   [Learning ggplot2 on Paper – Scale](https://henrywang.nl/tag/learning-ggplot2-on-paper/)
+
+# 2.1 Trying out ggplot
+
+::: panel-tabset
+## Box Plot of Maths
+
+```{r}
+ggplot(data=exam_data, 
+       aes(y = MATHS, x= GENDER)) +
+  geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
+  geom_point(stat="summary",        
+             fun=mean,           
+             colour ="darkblue",          
+             size=2) +
+  theme_light() +
+  labs(title="Maths scores across Gender", y="Maths Score", x="Gender")
+```
+
+## Box Plots of Maths, Eng and Science
+
+```{r}
+
+data_subset <- exam_data[, c("MATHS", "SCIENCE", "ENGLISH", "GENDER")]
+
+# Reshape the data for plotting
+data_long <- reshape2::melt(data_subset, id.vars = "GENDER", variable.name = "Score")
+
+# Create the boxplot
+ggplot(data_long, aes(x = Score, y = value, fill = GENDER)) +
+  geom_boxplot() +
+    xlab("Subject") +
+    ylab("Score") +
+    ggtitle("Boxplots of Scores by Subjects and Gender") +
+    theme(legend.position = "top") +
+  stat_summary(fun=mean, geom="point", shape=18, size=2, color="black", position = position_dodge(width=0.75)) +  # Add average
+  stat_summary(fun=median, geom="point", shape=16, size=2, color="grey", position = position_dodge(width=0.75)) +  # Add median
+  stat_summary(fun=quantile, geom="errorbar", width=0.4, color="black", fun.args=list(probs=c(0.25, 0.75)))
+
+```
+
+## Boxplots using Facet
+
+```{r}
+ggplot(data = data_long, aes(x = GENDER, y = value, fill=GENDER)) +
+  geom_boxplot() +
+  facet_wrap(~ Score, scales = "free_y", nrow = 1) +  
+  xlab("Gender") +
+  ylab("Score") +
+  ggtitle("Boxplots of Scores by Gender for each Subject")
+```
+:::
