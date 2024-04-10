@@ -149,7 +149,7 @@ Geometric objects are the actual marks we put on a plot. Examples include:
 
 -   For complete list, please refer to [here](https://ggplot2.tidyverse.org/reference/#section-layer-geoms).
 
-### 1.7.1 **Geometric Objects: geom_bar**
+### 1.7.1 Geometric Objects: geom_bar
 
 The code chunk below plots a bar chart by using [`geom_bar()`](https://ggplot2.tidyverse.org/reference/geom_bar.html).
 
@@ -159,7 +159,7 @@ ggplot(data=exam_data,
   geom_bar()
 ```
 
-### 1.7.2 **Geometric Objects: geom_dotplot**
+### 1.7.2 Geometric Objects: geom_dotplot
 
 In a dot plot, the width of a dot corresponds to the bin width (or maximum width, depending on the binning algorithm), and dots are stacked, with each dot representing one observation.
 
@@ -192,7 +192,7 @@ ggplot(data=exam_data,
                      breaks = NULL)  
 ```
 
-### 1.7.3  **Geometric Objects: `geom_histogram()`**
+### 1.7.3  Geometric Objects: `geom_histogram()`
 
 In the code chunk below, [*geom_histogram()*](https://ggplot2.tidyverse.org/reference/geom_histogram.html) is used to create a simple histogram by using values in *MATHS* field of *exam_data*.
 
@@ -206,7 +206,7 @@ ggplot(data=exam_data,
 Note that the default bin is **30**.
 :::
 
-### 1.7.4 **Modifying a geometric object by changing `geom()`**
+### 1.7.4 Modifying a geometric object by changing `geom()`
 
 In the code chunk below,
 
@@ -224,7 +224,7 @@ ggplot(data=exam_data,
                  fill="light blue")  
 ```
 
-### 1.7.5 **Modifying a geometric object by changing *aes()***
+### 1.7.5 Modifying a geometric object by changing *aes()*
 
 The code chunk below changes the interior colour of the histogram (i.e. *fill*) by using sub-group of *aesthetic()*.
 
@@ -240,7 +240,7 @@ ggplot(data=exam_data,
 This approach can be used to colour, fill and alpha of the geometric.
 :::
 
-### 1.7.6 **Geometric Objects: geom-density()**
+### 1.7.6 Geometric Objects: geom-density()
 
 [`geom-density()`](https://ggplot2.tidyverse.org/reference/geom_density.html) computes and plots [kernel density estimate](https://en.wikipedia.org/wiki/Kernel_density_estimation), which is a smoothed version of the histogram.
 
@@ -263,7 +263,7 @@ ggplot(data=exam_data,
   geom_density()
 ```
 
-### 1.7.7 **Geometric Objects: geom_boxplot**
+### 1.7.7 Geometric Objects: geom_boxplot
 
 [`geom_boxplot()`](https://ggplot2.tidyverse.org/reference/geom_boxplot.html) displays continuous value list. It visualises five summary statistics (the median, two hinges and two whiskers), and all “outlying” points individually.
 
@@ -287,7 +287,7 @@ ggplot(data=exam_data,
   geom_boxplot(notch=TRUE)
 ```
 
-### 1.7.8 **Geometric Objects: geom_violin**
+### 1.7.8 Geometric Objects: geom_violin
 
 [`geom_violin`](https://ggplot2.tidyverse.org/reference/geom_violin.html) is designed for creating violin plot. Violin plots are a way of comparing multiple data distributions. With ordinary density curves, it is difficult to compare more than just a few distributions because the lines visually interfere with each other. With a violin plot, it’s easier to compare several distributions since they’re placed side by side.
 
@@ -300,7 +300,7 @@ ggplot(data=exam_data,
   geom_violin()
 ```
 
-### **1.7.9 Geometric Objects: geom_point()**
+### 1.7.9 Geometric Objects: geom_point()
 
 [`geom_point()`](https://ggplot2.tidyverse.org/reference/geom_point.html) is especially useful for creating scatterplot.
 
@@ -313,7 +313,7 @@ ggplot(data=exam_data,
   geom_point()            
 ```
 
-### 1.7.10 ***geom*** **objects can be combined**
+### 1.7.10 *geom* objects can be combined
 
 The code chunk below plots the data points on the boxplots by using both `geom_boxplot()` and `geom_point()`.
 
@@ -352,7 +352,7 @@ ggplot(data=exam_data,
   geom_boxplot()
 ```
 
-### 1.8.2 **Working with stat - the *stat_summary()* method**
+### 1.8.2 Working with stat - the *stat_summary()* method
 
 The code chunk below adds mean values by using [`stat_summary()`](https://ggplot2.tidyverse.org/reference/stat_summary.html) function and overriding the default geom.
 
@@ -366,7 +366,7 @@ ggplot(data=exam_data,
                size=4)               
 ```
 
-### 1.8.3 **Working with stat - the `geom()` method**
+### 1.8.3 Working with stat - the `geom()` method
 
 The code chunk below adding mean values by using `geom_()` function and overriding the default stat.
 
@@ -380,7 +380,7 @@ ggplot(data=exam_data,
              size=4)          
 ```
 
-### 1.8.4 **Adding a best fit curve on a scatterplot?**
+### 1.8.4 Adding a best fit curve on a scatterplot?
 
 The scatterplot below shows the relationship of Maths and English grades of pupils. The interpretability of this graph can be improved by adding a best fit curve.
 
@@ -408,11 +408,11 @@ ggplot(data=exam_data,
               linewidth=0.5)
 ```
 
-## 1.9 **Facets**
+## 1.9 Facets
 
 Facetting generates small multiples (sometimes also called trellis plot), each displaying a different subset of the data. They are an alternative to aesthetics for displaying additional discrete variables. ggplot2 supports two types of factes, namely: [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html) and [`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html).
 
-### 1.9.1 **Working with `facet_wrap()`**
+### 1.9.1 Working with `facet_wrap()`
 
 [`facet_wrap`](https://ggplot2.tidyverse.org/reference/facet_wrap.html) wraps a 1d sequence of panels into 2d. This is generally a better use of screen space than facet_grid because most displays are roughly rectangular.
 
@@ -425,7 +425,7 @@ ggplot(data=exam_data,
     facet_wrap(~ CLASS)
 ```
 
-### 1.9.2 **`facet_grid()` function**
+### 1.9.2 `facet_grid()` function
 
 [`facet_grid()`](https://ggplot2.tidyverse.org/reference/facet_grid.html) forms a matrix of panels defined by row and column facetting variables. It is most useful when you have two discrete variables, and all combinations of the variables exist in the data.
 
@@ -450,7 +450,7 @@ The [*Coordinates* ](https://ggplot2.tidyverse.org/reference/index.html#coordi
 
 -   [coord_quickmap()](https://ggplot2.tidyverse.org/reference/coord_map.html) - a coordinate system that approximates a good aspect ratio for maps.
 
-### 1.10.1 **Working with Coordinate**
+### 1.10.1 Working with Coordinate
 
 By the default, the bar chart of ggplot2 is in vertical form.
 
@@ -469,7 +469,7 @@ ggplot(data=exam_data,
   coord_flip()
 ```
 
-### 1.10.2 **Changing the y- and x-axis range**
+### 1.10.2 Changing the y- and x-axis range
 
 The scatterplot on the right is slightly misleading because the y-aixs and x-axis range are not equal.
 
