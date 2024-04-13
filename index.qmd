@@ -1,5 +1,18 @@
 ---
 title: "ISSS608 - Visual Analytics"
+
+author: "Cheng Chun Chieh"
+
+date: "Apr 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  
+editor: visual
 ---
 
 This is the website created for ISSS608 - Visual Analytics as part of my journey through MITB in SMU.

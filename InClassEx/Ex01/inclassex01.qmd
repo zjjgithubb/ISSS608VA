@@ -1,0 +1,15 @@
+---
+title: "In Class Ex 01"
+
+author: "Cheng Chun Chieh"
+
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  
+editor: visual
+---

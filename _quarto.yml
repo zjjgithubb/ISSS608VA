@@ -20,15 +20,15 @@ website:
       - text: In-Class Ex
         menu: 
           - text: In-Class Ex 01
-            href: InClassEx/Ex01/inclass_ex01.html
+            href: InClassEx/Ex01/inclassex01.html
           - text: In-Class Ex 02
-            href: InClassEx/Ex02/inclass_ex02.html
+            href: InClassEx/Ex02/inclassex02.html
           - text: In-Class Ex 03
-            href: InClassEx/Ex03/Inclass_ex03.html
+            href: InClassEx/Ex03/Inclassex03.html
           - text: In-Class Ex 04
-            href: InClassEx/Ex04/inclass_ex04.html
+            href: InClassEx/Ex04/inclassex04.html
           - text: In-Class Ex 05
-            href: InClassEx/Ex05/inclass_ex05.html
+            href: InClassEx/Ex05/inclassex05.html
       - text: Take-Home Ex
         menu: 
           - text: Take-Home Ex 01
