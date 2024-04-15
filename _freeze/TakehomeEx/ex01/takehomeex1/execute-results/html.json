@@ -1,0 +1,14 @@
+{
+  "hash": "1bbc1dea83aa7a24b4e8b4dc86e16441",
+  "result": {
+    "markdown": "---\ntitle: \"Take Home Ex 1\"\n\nauthor: \"Cheng Chun Chieh\"\n\ndate: \"15 Apr 2024\"\ndate-modified: \"last-modified\"\n\nformat: html\n\nexecute: \n  echo: true\n  eval: true\n  warning: false\n  freeze: true\n  \neditor: visual\n---\n\n\n# Take Home Ex 1 \n\n***Creating data visualisation beyond default***\n\n## 1.1 Loading the Required Packages \n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load (tidyverse)\n```\n:::\n\n\n## 1.2 Examining the Data\n\n\n::: {.cell}\n\n```{.r .cell-code}\ndf <- list.files(path=\"data/\", full.names = TRUE) %>% \n  lapply(read_csv) %>% \n  bind_rows \n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\ndf <- df %>%\n  mutate(sale_date = as.Date(`Sale Date`, format = \"%d %b %Y\"),  \n         quarter = paste0(\"Q\", quarter(sale_date), \"Y\", format(sale_date, \"%y\")))\n```\n:::\n\n::: {.cell}\n\n```{.r .cell-code}\nrestrans <- df %>% \n  rename(\n    unit_psm = 'Unit Price ($ PSM)',\n    unit_area = 'Area (SQM)',\n    property_type = `Property Type`,\n    sale_type = `Type of Sale`,\n    planning_region = `Planning Region`,\n    planning_area = `Planning Area`,\n    trans_price = `Transacted Price ($)`\n      )\n```\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

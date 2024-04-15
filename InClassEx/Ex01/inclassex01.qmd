@@ -16,9 +16,9 @@ execute:
 editor: visual
 ---
 
-# In Class Ex 01 
+# In Class Ex 01
 
-## 1.1 Loading the required packages 
+## 1.1 Loading the required packages
 
 ```{r}
 pacman::p_load(tidyverse)

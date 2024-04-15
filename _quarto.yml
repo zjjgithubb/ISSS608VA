@@ -32,7 +32,7 @@ website:
       - text: Take-Home Ex
         menu: 
           - text: Take-Home Ex 01
-            href: TakehomeEx/Ex01/takehomeex1.html
+            href: TakehomeEx/ex01/takehomeex1.html
           - text: Take-Home Ex 02
             href: TakehomeEx/Ex02/takehomeex2.html
     right:
@@ -41,7 +41,7 @@ website:
       
 format:
   html:
-    theme: cosmo
+    theme: sandstone
     css: styles.css
     toc: true
 
