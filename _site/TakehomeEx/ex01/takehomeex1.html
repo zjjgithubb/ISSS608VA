@@ -208,11 +208,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#take-home-ex-1" id="toc-take-home-ex-1" class="nav-link active" data-scroll-target="#take-home-ex-1">Take Home Ex 1</a>
+  <li><a href="#take-home-ex-1" id="toc-take-home-ex-1" class="nav-link active" data-scroll-target="#take-home-ex-1">Take Home Ex 1</a></li>
+  <li><a href="#data-preparation" id="toc-data-preparation" class="nav-link" data-scroll-target="#data-preparation">1 Data Preparation</a>
   <ul class="collapse">
   <li><a href="#loading-the-required-packages" id="toc-loading-the-required-packages" class="nav-link" data-scroll-target="#loading-the-required-packages">1.1 Loading the Required Packages</a></li>
-  <li><a href="#examining-the-data" id="toc-examining-the-data" class="nav-link" data-scroll-target="#examining-the-data">1.2 Examining the Data</a></li>
+  <li><a href="#examining-and-preparing-the-data" id="toc-examining-and-preparing-the-data" class="nav-link" data-scroll-target="#examining-and-preparing-the-data">1.2 Examining and Preparing the Data</a></li>
+  <li><a href="#check-data-for-duplicated-missing-values" id="toc-check-data-for-duplicated-missing-values" class="nav-link" data-scroll-target="#check-data-for-duplicated-missing-values">1.3 Check Data for Duplicated, Missing Values</a></li>
+  <li><a href="#reviewing-the-property-type" id="toc-reviewing-the-property-type" class="nav-link" data-scroll-target="#reviewing-the-property-type">1.4 Reviewing the Property Type</a></li>
+  <li><a href="#x-writing-the-data-to-rds-file" id="toc-x-writing-the-data-to-rds-file" class="nav-link" data-scroll-target="#x-writing-the-data-to-rds-file">1.x Writing the data to rds file</a></li>
   </ul></li>
+  <li><a href="#data-visualisation" id="toc-data-visualisation" class="nav-link" data-scroll-target="#data-visualisation">2 Data Visualisation</a></li>
   </ul>
 </nav>
     </div>
@@ -245,7 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 15, 2024</p>
+      <p class="date-modified">April 17, 2024</p>
     </div>
   </div>
     
@@ -257,26 +262,36 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="take-home-ex-1" class="level1">
 <h1>Take Home Ex 1</h1>
 <p><strong><em>Creating data visualisation beyond default</em></strong></p>
+</section>
+<section id="data-preparation" class="level1">
+<h1>1 Data Preparation</h1>
 <section id="loading-the-required-packages" class="level2">
 <h2 class="anchored" data-anchor-id="loading-the-required-packages">1.1 Loading the Required Packages</h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span> (tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="examining-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="examining-the-data">1.2 Examining the Data</h2>
+<section id="examining-and-preparing-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="examining-and-preparing-the-data">1.2 Examining and Preparing the Data</h2>
+<p>We first read the 5 .csv files provided. These are separate csv files containing data of each of the quarters from 2023 to Mar 2024.</p>
+<p>As such, we will use the following code chunk to import the data and combine them into a single dataset.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path=</span><span class="st">"data/"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path=</span><span class="st">"data/csv"</span>, <span class="at">full.names =</span> <span class="cn">TRUE</span>) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lapply</span>(read_csv) <span class="sc">%&gt;%</span> </span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  bind_rows </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>After combining the dataset into df, we will also extract the Sale Date and code it accordingly to the quarters. E.g. Jan to Mar 23 will be Q1Y23 and so on.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">sale_date =</span> <span class="fu">as.Date</span>(<span class="st">`</span><span class="at">Sale Date</span><span class="st">`</span>, <span class="at">format =</span> <span class="st">"%d %b %Y"</span>),  </span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">quarter =</span> <span class="fu">paste0</span>(<span class="st">"Q"</span>, <span class="fu">quarter</span>(sale_date), <span class="st">"Y"</span>, <span class="fu">format</span>(sale_date, <span class="st">"%y"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">quarter =</span> <span class="fu">paste0</span>(<span class="st">"Q"</span>, <span class="fu">quarter</span>(sale_date), <span class="st">"Y"</span>, <span class="fu">format</span>(sale_date, <span class="st">"%y"</span>)))<span class="sc">%&gt;%</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">quarter =</span> <span class="fu">factor</span>(quarter, <span class="at">levels =</span> <span class="fu">c</span>(<span class="st">"Q1Y23"</span>, <span class="st">"Q2Y23"</span>, <span class="st">"Q3Y23"</span>, <span class="st">"Q4Y23"</span>, <span class="st">"Q1Y24"</span>))</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>I also like to rename some of the columns headers so that it is easier to type into the codes later, especially removing the space in between.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>restrans <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>realis2324 <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">unit_psm =</span> <span class="st">'Unit Price ($ PSM)'</span>,</span>
 <span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">unit_area =</span> <span class="st">'Area (SQM)'</span>,</span>
@@ -287,9 +302,171 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">trans_price =</span> <span class="st">`</span><span class="at">Transacted Price ($)</span><span class="st">`</span></span>
 <span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-
-
 </section>
+<section id="check-data-for-duplicated-missing-values" class="level2">
+<h2 class="anchored" data-anchor-id="check-data-for-duplicated-missing-values">1.3 Check Data for Duplicated, Missing Values</h2>
+<p>First, we check if there are any missing values in the dataset.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for missing values</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>missing_values <span class="ot">&lt;-</span> realis2324 <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise_all</span>(<span class="sc">~</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(.)))</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display columns with missing values</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(missing_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 23
+  `Project Name` trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date`
+           &lt;int&gt;       &lt;int&gt;         &lt;int&gt;                &lt;int&gt;       &lt;int&gt;
+1              0           0             0                    0           0
+# ℹ 18 more variables: Address &lt;int&gt;, sale_type &lt;int&gt;, `Type of Area` &lt;int&gt;,
+#   unit_area &lt;int&gt;, unit_psm &lt;int&gt;, `Nett Price($)` &lt;int&gt;,
+#   property_type &lt;int&gt;, `Number of Units` &lt;int&gt;, Tenure &lt;int&gt;,
+#   `Completion Date` &lt;int&gt;, `Purchaser Address Indicator` &lt;int&gt;,
+#   `Postal Code` &lt;int&gt;, `Postal District` &lt;int&gt;, `Postal Sector` &lt;int&gt;,
+#   planning_region &lt;int&gt;, planning_area &lt;int&gt;, sale_date &lt;int&gt;, quarter &lt;int&gt;</code></pre>
+</div>
+</div>
+<p>And also for any duplicated values.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Check for duplicate rows</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>duplicate_rows <span class="ot">&lt;-</span> realis2324 <span class="sc">%&gt;%</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">duplicated</span>(.))</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Display duplicate rows</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(duplicate_rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 0 × 23
+# ℹ 23 variables: Project Name &lt;chr&gt;, trans_price &lt;dbl&gt;, Area (SQFT) &lt;dbl&gt;,
+#   Unit Price ($ PSF) &lt;dbl&gt;, Sale Date &lt;chr&gt;, Address &lt;chr&gt;, sale_type &lt;chr&gt;,
+#   Type of Area &lt;chr&gt;, unit_area &lt;dbl&gt;, unit_psm &lt;dbl&gt;, Nett Price($) &lt;chr&gt;,
+#   property_type &lt;chr&gt;, Number of Units &lt;dbl&gt;, Tenure &lt;chr&gt;,
+#   Completion Date &lt;chr&gt;, Purchaser Address Indicator &lt;chr&gt;,
+#   Postal Code &lt;chr&gt;, Postal District &lt;chr&gt;, Postal Sector &lt;chr&gt;,
+#   planning_region &lt;chr&gt;, planning_area &lt;chr&gt;, sale_date &lt;date&gt;, …</code></pre>
+</div>
+</div>
+<p>Because we are looking at transaction data of the properties, we also want to check the number of units sold in each row is equal to 1. Because any sales with more than 1 unit can indicate other sales types, like en-bloc etc.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>all_units_equal_to_1 <span class="ot">&lt;-</span> <span class="fu">all</span>(realis2324<span class="sc">$</span><span class="st">`</span><span class="at">Number of Units</span><span class="st">`</span> <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> (all_units_equal_to_1) {</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"All values in the 'Number of Units' column are equal to 1."</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>} <span class="cf">else</span> {</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Print values above 1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  units_above_1 <span class="ot">&lt;-</span> realis2324 <span class="sc">%&gt;%</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="fu">filter</span>(<span class="st">`</span><span class="at">Number of Units</span><span class="st">`</span> <span class="sc">&gt;</span> <span class="dv">1</span>)</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(<span class="st">"Values in the 'Number of Units' column above 1:"</span>)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">print</span>(units_above_1)</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Values in the 'Number of Units' column above 1:"
+# A tibble: 12 × 23
+   `Project Name`     trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date`
+   &lt;chr&gt;                    &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt; &lt;chr&gt;      
+ 1 N.A.                  32200000        14123.                 2280 02 May 2023
+ 2 KEW LODGE             66800000        25177                  2653 23 May 2023
+ 3 N.A.                   6150000         4342.                 1416 19 Jun 2023
+ 4 N.A.                  10600000         6747.                 1571 26 Jun 2023
+ 5 CLAYMORE PLAZA         7000000         4209.                 1663 27 Feb 2024
+ 6 BAGNALL COURT        115280000        68491.                 1683 04 Jan 2023
+ 7 MONDO MANSION BUI…     6280000         5490.                 1144 18 Jan 2023
+ 8 MEYER PARK           392180000       144883.                 2707 09 Feb 2023
+ 9 N.A.                  61080008        32149.                 1900 21 Mar 2023
+10 EAST VIEW GARDEN       6100000         8338.                  732 17 Jul 2023
+11 N.A.                   8000000         3659.                 2187 28 Jul 2023
+12 KARTAR APARTMENTS     18000000         6964.                 2585 11 Oct 2023
+# ℹ 18 more variables: Address &lt;chr&gt;, sale_type &lt;chr&gt;, `Type of Area` &lt;chr&gt;,
+#   unit_area &lt;dbl&gt;, unit_psm &lt;dbl&gt;, `Nett Price($)` &lt;chr&gt;,
+#   property_type &lt;chr&gt;, `Number of Units` &lt;dbl&gt;, Tenure &lt;chr&gt;,
+#   `Completion Date` &lt;chr&gt;, `Purchaser Address Indicator` &lt;chr&gt;,
+#   `Postal Code` &lt;chr&gt;, `Postal District` &lt;chr&gt;, `Postal Sector` &lt;chr&gt;,
+#   planning_region &lt;chr&gt;, planning_area &lt;chr&gt;, sale_date &lt;date&gt;, quarter &lt;fct&gt;</code></pre>
+</div>
+</div>
+<p>We have 12 rows with the number of units &gt; 1. Given that we are not able to divide the sales data accordingly by the number of units etc, we will remove these data instead.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>realis2324_cleaned <span class="ot">&lt;-</span> realis2324 <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Number of Units</span><span class="st">`</span> <span class="sc">&lt;=</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="reviewing-the-property-type" class="level2">
+<h2 class="anchored" data-anchor-id="reviewing-the-property-type">1.4 Reviewing the Property Type</h2>
+<p>When we look at the data, we can see that there are five property types indicated:</p>
+<ol type="1">
+<li><p>Apartment</p></li>
+<li><p>Condominium</p></li>
+<li><p>Detached House</p></li>
+<li><p>Executive Condominium</p></li>
+<li><p>Semi-Detached House</p></li>
+<li><p>Terrace House</p></li>
+</ol>
+<p>Executive Condominium is a mix between public and private housing so we will leave it as such in case we want to exclude it from further analysis. However, when we look at Apartment and Condominium, we realised that there is not much difference; e.g.&nbsp;one of the Apartment is <a href="https://www.lentorsmodern.com.sg/">Lentor Modern</a> which is actually listed as a Condominium on its website. For the purpose of our study, we can there combine apartment and condominium as one same group - condo.</p>
+</section>
+<section id="x-writing-the-data-to-rds-file" class="level2">
+<h2 class="anchored" data-anchor-id="x-writing-the-data-to-rds-file">1.x Writing the data to rds file</h2>
+<p>We will then write the data into a rds format.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(realis2324_cleaned, <span class="st">"data/rds/realis2324_cleaned.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="data-visualisation" class="level1">
+<h1>2 Data Visualisation</h1>
+<p>Reading the file from rds.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>realis2324_cleaned <span class="ot">&lt;-</span> <span class="fu">read_rds</span> (<span class="st">"data/rds/realis2324_cleaned.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>What are we interested in?</p>
+<ul>
+<li><p>number of transactions by sales types for condos - proportion of new sales or sales prices of new sales - vs resale</p></li>
+<li><p>are more ppl looking for bigger size condo?</p></li>
+<li><p>% increase of prices by planning regions</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data =</span> realis2324_cleaned, <span class="fu">aes</span>(<span class="at">x =</span> quarter, <span class="at">fill =</span> property_type)) <span class="sc">+</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">color =</span> <span class="st">"black"</span>) <span class="sc">+</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Number of Transactions by Property Types Across Quarters"</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Quarters"</span>,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Transactions"</span></span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"Set3"</span>)  <span class="co"># Adjust the color palette if needed</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>realis2324_cleaned, </span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x=</span> trans_price)) <span class="sc">+</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="at">bins=</span><span class="dv">50</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span> (<span class="dv">0</span>, <span class="dv">5000000</span>) <span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> quarter) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Histogram of Transacted Price across Quarters (up to $5M)"</span>, <span class="at">y=</span><span class="st">"Count"</span>, <span class="at">x=</span><span class="st">"Transacted Price ($)"</span>)<span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(<span class="at">data=</span>realis2324_cleaned, </span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> trans_price, <span class="at">x=</span> quarter)) <span class="sc">+</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">5000000</span>) <span class="sc">+</span></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">colour =</span><span class="st">"black"</span>, <span class="at">fill=</span><span class="st">"#88abff"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">stat=</span><span class="st">"summary"</span>,        </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">fun=</span>mean,           </span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span><span class="st">"darkblue"</span>,          </span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_light</span>() <span class="sc">+</span></span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Transaction Price across Quarters"</span>, <span class="at">y=</span><span class="st">"Transacted Price"</span>, <span class="at">x=</span><span class="st">"Quarters"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+
+
 </section>
 
 </main> <!-- /main -->

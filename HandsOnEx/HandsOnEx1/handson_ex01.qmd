@@ -1,5 +1,19 @@
 ---
 title: "Hands-On Ex 1"
+
+author: "Cheng Chun Chieh"
+
+date: "12 Apr 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+  
+editor: visual
 ---
 
 # Layered Grammar of Graphics: ggplot2 methods
