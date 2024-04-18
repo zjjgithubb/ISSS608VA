@@ -21,12 +21,17 @@ editor: visual
 
 ***Creating data visualisation beyond default***
 
+## **The Task**
+
+Assuming the role of a graphical editor of a median company, you are requested to prepare minimum two and maximum three data visualisation to reveal the private residential market and sub-markets of Singapore for the 1st quarter of 2024.
+
 # 1 Data Preparation
 
 ## 1.1 Loading the Required Packages
 
 ```{r}
-pacman::p_load (tidyverse)
+
+pacman::p_load(plotly, patchwork, hrbrthemes, ggrepel, tidyverse, ggpubr, scales)
 ```
 
 ## 1.2 Examining and Preparing the Data
@@ -133,9 +138,18 @@ When we look at the data, we can see that there are five property types indicate
 
 6.  Terrace House
 
-Executive Condominium is a mix between public and private housing so we will leave it as such in case we want to exclude it from further analysis. However, when we look at Apartment and Condominium, we realised that there is not much difference; e.g. one of the Apartment is [Lentor Modern](https://www.lentorsmodern.com.sg/) which is actually listed as a Condominium on its website. For the purpose of our study, we can there combine apartment and condominium as one same group - condo.
+Executive Condominium is a mix between public and private housing so we will leave it as such in case we want to exclude it from further analysis. However, when we look at Apartment and Condominium, we realised that there is not much difference; e.g. one of the Apartment is [Lentor Modern](https://www.lentorsmodern.com.sg/) which is actually listed as a Condominium on its website. For the purpose of our study, we can therefore combine apartment and condominium as one same group - condo.
 
-## 1.x Writing the data to rds file
+```{r}
+realis2324_cleaned$property_type <- ifelse(realis2324_cleaned$property_type == "Apartment", "Condominium", realis2324_cleaned$property_type)
+
+realis2324_cleaned <- realis2324_cleaned %>%
+  mutate(
+    property_type = factor(property_type, levels = c("Condominium", "Executive Condominium", "Terrace House", "Semi-Detached House", "Detached House"))
+  )
+```
+
+## 1.5 Writing the data to rds file
 
 We will then write the data into a rds format.
 
@@ -151,46 +165,218 @@ Reading the file from rds.
 realis2324_cleaned <- read_rds ("data/rds/realis2324_cleaned.rds")
 ```
 
-What are we interested in?
+## 2.1 Overview of the Private Property Transactions in Q1Y24
 
--   number of transactions by sales types for condos - proportion of new sales or sales prices of new sales - vs resale
+We will first start by providing an overview of the private property transactions in the Quarter 1 2024, by trying to answer the following questions:
 
--   are more ppl looking for bigger size condo?
-
--   \% increase of prices by planning regions
+-   What is the proportion of sales in terms of property type across the quarters? We know that the bulk of transactions would involve Condominiums given their availability as compared to landed properties, but we also want to know the difference between resales/sub-sale as compared to new sales.
 
 ```{r}
-ggplot(data = realis2324_cleaned, aes(x = quarter, fill = property_type)) +
+#| code-fold: true
+
+g1 <- ggplot(subset(realis2324_cleaned, sale_type %in% c("Resale", "Sub Sale")), aes(x = quarter, fill = property_type)) +
   geom_bar(position = "dodge", color = "black") +
-  theme_light() +
-  labs(
-    title = "Number of Transactions by Property Types Across Quarters",
+  geom_text(
+    aes(label = ..count.., y = ..count.. + 50 ),
+    stat = "count",
+    size = 2,
+    position = position_dodge(0.9),
+    vjust=0)+
+  theme(legend.position="none")+
+   labs(
+    title = "Resale Transactions for Condos in Q1Y24 is comparable to Q1Y23",
     x = "Quarters",
     y = "Number of Transactions"
   ) +
-  scale_fill_brewer(palette = "Set3")  # Adjust the color palette if needed
+  scale_fill_brewer(palette = "Blues", name = "Property Type") 
+
+g1
 ```
 
 ```{r}
-ggplot(data=realis2324_cleaned, 
-       aes(x= trans_price)) +
-  geom_histogram(bins=50) +
-  xlim (0, 5000000) +
-  facet_wrap(~ quarter) +
-  labs(title="Histogram of Transacted Price across Quarters (up to $5M)", y="Count", x="Transacted Price ($)")+
-  theme_minimal() +
-  theme(axis.text.x = element_text(size = 6))
+#| code-fold: true
+
+g2 <- ggplot(subset(realis2324_cleaned, sale_type %in% "New Sale"), aes(x = quarter, fill = property_type)) +
+  geom_bar(position = "dodge", color = "black") +
+  geom_text(
+    aes(label = ..count.., y = ..count.. + 50 ),
+    stat = "count",
+    size = 2,
+    position = position_dodge(0.9),
+    vjust=0)+
+  labs(
+    title = "New Sale Transactions for Condos in Q1Y24 is comparable to Q1Y23",
+    x = "Quarters",
+    y = "Number of Transactions"
+  ) +
+  scale_fill_brewer(palette = "Blues", name = "Property Type") 
+
+g2
 ```
 
 ```{r}
-ggplot(data=realis2324_cleaned, 
+p = (g1 / g2) +
+  plot_annotation('Number of Condo Transactions for Q1Y24 is comparable to Q1Y23')
+
+p & theme_minimal()+
+  theme(legend.key.size = unit(0.3, 'cm'), #change legend key size
+        legend.key.height = unit(0.3, 'cm'), #change legend key height
+        legend.key.width = unit(0.3, 'cm'), #change legend key width
+        legend.title = element_text(size=6), #change legend title font size
+        legend.text = element_text(size=6),
+        title=element_text(size=8, face='bold'), 
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 8),
+        )
+      
+```
+
+::: callout-important
+From the graph, we can see that the number of transactions for condominiums is a lot higher as compared to landed properties, with the number of both resale and new sales in Q1Y24 comparable to that in Q1Y23.
+
+There are a higher number of new sales in Q2 and Q3 of the year, which is probably explained by the period when the developers like to launch their sales. We can also see that the new sales of landed properties pale in comparison to that of condominiums.
+:::
+
+## 2.2 Transaction Price on Resale Condos
+
+Next, we ask the following questions about the resale prices of condos:
+
+-   Has the overall transaction price of properties, **focusing on resale Condominiums** increased across the quarter, and year on year comparison for Q1Y24 as compared to Q1Y23?
+
+First we look at the data in 2023 and compute some statistical values.
+
+```{r}
+condo_subset23 <- realis2324_cleaned %>%
+  filter(sale_type %in% c("Resale", "Sub Sale"), 
+         property_type == "Condominium",
+         quarter %in% c("Q1Y23", "Q2Y23", "Q3Y23", "Q4Y23") )
+```
+
+```{r}
+resale23_mean <- round(mean(condo_subset23$trans_price))
+resale23_median <- round(median(condo_subset23$trans_price))
+
+```
+
+```{r}
+condo_subset24 <- realis2324_cleaned %>%
+  filter(sale_type %in% c("Resale", "Sub Sale"), 
+         property_type == "Condominium",
+         quarter %in% c("Q1Y24") )
+
+resale24_mean <- round(mean(condo_subset24$trans_price))
+resale24_median <- round(median(condo_subset24$trans_price))
+
+ymax <- as.numeric(round((IQR(condo_subset24$trans_price)*1.5) +
+                quantile(condo_subset24$trans_price,0.75)))
+ymin <- as.integer(min(condo_subset24$trans_price))
+```
+
+Next, we plot the histogram and box plots of the transaction prices of the resale condos (including those sub set sales), up to a limit of \$5 million.
+
+```{r}
+#| code-fold: true
+
+h_price <- ggplot(data= condo_subset24, aes(x= trans_price)) +
+  geom_histogram(bins=30) +
+  geom_vline(aes(xintercept = resale23_mean), col="darkgrey", linewidth=0.5, linetype = "dashed") +
+  annotate("text", x=2500000, y=360, label="Mean Price in 2023:", 
+           size=3, color="darkgrey") +
+  annotate("text", x=2500000, y=330, label=format(resale23_mean, big.mark = ","),
+           size=3, color="darkgrey") +
+  geom_vline(aes(xintercept = resale23_median), col="darkgrey", linewidth=0.5, linetype = "dashed") +
+  annotate("text", x=900000, y=360, label="Median Price in 2023", 
+           size=3, color="darkgrey") +
+  annotate("text", x=900000, y=330, label=format(resale23_median, big.mark = ","),
+           size=3, color="darkgrey") +
+  geom_vline(aes(xintercept = resale24_median), col="darkblue", linewidth=0.5, linetype = "dashed") +
+  annotate("text", x=900000, y=300, label="Median Price in Q1Y24", 
+           size=3, color="darkblue") +
+  annotate("text", x=900000, y=270, label=format(resale24_median, big.mark = ","),
+           size=3, color="darkblue")+
+    geom_vline(aes(xintercept = resale24_mean), col="darkblue", linewidth=0.5, linetype = "dashed") +
+  annotate("text", x=2500000, y=300, label="Mean Price in Q1Y24", 
+           size=3, color="darkblue") +
+  annotate("text", x=2500000, y=270, label=format(resale24_mean, big.mark = ","),
+           size=3, color="darkblue") +
+  scale_x_continuous(limits = c(0,5000000),labels = unit_format(unit = "M", scale = 1e-6)) +
+  labs(
+    x = "Transaction Price",
+    y = "Number of Transactions"
+  )
+```
+
+```{r}
+#| code-fold: true
+
+b_price <- ggplot(data = condo_subset24, aes(y = trans_price)) + 
+  geom_boxplot(outlier.colour="firebrick", outlier.shape=16,
+               outlier.size=0.6, notch=FALSE, width = 0.25) + 
+  coord_flip() + labs(y = "", x = "") + 
+  scale_y_continuous(limits = c(0,5000000), labels = unit_format(unit = "M", scale = 1e-6)) +
+  theme(axis.text = element_blank(), axis.ticks = element_blank()) + 
+  stat_boxplot(geom="errorbar", width=0.25) + 
+  annotate("text", x=0.20, y=ymax, label=format(ymax, big.mark = ","), 
+           size=3, color="lightpink4") +
+  annotate("text", x=0.20, y=ymin, label=format(ymin, big.mark = ","), 
+           size=3, color="lightpink4") +
+  annotate("text", x=-0.15, y=3000000, label=format(resale24_median, big.mark = ","),
+           size=3, color="lightpink4") +
+  annotate("text", x=-0.15, y=1000000, label="Median Price =",
+           size=3, color="lightpink4")+
+  labs(title="Transaction Price in Q1Y24")
+
+```
+
+```{r}
+#| code-fold: true
+
+condo_subset2324 <- realis2324_cleaned %>%
+  filter(sale_type %in% c("Resale", "Sub Sale"), 
+         property_type == "Condominium")
+
+bp_price <- ggplot(data=condo_subset2324, 
        aes(y = trans_price, x= quarter)) +
-  ylim(0,5000000) +
   geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
+  geom_hline(aes(yintercept = resale24_median), col="darkblue", linewidth=0.5, linetype = "dashed") +
   geom_point(stat="summary",        
              fun=mean,           
              colour ="darkblue",          
              size=2) +
-  theme_light() +
-  labs(title="Transaction Price across Quarters", y="Transacted Price", x="Quarters")
+  scale_y_continuous(limits = c(0,3000000),labels = unit_format(unit = "M", scale = 1e-6))+
+  labs(title="Transaction Price across Quarters")
+
+```
+
+```{r}
+resale_price24 <- (b_price | bp_price) / h_price
+
+p1 <- resale_price24 + plot_annotation(title = "Both Mean and Median Prices of Transactions are higher in Q1Y24 compared to 2023")
+
+p1 & theme_minimal() +
+  theme(title=element_text(size=8, face='bold'), 
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 8),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        )
+```
+
+::: callout-important
+From the graphs, we can observe that both the median and mean prices in Q1Y24 are higher as compared to that of 2023. The distribution of prices is also more right-skewed with the mean prices \> median prices. When we look across the quarters, there also seem to be a gradual increase in the prices.
+
+While the majority of the prices would fall between \$1M to \$2.2M, there are also quite a number of properties going for higher prices.
+
+This is expected given that the transaction prices of properties are dependent on a variety of factors, mainly location, size of the units, age and many more.
+:::
+
+## 2.3 Prices across Planning Regions
+
+```{r}
+region_price <- ggplot(data = condo_subset24, aes(x = fct_infreq(planning_region))) +
+  geom_bar(stat = 'count', position = "dodge", fill = "lightblue") +
+  labs(
+    title = "Higher number of sales in Central Region",
+    y = "Number of Transactions"
+  ) 
 ```
