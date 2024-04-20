@@ -1,0 +1,16 @@
+{
+  "hash": "fed4394fde855e76f76ae9adef3d108b",
+  "result": {
+    "markdown": "---\ntitle: \"In Class Ex 02\"\n\nauthor: \"Cheng Chun Chieh\"\n\ndate: \"20 Apr 2024\"\ndate-modified: \"last-modified\"\n\nformat: html\nexecute: \n  echo: true\n  eval: true\n  warning: false\n  freeze: true\n  \neditor: visual\n---\n\n\n# In Class Ex 2 - Data Visualisation \n\n## 1.1 Loading the required packages \n\n\n::: {.cell}\n\n```{.r .cell-code}\npacman::p_load(tidyverse, ggdist, ggthemes)\n```\n:::\n\n\n## 1.2 Loading Exam Data \n\n\n::: {.cell}\n\n```{.r .cell-code}\nexam_data <- read_csv(\"data/Exam_data.csv\")\n```\n:::\n\n\n# Visualising Distribution\n\n## Typical way - Using Histogram\n\n\n::: {.cell}\n\n```{.r .cell-code}\nggplot(data=exam_data, \n             aes(x = ENGLISH)) +\n  geom_histogram(bins=20, \n                 boundary = 100,\n                 color=\"grey25\", \n                 fill=\"grey90\") +\n  theme_gray() +\n  ggtitle(\"Distribution of English scores\") \n```\n\n::: {.cell-output-display}\n![](inclassex02_files/figure-html/unnamed-chunk-3-1.png){width=672}\n:::\n:::\n\n\nBy using histogram - the underlying code will bin the data to create the histogram - because they are to be represented in bars.\n\n## Using Probability Density Plot Instead \n\n\n::: {.cell}\n\n```{.r .cell-code}\nggplot(data=exam_data, aes(x = ENGLISH)) +\n  geom_density(color=\"darkblue\", adjust =.65, alpha = .6, linewidth = 1) +\n  theme_minimal() +\n  ggtitle(\"Distribution of English scores\") \n```\n\n::: {.cell-output-display}\n![](inclassex02_files/figure-html/unnamed-chunk-4-1.png){width=672}\n:::\n:::\n\n\n## The alternative design\n\n\n::: {.cell}\n\n```{.r .cell-code}\nmedian_eng <- median(exam_data$ENGLISH)\nmean_eng <- mean(exam_data$ENGLISH)\nstd_eng <- sd(exam_data$ENGLISH)\n\nggplot(data=exam_data, aes(x = ENGLISH)) +\n  geom_density(color=\"darkblue\", adjust =.65, alpha = .6, linewidth = 1) +\n  stat_function(\n    fun = dnorm,\n    args = list(mean = mean_eng, sd = std_eng),\n    col =\"darkgrey\",\n    size = 0.8\n  ) +\n  geom_vline (aes(xintercept = mean_eng), col = \"red\", linewidth = 0.6) + \n  annotate(\"text\", x= mean_eng - 12, y=0.04, label= paste0(\"Mean ENGLISH: \", round((mean_eng),2)), color=\"red\") + \n  annotate(\"text\", x= median_eng + 12, y=0.04, label= paste0(\"Median ENGLISH: \", round((median_eng),2)), color=\"red\") +\n  geom_vline (aes(xintercept = median_eng), col = \"red\", linewidth = 0.6, linetype = \"dashed\") +\n  theme_minimal() +\n  ggtitle(\"Distribution of English scores\") \n```\n\n::: {.cell-output-display}\n![](inclassex02_files/figure-html/unnamed-chunk-5-1.png){width=672}\n:::\n:::\n",
+    "supporting": [
+      "inclassex02_files"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

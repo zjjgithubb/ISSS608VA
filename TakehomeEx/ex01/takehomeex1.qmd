@@ -98,6 +98,8 @@ duplicate_rows <- realis2324 %>%
 print(duplicate_rows)
 ```
 
+## 1.4 Focusing on Individual Sales (i.e. Remove En Bloc)
+
 Because we are looking at transaction data of the properties, we also want to check the number of units sold in each row is equal to 1. Because any sales with more than 1 unit can indicate other sales types, like en-bloc etc.
 
 ```{r}
@@ -122,7 +124,7 @@ realis2324_cleaned <- realis2324 %>%
   filter(`Number of Units` <= 1)
 ```
 
-## 1.4 Reviewing the Property Type
+## 1.5 Reviewing the Property Type
 
 When we look at the data, we can see that there are five property types indicated:
 
@@ -149,7 +151,7 @@ realis2324_cleaned <- realis2324_cleaned %>%
   )
 ```
 
-## 1.5 Writing the data to rds file
+## 1.6 Writing the data to rds file
 
 We will then write the data into a rds format.
 
@@ -157,7 +159,7 @@ We will then write the data into a rds format.
 write_rds(realis2324_cleaned, "data/rds/realis2324_cleaned.rds")
 ```
 
-# 2 Data Visualisation
+# 2 Examining Resale Condo Prices
 
 Reading the file from rds.
 
@@ -235,6 +237,8 @@ p & theme_minimal()+
 From the graph, we can see that the number of transactions for condominiums is a lot higher as compared to landed properties, with the number of both resale and new sales in Q1Y24 comparable to that in Q1Y23.
 
 There are a higher number of new sales in Q2 and Q3 of the year, which is probably explained by the period when the developers like to launch their sales. We can also see that the new sales of landed properties pale in comparison to that of condominiums.
+
+While the new sales in Q1Y24 is comparable to that in Q4Y23, the number of resale transactions decreased by about 305 which is about 10% decrease.
 :::
 
 ## 2.2 Transaction Price on Resale Condos
@@ -266,6 +270,10 @@ condo_subset24 <- realis2324_cleaned %>%
 
 resale24_mean <- round(mean(condo_subset24$trans_price))
 resale24_median <- round(median(condo_subset24$trans_price))
+
+resaleunit24_median <- round(median(condo_subset24$unit_psm))
+resalesize24_median <- round(median(condo_subset24$unit_area)) 
+
 
 ymax <- as.numeric(round((IQR(condo_subset24$trans_price)*1.5) +
                 quantile(condo_subset24$trans_price,0.75)))
@@ -316,9 +324,9 @@ b_price <- ggplot(data = condo_subset24, aes(y = trans_price)) +
   scale_y_continuous(limits = c(0,5000000), labels = unit_format(unit = "M", scale = 1e-6)) +
   theme(axis.text = element_blank(), axis.ticks = element_blank()) + 
   stat_boxplot(geom="errorbar", width=0.25) + 
-  annotate("text", x=0.20, y=ymax, label=format(ymax, big.mark = ","), 
+  annotate("text", x=0.15, y=ymax, label=format(ymax, big.mark = ","), 
            size=3, color="lightpink4") +
-  annotate("text", x=0.20, y=ymin, label=format(ymin, big.mark = ","), 
+  annotate("text", x=0.15, y=ymin, label=format(ymin, big.mark = ","), 
            size=3, color="lightpink4") +
   annotate("text", x=-0.15, y=3000000, label=format(resale24_median, big.mark = ","),
            size=3, color="lightpink4") +
@@ -351,7 +359,7 @@ bp_price <- ggplot(data=condo_subset2324,
 ```{r}
 resale_price24 <- (b_price | bp_price) / h_price
 
-p1 <- resale_price24 + plot_annotation(title = "Both Mean and Median Prices of Transactions are higher in Q1Y24 compared to 2023")
+p1 <- resale_price24 + plot_annotation(title = "Both Mean and Median Prices of Resale Transactions are higher in Q1Y24 compared to 2023")
 
 p1 & theme_minimal() +
   theme(title=element_text(size=8, face='bold'), 
@@ -370,13 +378,67 @@ While the majority of the prices would fall between \$1M to \$2.2M, there are al
 This is expected given that the transaction prices of properties are dependent on a variety of factors, mainly location, size of the units, age and many more.
 :::
 
-## 2.3 Prices across Planning Regions
+## 2.3 Resale Condo Prices across Planning Regions in Q1Y24
 
 ```{r}
-region_price <- ggplot(data = condo_subset24, aes(x = fct_infreq(planning_region))) +
-  geom_bar(stat = 'count', position = "dodge", fill = "lightblue") +
+region_number <- ggplot(data = condo_subset24, aes(x = fct_infreq(planning_region))) +
+  geom_bar(stat = 'count', position = "dodge", color = "black", fill = "#88abff") +
   labs(
     title = "Higher number of sales in Central Region",
-    y = "Number of Transactions"
+    y = "Number of Transactions", x = "Planning Region"
   ) 
+
+region_number
+```
+
+```{r}
+region_size <- ggplot(data=condo_subset2324, 
+       aes(y = unit_area, x= fct_infreq(planning_region))) +
+  geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
+  geom_point(stat="summary",        
+             fun=mean,           
+             colour ="darkblue",          
+             size=2) +
+  geom_hline(aes(yintercept = resalesize24_median), col="red", linewidth=0.5, linetype = "dashed") +
+  annotate("text", x=4.6, y=150, label="Median Unit Size", 
+           size=3, color="red") +
+  annotate("text", x=4.6, y=130, label=format(resalesize24_median, big.mark = ","),
+           size=3, color="red")+
+  ylim(0,200) +
+  labs(title="Unit Area of Condos", y = "Unit Area (sqm)", x = "Planning Region")
+
+region_size
+```
+
+```{r}
+region_unitprice <- ggplot(data=condo_subset2324, 
+       aes(y = unit_psm, x= fct_infreq(planning_region))) +
+  geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
+  geom_hline(aes(yintercept = resaleunit24_median), col="red", linewidth=0.5, linetype = "dashed") +
+  geom_point(stat="summary",        
+             fun=mean,           
+             colour ="darkblue",          
+             size=2) +
+  annotate("text", x=4.6, y=30000, label="Median Unit Price", 
+           size=3, color="red") +
+  annotate("text", x=4.6, y=27000, label=format(resaleunit24_median, big.mark = ","),
+           size=3, color="red")+
+  ylim(0,40000) +
+  labs(title="Unit Price ($ sqm) of Condos", y = "Unit Price ($ sqm)", x = "Planning Region")
+
+region_unitprice
+```
+
+```{r}
+resale_unitprice24 <- region_number | (region_size / region_unitprice)
+
+p2 <- resale_unitprice24 + plot_annotation(title = "Both Mean and Median Prices of Resale Transactions are higher in Q1Y24 compared to 2023")
+
+p2 & theme_minimal() +
+  theme(title=element_text(size=8, face='bold'), 
+        axis.text.x = element_text(size = 6),
+        axis.text.y = element_text(size = 8),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        )
 ```
