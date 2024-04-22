@@ -217,15 +217,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#loading-the-required-packages" id="toc-loading-the-required-packages" class="nav-link" data-scroll-target="#loading-the-required-packages">1.1 Loading the Required Packages</a></li>
   <li><a href="#examining-and-preparing-the-data" id="toc-examining-and-preparing-the-data" class="nav-link" data-scroll-target="#examining-and-preparing-the-data">1.2 Examining and Preparing the Data</a></li>
   <li><a href="#check-data-for-duplicated-missing-values" id="toc-check-data-for-duplicated-missing-values" class="nav-link" data-scroll-target="#check-data-for-duplicated-missing-values">1.3 Check Data for Duplicated, Missing Values</a></li>
-  <li><a href="#reviewing-the-property-type" id="toc-reviewing-the-property-type" class="nav-link" data-scroll-target="#reviewing-the-property-type">1.4 Reviewing the Property Type</a></li>
-  <li><a href="#writing-the-data-to-rds-file" id="toc-writing-the-data-to-rds-file" class="nav-link" data-scroll-target="#writing-the-data-to-rds-file">1.5 Writing the data to rds file</a></li>
+  <li><a href="#focusing-on-individual-sales-i.e.-remove-en-bloc" id="toc-focusing-on-individual-sales-i.e.-remove-en-bloc" class="nav-link" data-scroll-target="#focusing-on-individual-sales-i.e.-remove-en-bloc">1.4 Focusing on Individual Sales (i.e.&nbsp;Remove En Bloc)</a></li>
+  <li><a href="#reviewing-the-property-type" id="toc-reviewing-the-property-type" class="nav-link" data-scroll-target="#reviewing-the-property-type">1.5 Reviewing the Property Type</a></li>
+  <li><a href="#writing-the-data-to-rds-file" id="toc-writing-the-data-to-rds-file" class="nav-link" data-scroll-target="#writing-the-data-to-rds-file">1.6 Writing the data to rds file</a></li>
   </ul></li>
-  <li><a href="#data-visualisation" id="toc-data-visualisation" class="nav-link" data-scroll-target="#data-visualisation">2 Data Visualisation</a>
+  <li><a href="#examining-resale-condo-prices" id="toc-examining-resale-condo-prices" class="nav-link" data-scroll-target="#examining-resale-condo-prices">2 Examining Resale Condo Prices</a>
   <ul class="collapse">
   <li><a href="#overview-of-the-private-property-transactions-in-q1y24" id="toc-overview-of-the-private-property-transactions-in-q1y24" class="nav-link" data-scroll-target="#overview-of-the-private-property-transactions-in-q1y24">2.1 Overview of the Private Property Transactions in Q1Y24</a></li>
   <li><a href="#transaction-price-on-resale-condos" id="toc-transaction-price-on-resale-condos" class="nav-link" data-scroll-target="#transaction-price-on-resale-condos">2.2 Transaction Price on Resale Condos</a></li>
-  <li><a href="#prices-across-planning-regions" id="toc-prices-across-planning-regions" class="nav-link" data-scroll-target="#prices-across-planning-regions">2.3 Prices across Planning Regions</a></li>
+  <li><a href="#resale-condo-prices-across-planning-regions-in-q1y24" id="toc-resale-condo-prices-across-planning-regions-in-q1y24" class="nav-link" data-scroll-target="#resale-condo-prices-across-planning-regions-in-q1y24">2.3 Resale Condo Prices across Planning Regions in Q1Y24</a></li>
+  <li><a href="#examining-the-new-sales-data" id="toc-examining-the-new-sales-data" class="nav-link" data-scroll-target="#examining-the-new-sales-data">2.4 Examining the New Sales Data</a></li>
   </ul></li>
+  <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
     </div>
@@ -258,7 +261,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 20, 2024</p>
+      <p class="date-modified">April 22, 2024</p>
     </div>
   </div>
     
@@ -280,7 +283,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="loading-the-required-packages" class="level2">
 <h2 class="anchored" data-anchor-id="loading-the-required-packages">1.1 Loading the Required Packages</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(plotly, patchwork, hrbrthemes, ggrepel, tidyverse, ggpubr, scales)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(plotly, patchwork, hrbrthemes, ggridges, ggrepel, tidyverse, ggpubr, scales, colorspace, ggdist)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="examining-and-preparing-the-data" class="level2">
@@ -311,8 +314,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">sale_type =</span> <span class="st">`</span><span class="at">Type of Sale</span><span class="st">`</span>,</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">planning_region =</span> <span class="st">`</span><span class="at">Planning Region</span><span class="st">`</span>,</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">planning_area =</span> <span class="st">`</span><span class="at">Planning Area</span><span class="st">`</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">trans_price =</span> <span class="st">`</span><span class="at">Transacted Price ($)</span><span class="st">`</span></span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">trans_price =</span> <span class="st">`</span><span class="at">Transacted Price ($)</span><span class="st">`</span>,</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">project =</span> <span class="st">`</span><span class="at">Project Name</span><span class="st">`</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>      )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="check-data-for-duplicated-missing-values" class="level2">
@@ -327,15 +331,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(missing_values)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 23
-  `Project Name` trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date`
-           &lt;int&gt;       &lt;int&gt;         &lt;int&gt;                &lt;int&gt;       &lt;int&gt;
-1              0           0             0                    0           0
-# ℹ 18 more variables: Address &lt;int&gt;, sale_type &lt;int&gt;, `Type of Area` &lt;int&gt;,
-#   unit_area &lt;int&gt;, unit_psm &lt;int&gt;, `Nett Price($)` &lt;int&gt;,
-#   property_type &lt;int&gt;, `Number of Units` &lt;int&gt;, Tenure &lt;int&gt;,
-#   `Completion Date` &lt;int&gt;, `Purchaser Address Indicator` &lt;int&gt;,
-#   `Postal Code` &lt;int&gt;, `Postal District` &lt;int&gt;, `Postal Sector` &lt;int&gt;,
-#   planning_region &lt;int&gt;, planning_area &lt;int&gt;, sale_date &lt;int&gt;, quarter &lt;int&gt;</code></pre>
+  project trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date` Address
+    &lt;int&gt;       &lt;int&gt;         &lt;int&gt;                &lt;int&gt;       &lt;int&gt;   &lt;int&gt;
+1       0           0             0                    0           0       0
+# ℹ 17 more variables: sale_type &lt;int&gt;, `Type of Area` &lt;int&gt;, unit_area &lt;int&gt;,
+#   unit_psm &lt;int&gt;, `Nett Price($)` &lt;int&gt;, property_type &lt;int&gt;,
+#   `Number of Units` &lt;int&gt;, Tenure &lt;int&gt;, `Completion Date` &lt;int&gt;,
+#   `Purchaser Address Indicator` &lt;int&gt;, `Postal Code` &lt;int&gt;,
+#   `Postal District` &lt;int&gt;, `Postal Sector` &lt;int&gt;, planning_region &lt;int&gt;,
+#   planning_area &lt;int&gt;, sale_date &lt;int&gt;, quarter &lt;int&gt;</code></pre>
 </div>
 </div>
 <p>And also for any duplicated values.</p>
@@ -348,7 +352,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(duplicate_rows)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 0 × 23
-# ℹ 23 variables: Project Name &lt;chr&gt;, trans_price &lt;dbl&gt;, Area (SQFT) &lt;dbl&gt;,
+# ℹ 23 variables: project &lt;chr&gt;, trans_price &lt;dbl&gt;, Area (SQFT) &lt;dbl&gt;,
 #   Unit Price ($ PSF) &lt;dbl&gt;, Sale Date &lt;chr&gt;, Address &lt;chr&gt;, sale_type &lt;chr&gt;,
 #   Type of Area &lt;chr&gt;, unit_area &lt;dbl&gt;, unit_psm &lt;dbl&gt;, Nett Price($) &lt;chr&gt;,
 #   property_type &lt;chr&gt;, Number of Units &lt;dbl&gt;, Tenure &lt;chr&gt;,
@@ -357,6 +361,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 #   planning_region &lt;chr&gt;, planning_area &lt;chr&gt;, sale_date &lt;date&gt;, …</code></pre>
 </div>
 </div>
+</section>
+<section id="focusing-on-individual-sales-i.e.-remove-en-bloc" class="level2">
+<h2 class="anchored" data-anchor-id="focusing-on-individual-sales-i.e.-remove-en-bloc">1.4 Focusing on Individual Sales (i.e.&nbsp;Remove En Bloc)</h2>
 <p>Because we are looking at transaction data of the properties, we also want to check the number of units sold in each row is equal to 1. Because any sales with more than 1 unit can indicate other sales types, like en-bloc etc.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>all_units_equal_to_1 <span class="ot">&lt;-</span> <span class="fu">all</span>(realis2324<span class="sc">$</span><span class="st">`</span><span class="at">Number of Units</span><span class="st">`</span> <span class="sc">==</span> <span class="dv">1</span>)</span>
@@ -374,26 +381,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Values in the 'Number of Units' column above 1:"
 # A tibble: 12 × 23
-   `Project Name`     trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date`
-   &lt;chr&gt;                    &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt; &lt;chr&gt;      
- 1 N.A.                  32200000        14123.                 2280 02 May 2023
- 2 KEW LODGE             66800000        25177                  2653 23 May 2023
- 3 N.A.                   6150000         4342.                 1416 19 Jun 2023
- 4 N.A.                  10600000         6747.                 1571 26 Jun 2023
- 5 CLAYMORE PLAZA         7000000         4209.                 1663 27 Feb 2024
- 6 BAGNALL COURT        115280000        68491.                 1683 04 Jan 2023
- 7 MONDO MANSION BUI…     6280000         5490.                 1144 18 Jan 2023
- 8 MEYER PARK           392180000       144883.                 2707 09 Feb 2023
- 9 N.A.                  61080008        32149.                 1900 21 Mar 2023
-10 EAST VIEW GARDEN       6100000         8338.                  732 17 Jul 2023
-11 N.A.                   8000000         3659.                 2187 28 Jul 2023
-12 KARTAR APARTMENTS     18000000         6964.                 2585 11 Oct 2023
-# ℹ 18 more variables: Address &lt;chr&gt;, sale_type &lt;chr&gt;, `Type of Area` &lt;chr&gt;,
-#   unit_area &lt;dbl&gt;, unit_psm &lt;dbl&gt;, `Nett Price($)` &lt;chr&gt;,
-#   property_type &lt;chr&gt;, `Number of Units` &lt;dbl&gt;, Tenure &lt;chr&gt;,
-#   `Completion Date` &lt;chr&gt;, `Purchaser Address Indicator` &lt;chr&gt;,
-#   `Postal Code` &lt;chr&gt;, `Postal District` &lt;chr&gt;, `Postal Sector` &lt;chr&gt;,
-#   planning_region &lt;chr&gt;, planning_area &lt;chr&gt;, sale_date &lt;date&gt;, quarter &lt;fct&gt;</code></pre>
+   project    trans_price `Area (SQFT)` `Unit Price ($ PSF)` `Sale Date` Address
+   &lt;chr&gt;            &lt;dbl&gt;         &lt;dbl&gt;                &lt;dbl&gt; &lt;chr&gt;       &lt;chr&gt;  
+ 1 N.A.          32200000        14123.                 2280 02 May 2023 "29,29…
+ 2 KEW LODGE     66800000        25177                  2653 23 May 2023 "34,34…
+ 3 N.A.           6150000         4342.                 1416 19 Jun 2023 "87 LO…
+ 4 N.A.          10600000         6747.                 1571 26 Jun 2023 "1,1A,…
+ 5 CLAYMORE …     7000000         4209.                 1663 27 Feb 2024 "6 CLA…
+ 6 BAGNALL C…   115280000        68491.                 1683 04 Jan 2023 "813,8…
+ 7 MONDO MAN…     6280000         5490.                 1144 18 Jan 2023 "543,5…
+ 8 MEYER PARK   392180000       144883.                 2707 09 Feb 2023 "81,83…
+ 9 N.A.          61080008        32149.                 1900 21 Mar 2023 "14,14…
+10 EAST VIEW…     6100000         8338.                  732 17 Jul 2023 "43,45…
+11 N.A.           8000000         3659.                 2187 28 Jul 2023 "4,6 L…
+12 KARTAR AP…    18000000         6964.                 2585 11 Oct 2023 "41A,4…
+# ℹ 17 more variables: sale_type &lt;chr&gt;, `Type of Area` &lt;chr&gt;, unit_area &lt;dbl&gt;,
+#   unit_psm &lt;dbl&gt;, `Nett Price($)` &lt;chr&gt;, property_type &lt;chr&gt;,
+#   `Number of Units` &lt;dbl&gt;, Tenure &lt;chr&gt;, `Completion Date` &lt;chr&gt;,
+#   `Purchaser Address Indicator` &lt;chr&gt;, `Postal Code` &lt;chr&gt;,
+#   `Postal District` &lt;chr&gt;, `Postal Sector` &lt;chr&gt;, planning_region &lt;chr&gt;,
+#   planning_area &lt;chr&gt;, sale_date &lt;date&gt;, quarter &lt;fct&gt;</code></pre>
 </div>
 </div>
 <p>We have 12 rows with the number of units &gt; 1. Given that we are not able to divide the sales data accordingly by the number of units etc, we will remove these data instead.</p>
@@ -403,7 +410,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="reviewing-the-property-type" class="level2">
-<h2 class="anchored" data-anchor-id="reviewing-the-property-type">1.4 Reviewing the Property Type</h2>
+<h2 class="anchored" data-anchor-id="reviewing-the-property-type">1.5 Reviewing the Property Type</h2>
 <p>When we look at the data, we can see that there are five property types indicated:</p>
 <ol type="1">
 <li><p>Apartment</p></li>
@@ -424,15 +431,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 <section id="writing-the-data-to-rds-file" class="level2">
-<h2 class="anchored" data-anchor-id="writing-the-data-to-rds-file">1.5 Writing the data to rds file</h2>
+<h2 class="anchored" data-anchor-id="writing-the-data-to-rds-file">1.6 Writing the data to rds file</h2>
 <p>We will then write the data into a rds format.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(realis2324_cleaned, <span class="st">"data/rds/realis2324_cleaned.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>
-<section id="data-visualisation" class="level1">
-<h1>2 Data Visualisation</h1>
+<section id="examining-resale-condo-prices" class="level1">
+<h1>2 Examining Resale Condo Prices</h1>
 <p>Reading the file from rds.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>realis2324_cleaned <span class="ot">&lt;-</span> <span class="fu">read_rds</span> (<span class="st">"data/rds/realis2324_cleaned.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -522,6 +529,7 @@ Important
 <div class="callout-body-container callout-body">
 <p>From the graph, we can see that the number of transactions for condominiums is a lot higher as compared to landed properties, with the number of both resale and new sales in Q1Y24 comparable to that in Q1Y23.</p>
 <p>There are a higher number of new sales in Q2 and Q3 of the year, which is probably explained by the period when the developers like to launch their sales. We can also see that the new sales of landed properties pale in comparison to that of condominiums.</p>
+<p>While the new sales in Q1Y24 is comparable to that in Q4Y23, the number of resale transactions decreased by about 305 which is about 10% decrease.</p>
 </div>
 </div>
 </section>
@@ -551,9 +559,13 @@ Important
 <span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>resale24_mean <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">mean</span>(condo_subset24<span class="sc">$</span>trans_price))</span>
 <span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>resale24_median <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">median</span>(condo_subset24<span class="sc">$</span>trans_price))</span>
 <span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>ymax <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">round</span>((<span class="fu">IQR</span>(condo_subset24<span class="sc">$</span>trans_price)<span class="sc">*</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                <span class="fu">quantile</span>(condo_subset24<span class="sc">$</span>trans_price,<span class="fl">0.75</span>)))</span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>ymin <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">min</span>(condo_subset24<span class="sc">$</span>trans_price))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>resaleunit24_median <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">median</span>(condo_subset24<span class="sc">$</span>unit_psm))</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>resalesize24_median <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fu">median</span>(condo_subset24<span class="sc">$</span>unit_area)) </span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>ymax <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(<span class="fu">round</span>((<span class="fu">IQR</span>(condo_subset24<span class="sc">$</span>trans_price)<span class="sc">*</span><span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>                <span class="fu">quantile</span>(condo_subset24<span class="sc">$</span>trans_price,<span class="fl">0.75</span>)))</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>ymin <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">min</span>(condo_subset24<span class="sc">$</span>trans_price))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Next, we plot the histogram and box plots of the transaction prices of the resale condos (including those sub set sales), up to a limit of $5 million.</p>
 <div class="cell">
@@ -598,9 +610,9 @@ Important
 <span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">5000000</span>), <span class="at">labels =</span> <span class="fu">unit_format</span>(<span class="at">unit =</span> <span class="st">"M"</span>, <span class="at">scale =</span> <span class="fl">1e-6</span>)) <span class="sc">+</span></span>
 <span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text =</span> <span class="fu">element_blank</span>(), <span class="at">axis.ticks =</span> <span class="fu">element_blank</span>()) <span class="sc">+</span> </span>
 <span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_boxplot</span>(<span class="at">geom=</span><span class="st">"errorbar"</span>, <span class="at">width=</span><span class="fl">0.25</span>) <span class="sc">+</span> </span>
-<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">0.20</span>, <span class="at">y=</span>ymax, <span class="at">label=</span><span class="fu">format</span>(ymax, <span class="at">big.mark =</span> <span class="st">","</span>), </span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">0.15</span>, <span class="at">y=</span>ymax, <span class="at">label=</span><span class="fu">format</span>(ymax, <span class="at">big.mark =</span> <span class="st">","</span>), </span>
 <span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"lightpink4"</span>) <span class="sc">+</span></span>
-<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">0.20</span>, <span class="at">y=</span>ymin, <span class="at">label=</span><span class="fu">format</span>(ymin, <span class="at">big.mark =</span> <span class="st">","</span>), </span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">0.15</span>, <span class="at">y=</span>ymin, <span class="at">label=</span><span class="fu">format</span>(ymin, <span class="at">big.mark =</span> <span class="st">","</span>), </span>
 <span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"lightpink4"</span>) <span class="sc">+</span></span>
 <span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="sc">-</span><span class="fl">0.15</span>, <span class="at">y=</span><span class="dv">3000000</span>, <span class="at">label=</span><span class="fu">format</span>(resale24_median, <span class="at">big.mark =</span> <span class="st">","</span>),</span>
 <span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"lightpink4"</span>) <span class="sc">+</span></span>
@@ -631,7 +643,7 @@ Important
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>resale_price24 <span class="ot">&lt;-</span> (b_price <span class="sc">|</span> bp_price) <span class="sc">/</span> h_price</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> resale_price24 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Both Mean and Median Prices of Transactions are higher in Q1Y24 compared to 2023"</span>)</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>p1 <span class="ot">&lt;-</span> resale_price24 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Both Mean and Median Prices of Resale Transactions are higher in Q1Y24 compared to 2023"</span>)</span>
 <span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>p1 <span class="sc">&amp;</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
 <span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>, <span class="at">face=</span><span class="st">'bold'</span>), </span>
@@ -660,19 +672,230 @@ Important
 </div>
 </div>
 </section>
-<section id="prices-across-planning-regions" class="level2">
-<h2 class="anchored" data-anchor-id="prices-across-planning-regions">2.3 Prices across Planning Regions</h2>
+<section id="resale-condo-prices-across-planning-regions-in-q1y24" class="level2">
+<h2 class="anchored" data-anchor-id="resale-condo-prices-across-planning-regions-in-q1y24">2.3 Resale Condo Prices across Planning Regions in Q1Y24</h2>
+<p>Next we will zoom into Q1Y24 to examine the data and see if there is any trend relating to the number of transactions and prices.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>region_price <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> condo_subset24, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(planning_region))) <span class="sc">+</span></span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">fill =</span> <span class="st">"lightblue"</span>) <span class="sc">+</span></span>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>region_number <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> condo_subset24, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_infreq</span>(planning_region))) <span class="sc">+</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"#88abff"</span>) <span class="sc">+</span></span>
 <span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
 <span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Higher number of sales in Central Region"</span>,</span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Transactions"</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  ) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Transactions"</span>, <span class="at">x =</span> <span class="st">"Planning Region"</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  ) </span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>region_number</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
 </div>
-
-
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>region_size <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>condo_subset2324, </span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> unit_area, <span class="at">x=</span> <span class="fu">fct_infreq</span>(planning_region))) <span class="sc">+</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">colour =</span><span class="st">"black"</span>, <span class="at">fill=</span><span class="st">"#88abff"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">stat=</span><span class="st">"summary"</span>,        </span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">fun=</span>mean,           </span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span><span class="st">"darkblue"</span>,          </span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> resalesize24_median), <span class="at">col=</span><span class="st">"red"</span>, <span class="at">linewidth=</span><span class="fl">0.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">4.6</span>, <span class="at">y=</span><span class="dv">150</span>, <span class="at">label=</span><span class="st">"Median Unit Size"</span>, </span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">4.6</span>, <span class="at">y=</span><span class="dv">130</span>, <span class="at">label=</span><span class="fu">format</span>(resalesize24_median, <span class="at">big.mark =</span> <span class="st">","</span>),</span>
+<span id="cb26-12"><a href="#cb26-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"red"</span>)<span class="sc">+</span></span>
+<span id="cb26-13"><a href="#cb26-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">200</span>) <span class="sc">+</span></span>
+<span id="cb26-14"><a href="#cb26-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Unit Area of Condos Comparable"</span>, <span class="at">y =</span> <span class="st">"Unit Area (sqm)"</span>, <span class="at">x =</span> <span class="st">"Planning Region"</span>)</span>
+<span id="cb26-15"><a href="#cb26-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-16"><a href="#cb26-16" aria-hidden="true" tabindex="-1"></a>region_size</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>region_unitprice <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data=</span>condo_subset2324, </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">y =</span> unit_psm, <span class="at">x=</span> <span class="fu">fct_infreq</span>(planning_region))) <span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">colour =</span><span class="st">"black"</span>, <span class="at">fill=</span><span class="st">"#88abff"</span>, <span class="at">alpha=</span><span class="fl">0.5</span>) <span class="sc">+</span></span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="fu">aes</span>(<span class="at">yintercept =</span> resaleunit24_median), <span class="at">col=</span><span class="st">"red"</span>, <span class="at">linewidth=</span><span class="fl">0.5</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">stat=</span><span class="st">"summary"</span>,        </span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">fun=</span>mean,           </span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>             <span class="at">colour =</span><span class="st">"darkblue"</span>,          </span>
+<span id="cb27-8"><a href="#cb27-8" aria-hidden="true" tabindex="-1"></a>             <span class="at">size=</span><span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb27-9"><a href="#cb27-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">4.6</span>, <span class="at">y=</span><span class="dv">30000</span>, <span class="at">label=</span><span class="st">"Median Unit Price"</span>, </span>
+<span id="cb27-10"><a href="#cb27-10" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"red"</span>) <span class="sc">+</span></span>
+<span id="cb27-11"><a href="#cb27-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">annotate</span>(<span class="st">"text"</span>, <span class="at">x=</span><span class="fl">4.6</span>, <span class="at">y=</span><span class="dv">27000</span>, <span class="at">label=</span><span class="fu">format</span>(resaleunit24_median, <span class="at">big.mark =</span> <span class="st">","</span>),</span>
+<span id="cb27-12"><a href="#cb27-12" aria-hidden="true" tabindex="-1"></a>           <span class="at">size=</span><span class="dv">3</span>, <span class="at">color=</span><span class="st">"red"</span>)<span class="sc">+</span></span>
+<span id="cb27-13"><a href="#cb27-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>,<span class="dv">40000</span>) <span class="sc">+</span></span>
+<span id="cb27-14"><a href="#cb27-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Unit Price ($ sqm) higher in Central Region"</span>, <span class="at">y =</span> <span class="st">"Unit Price ($ sqm)"</span>, <span class="at">x =</span> <span class="st">"Planning Region"</span>)</span>
+<span id="cb27-15"><a href="#cb27-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb27-16"><a href="#cb27-16" aria-hidden="true" tabindex="-1"></a>region_unitprice</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>resale_unitprice24 <span class="ot">&lt;-</span> region_number <span class="sc">|</span> (region_size <span class="sc">/</span> region_unitprice)</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>p2 <span class="ot">&lt;-</span> resale_unitprice24 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"Number of Transactions and Prices higher for Central Region"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>p2 <span class="sc">&amp;</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>, <span class="at">face=</span><span class="st">'bold'</span>), </span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">6</span>),</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">8</span>),</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-25-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here we see that the number of transactions for resale condos in the central region is a lot higher compared to the other regions, and the median price in the central region is also higher compared to the overall median price.</p>
+<p>The size of the units remain somewhat comparable across the regions, indicating the preference of buyers in this current climate.</p>
+</div>
+</div>
 </section>
+<section id="examining-the-new-sales-data" class="level2">
+<h2 class="anchored" data-anchor-id="examining-the-new-sales-data">2.4 Examining the New Sales Data</h2>
+<p>Next, we want to know what are the new sales in Q1Y24 and the prices transacted to understand if there is a range of prices within these projects and how big is this variance.</p>
+<p>First, we filter the data:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>condo_new_subset24 <span class="ot">&lt;-</span> realis2324_cleaned <span class="sc">%&gt;%</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(sale_type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"New Sale"</span>), </span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>         property_type <span class="sc">==</span> <span class="st">"Condominium"</span>,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>         quarter <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Q1Y24"</span>) )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we see which are the top 10 new sales and the projects.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Select top 10 projects based on transaction count</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>top_10_projects <span class="ot">&lt;-</span> condo_new_subset24 <span class="sc">%&gt;%</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(project) <span class="sc">%&gt;%</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">top_n</span>(<span class="dv">10</span>, <span class="at">wt =</span> n)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Subset the original data frame to include only the top 10 projects</span></span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>condo_top_10 <span class="ot">&lt;-</span> condo_new_subset24 <span class="sc">%&gt;%</span></span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(project <span class="sc">%in%</span> top_10_projects<span class="sc">$</span>project)</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot bar graph with top 10 projects</span></span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>condo_top10 <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> condo_top_10, <span class="fu">aes</span>(<span class="at">x =</span> <span class="fu">fct_rev</span>(<span class="fu">fct_infreq</span>(project)))) <span class="sc">+</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">'count'</span>, <span class="at">position =</span> <span class="st">"dodge"</span>, <span class="at">color =</span> <span class="st">"black"</span>, <span class="at">fill =</span> <span class="st">"#88abff"</span>) <span class="sc">+</span></span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"4 out of 10 projects are situated in Lentor"</span>,</span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of Transactions"</span>, <span class="at">x =</span> <span class="st">"Projects"</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">+</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Next, we plot the ridge plot to take a look at the unit price (S$ psm).</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>condo_ridge <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(condo_top_10,</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> unit_psm, </span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> project, </span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>           <span class="at">fill =</span> <span class="fu">factor</span>(<span class="fu">stat</span>(quantile))</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>           )) <span class="sc">+</span></span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_density_ridges</span>(</span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">geom =</span> <span class="st">"density_ridges_gradient"</span>,</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">calc_ecdf =</span> <span class="cn">TRUE</span>, </span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">quantiles =</span> <span class="fu">c</span>(<span class="fl">0.025</span>, <span class="fl">0.975</span>)</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">name =</span> <span class="st">"Probability"</span>,</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"lightblue"</span>, <span class="st">"lightgrey"</span>, <span class="st">"darkblue"</span>),</span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"(0, 0.025]"</span>, <span class="st">"(0.025, 0.975]"</span>, <span class="st">"(0.975, 1]"</span>), <span class="at">guide =</span> <span class="st">"none"</span></span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"High Variance of Unit Price across Projects, even for Lentor Area"</span>, <span class="at">y =</span> <span class="st">"Projects"</span>, <span class="at">x =</span> <span class="st">"Unit Price ($psm)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Further zoom into the Lentor Projects, namely - Lentoria, Lentor Mansion, Lentor Hill Residences, Hillock Green.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>condo_lentor <span class="ot">&lt;-</span> condo_new_subset24 <span class="sc">%&gt;%</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(project <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"LENTORIA"</span>, <span class="st">"LENTOR MANSION"</span>, <span class="st">"LENTOR HILLS RESIDENCES"</span>, <span class="st">"HILLOCK GREEN"</span>))</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>condo_lentor_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(condo_lentor, </span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>       <span class="fu">aes</span>(<span class="at">x =</span> project, </span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">y =</span> unit_psm)) <span class="sc">+</span></span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_halfeye</span>(<span class="at">adjust =</span> <span class="fl">0.5</span>,</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>               <span class="at">justification =</span> <span class="sc">-</span><span class="fl">0.2</span>,</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>               <span class="at">.width =</span> <span class="dv">0</span>,</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>               <span class="at">point_colour =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_boxplot</span>(<span class="at">width =</span> .<span class="dv">20</span>,</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>               <span class="at">outlier.shape =</span> <span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_dots</span>(<span class="at">side =</span> <span class="st">"left"</span>, </span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">justification =</span> <span class="fl">1.2</span>, </span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>            <span class="at">binwidth =</span> .<span class="dv">5</span>,</span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>            <span class="at">dotsize =</span> <span class="fl">1.5</span>) <span class="sc">+</span></span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"Higher Prices for Lentor Mansion"</span>, <span class="at">y =</span> <span class="st">"Projects"</span>, <span class="at">x =</span> <span class="st">"Unit Price ($psm)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> condo_top10 <span class="sc">|</span> (condo_ridge <span class="sc">/</span> condo_lentor_plot)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> g1 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"High no. of New Sales in Lentor for Q1Y24, but each Project in Lentor is also Different"</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>g2 <span class="sc">&amp;</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>, <span class="at">face=</span><span class="st">'bold'</span>), </span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.x =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a>        )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<p><img src="takehomeex1_files/figure-html/unnamed-chunk-30-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Here we examine the number of new sales in Q1Y24, focusing on the top 10 condo projects.</p>
+<p>We notice that there is a concentration of new releases in the Lentor area, with 4 new projects being sold. That said, we observe that the unit price varies within the project and also across the projects even in Lentor.</p>
+<p>From the graph, we also notice that the unit price for Lentor Mansion is higher compared to the neighbouring projects. So we know that there is a premium to be paid for this project - which could be due to the developer, and the new GFA harmonisation rules (no more space wastage shenanigans).</p>
+</div>
+</div>
+<p><img src="images/Lentor-3.webp" class="img-fluid"></p>
+</section>
+</section>
+<section id="references" class="level1">
+<h1>References</h1>
+<p>Can refer to the textbook by Prof Kam for the functions written in this exercise, namely:</p>
+<ul>
+<li><p><a href="https://r4va.netlify.app/chap09">Data Visualisation</a></p></li>
+<li><p><a href="https://r4va.netlify.app/chap02">Beyond ggplot2 fundamentals</a></p></li>
+<li><p><a href="https://stackedhomes.com/editorial/this-up-and-coming-area-has-5-new-condos-in-just-2-years-is-lentor-mansion-still-worth-a-look/" class="uri">https://stackedhomes.com/editorial/this-up-and-coming-area-has-5-new-condos-in-just-2-years-is-lentor-mansion-still-worth-a-look/</a></p></li>
+</ul>
+
+
 </section>
 
 </main> <!-- /main -->

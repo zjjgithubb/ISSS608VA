@@ -31,7 +31,7 @@ Assuming the role of a graphical editor of a median company, you are requested t
 
 ```{r}
 
-pacman::p_load(plotly, patchwork, hrbrthemes, ggrepel, tidyverse, ggpubr, scales)
+pacman::p_load(plotly, patchwork, hrbrthemes, ggridges, ggrepel, tidyverse, ggpubr, scales, colorspace, ggdist)
 ```
 
 ## 1.2 Examining and Preparing the Data
@@ -70,7 +70,8 @@ realis2324 <- df %>%
     sale_type = `Type of Sale`,
     planning_region = `Planning Region`,
     planning_area = `Planning Area`,
-    trans_price = `Transacted Price ($)`
+    trans_price = `Transacted Price ($)`,
+    project = `Project Name`
       )
 ```
 
@@ -380,7 +381,11 @@ This is expected given that the transaction prices of properties are dependent o
 
 ## 2.3 Resale Condo Prices across Planning Regions in Q1Y24
 
+Next we will zoom into Q1Y24 to examine the data and see if there is any trend relating to the number of transactions and prices.
+
 ```{r}
+#| code-fold: true
+
 region_number <- ggplot(data = condo_subset24, aes(x = fct_infreq(planning_region))) +
   geom_bar(stat = 'count', position = "dodge", color = "black", fill = "#88abff") +
   labs(
@@ -392,6 +397,8 @@ region_number
 ```
 
 ```{r}
+#| code-fold: true
+
 region_size <- ggplot(data=condo_subset2324, 
        aes(y = unit_area, x= fct_infreq(planning_region))) +
   geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
@@ -405,12 +412,14 @@ region_size <- ggplot(data=condo_subset2324,
   annotate("text", x=4.6, y=130, label=format(resalesize24_median, big.mark = ","),
            size=3, color="red")+
   ylim(0,200) +
-  labs(title="Unit Area of Condos", y = "Unit Area (sqm)", x = "Planning Region")
+  labs(title="Unit Area of Condos Comparable", y = "Unit Area (sqm)", x = "Planning Region")
 
 region_size
 ```
 
 ```{r}
+#| code-fold: true
+
 region_unitprice <- ggplot(data=condo_subset2324, 
        aes(y = unit_psm, x= fct_infreq(planning_region))) +
   geom_boxplot(colour ="black", fill="#88abff", alpha=0.5) +
@@ -424,15 +433,17 @@ region_unitprice <- ggplot(data=condo_subset2324,
   annotate("text", x=4.6, y=27000, label=format(resaleunit24_median, big.mark = ","),
            size=3, color="red")+
   ylim(0,40000) +
-  labs(title="Unit Price ($ sqm) of Condos", y = "Unit Price ($ sqm)", x = "Planning Region")
+  labs(title="Unit Price ($ sqm) higher in Central Region", y = "Unit Price ($ sqm)", x = "Planning Region")
 
 region_unitprice
 ```
 
 ```{r}
+#| code-fold: true
+
 resale_unitprice24 <- region_number | (region_size / region_unitprice)
 
-p2 <- resale_unitprice24 + plot_annotation(title = "Both Mean and Median Prices of Resale Transactions are higher in Q1Y24 compared to 2023")
+p2 <- resale_unitprice24 + plot_annotation(title = "Number of Transactions and Prices higher for Central Region")
 
 p2 & theme_minimal() +
   theme(title=element_text(size=8, face='bold'), 
@@ -442,3 +453,131 @@ p2 & theme_minimal() +
         axis.title.x = element_blank(),
         )
 ```
+
+::: callout-important
+Here we see that the number of transactions for resale condos in the central region is a lot higher compared to the other regions, and the median price in the central region is also higher compared to the overall median price.
+
+The size of the units remain somewhat comparable across the regions, indicating the preference of buyers in this current climate.
+:::
+
+## 2.4 Examining the New Sales Data
+
+Next, we want to know what are the new sales in Q1Y24 and the prices transacted to understand if there is a range of prices within these projects and how big is this variance.
+
+First, we filter the data:
+
+```{r}
+condo_new_subset24 <- realis2324_cleaned %>%
+  filter(sale_type %in% c("New Sale"), 
+         property_type == "Condominium",
+         quarter %in% c("Q1Y24") )
+```
+
+Next, we see which are the top 10 new sales and the projects.
+
+```{r}
+# Select top 10 projects based on transaction count
+top_10_projects <- condo_new_subset24 %>%
+  count(project) %>%
+  top_n(10, wt = n)
+
+# Subset the original data frame to include only the top 10 projects
+condo_top_10 <- condo_new_subset24 %>%
+  filter(project %in% top_10_projects$project)
+
+# Plot bar graph with top 10 projects
+
+
+condo_top10 <- ggplot(data = condo_top_10, aes(x = fct_rev(fct_infreq(project)))) +
+  geom_bar(stat = 'count', position = "dodge", color = "black", fill = "#88abff") +
+  labs(
+    title = "4 out of 10 projects are situated in Lentor",
+    y = "Number of Transactions", x = "Projects"
+  )+
+  coord_flip()
+```
+
+Next, we plot the ridge plot to take a look at the unit price (S\$ psm).
+
+```{r}
+#| code-fold: true
+
+condo_ridge <- ggplot(condo_top_10,
+       aes(x = unit_psm, 
+           y = project, 
+           fill = factor(stat(quantile))
+           )) +
+  stat_density_ridges(
+    geom = "density_ridges_gradient",
+    calc_ecdf = TRUE, 
+    quantiles = c(0.025, 0.975)
+    ) +
+  scale_fill_manual(
+    name = "Probability",
+    values = c("lightblue", "lightgrey", "darkblue"),
+    labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]"), guide = "none"
+    ) +
+  labs(title="High Variance of Unit Price across Projects, even for Lentor Area", y = "Projects", x = "Unit Price ($psm)")
+
+
+```
+
+Further zoom into the Lentor Projects, namely - Lentoria, Lentor Mansion, Lentor Hill Residences, Hillock Green.
+
+```{r}
+condo_lentor <- condo_new_subset24 %>%
+  filter(project %in% c("LENTORIA", "LENTOR MANSION", "LENTOR HILLS RESIDENCES", "HILLOCK GREEN"))
+
+
+condo_lentor_plot <- ggplot(condo_lentor, 
+       aes(x = project, 
+           y = unit_psm)) +
+  stat_halfeye(adjust = 0.5,
+               justification = -0.2,
+               .width = 0,
+               point_colour = NA) +
+  geom_boxplot(width = .20,
+               outlier.shape = NA) +
+  stat_dots(side = "left", 
+            justification = 1.2, 
+            binwidth = .5,
+            dotsize = 1.5) +
+  coord_flip() +
+  labs(title="Higher Prices for Lentor Mansion", y = "Projects", x = "Unit Price ($psm)")
+```
+
+```{r}
+#| code-fold: true
+
+g1 <- condo_top10 | (condo_ridge / condo_lentor_plot)
+
+g2 <- g1 + plot_annotation(title = "High no. of New Sales in Lentor for Q1Y24, but each Project in Lentor is also Different")
+
+g2 & theme_minimal() +
+  theme(title=element_text(size=8, face='bold'), 
+        axis.text.x = element_text(size = 5),
+        axis.text.y = element_text(size = 5),
+        axis.title.y = element_blank(),
+        axis.title.x = element_blank(),
+        )
+```
+
+::: callout-important
+Here we examine the number of new sales in Q1Y24, focusing on the top 10 condo projects.
+
+We notice that there is a concentration of new releases in the Lentor area, with 4 new projects being sold. That said, we observe that the unit price varies within the project and also across the projects even in Lentor.
+
+From the graph, we also notice that the unit price for Lentor Mansion is higher compared to the neighbouring projects. So we know that there is a premium to be paid for this project - which could be due to the developer, and the new GFA harmonisation rules (no more space wastage shenanigans).
+:::
+
+![](images/Lentor-3.webp)
+
+# References
+
+Can refer to the textbook by Prof Kam for the functions written in this exercise, namely:
+
+-   [Data Visualisation](https://r4va.netlify.app/chap09)
+
+-   [Beyond ggplot2 fundamentals](https://r4va.netlify.app/chap02)
+
+-   <https://stackedhomes.com/editorial/this-up-and-coming-area-has-5-new-condos-in-just-2-years-is-lentor-mansion-still-worth-a-look/>
