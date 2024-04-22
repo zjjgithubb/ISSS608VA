@@ -226,8 +226,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#overview-of-the-private-property-transactions-in-q1y24" id="toc-overview-of-the-private-property-transactions-in-q1y24" class="nav-link" data-scroll-target="#overview-of-the-private-property-transactions-in-q1y24">2.1 Overview of the Private Property Transactions in Q1Y24</a></li>
   <li><a href="#transaction-price-on-resale-condos" id="toc-transaction-price-on-resale-condos" class="nav-link" data-scroll-target="#transaction-price-on-resale-condos">2.2 Transaction Price on Resale Condos</a></li>
   <li><a href="#resale-condo-prices-across-planning-regions-in-q1y24" id="toc-resale-condo-prices-across-planning-regions-in-q1y24" class="nav-link" data-scroll-target="#resale-condo-prices-across-planning-regions-in-q1y24">2.3 Resale Condo Prices across Planning Regions in Q1Y24</a></li>
-  <li><a href="#examining-the-new-sales-data" id="toc-examining-the-new-sales-data" class="nav-link" data-scroll-target="#examining-the-new-sales-data">2.4 Examining the New Sales Data</a></li>
   </ul></li>
+  <li><a href="#examining-the-new-sales-data" id="toc-examining-the-new-sales-data" class="nav-link" data-scroll-target="#examining-the-new-sales-data">3 Examining the New Sales Data</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
 </nav>
@@ -773,8 +773,9 @@ Important
 </div>
 </div>
 </section>
-<section id="examining-the-new-sales-data" class="level2">
-<h2 class="anchored" data-anchor-id="examining-the-new-sales-data">2.4 Examining the New Sales Data</h2>
+</section>
+<section id="examining-the-new-sales-data" class="level1">
+<h1>3 Examining the New Sales Data</h1>
 <p>Next, we want to know what are the new sales in Q1Y24 and the prices transacted to understand if there is a range of prices within these projects and how big is this variance.</p>
 <p>First, we filter the data:</p>
 <div class="cell">
@@ -824,7 +825,7 @@ Important
 <span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> <span class="fu">c</span>(<span class="st">"lightblue"</span>, <span class="st">"lightgrey"</span>, <span class="st">"darkblue"</span>),</span>
 <span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> <span class="fu">c</span>(<span class="st">"(0, 0.025]"</span>, <span class="st">"(0.025, 0.975]"</span>, <span class="st">"(0.975, 1]"</span>), <span class="at">guide =</span> <span class="st">"none"</span></span>
 <span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>    ) <span class="sc">+</span></span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"High Variance of Unit Price across Projects, even for Lentor Area"</span>, <span class="at">y =</span> <span class="st">"Projects"</span>, <span class="at">x =</span> <span class="st">"Unit Price ($psm)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title=</span><span class="st">"High Variance of Unit Price across Projects"</span>, <span class="at">y =</span> <span class="st">"Projects"</span>, <span class="at">x =</span> <span class="st">"Unit Price ($psm)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
 <p>Further zoom into the Lentor Projects, namely - Lentoria, Lentor Mansion, Lentor Hill Residences, Hillock Green.</p>
@@ -854,10 +855,10 @@ Important
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>g1 <span class="ot">&lt;-</span> condo_top10 <span class="sc">|</span> (condo_ridge <span class="sc">/</span> condo_lentor_plot)</span>
 <span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> g1 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"High no. of New Sales in Lentor for Q1Y24, but each Project in Lentor is also Different"</span>)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>g2 <span class="ot">&lt;-</span> g1 <span class="sc">+</span> <span class="fu">plot_annotation</span>(<span class="at">title =</span> <span class="st">"New Sales in Lentor for Q1Y24 with Lentor Mansion commanding a higher price"</span>)</span>
 <span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>g2 <span class="sc">&amp;</span> <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">8</span>, <span class="at">face=</span><span class="st">'bold'</span>), </span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">title=</span><span class="fu">element_text</span>(<span class="at">size=</span><span class="dv">7</span>, <span class="at">face=</span><span class="st">'bold'</span>), </span>
 <span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),</span>
 <span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.text.y =</span> <span class="fu">element_text</span>(<span class="at">size =</span> <span class="dv">5</span>),</span>
 <span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>        <span class="at">axis.title.y =</span> <span class="fu">element_blank</span>(),</span>
@@ -884,7 +885,6 @@ Important
 </div>
 </div>
 <p><img src="images/Lentor-3.webp" class="img-fluid"></p>
-</section>
 </section>
 <section id="references" class="level1">
 <h1>References</h1>

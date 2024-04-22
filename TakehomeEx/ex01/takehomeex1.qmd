@@ -460,7 +460,7 @@ Here we see that the number of transactions for resale condos in the central reg
 The size of the units remain somewhat comparable across the regions, indicating the preference of buyers in this current climate.
 :::
 
-## 2.4 Examining the New Sales Data
+# 3 Examining the New Sales Data
 
 Next, we want to know what are the new sales in Q1Y24 and the prices transacted to understand if there is a range of prices within these projects and how big is this variance.
 
@@ -517,7 +517,7 @@ condo_ridge <- ggplot(condo_top_10,
     values = c("lightblue", "lightgrey", "darkblue"),
     labels = c("(0, 0.025]", "(0.025, 0.975]", "(0.975, 1]"), guide = "none"
     ) +
-  labs(title="High Variance of Unit Price across Projects, even for Lentor Area", y = "Projects", x = "Unit Price ($psm)")
+  labs(title="High Variance of Unit Price across Projects", y = "Projects", x = "Unit Price ($psm)")
 
 
 ```
@@ -551,10 +551,10 @@ condo_lentor_plot <- ggplot(condo_lentor,
 
 g1 <- condo_top10 | (condo_ridge / condo_lentor_plot)
 
-g2 <- g1 + plot_annotation(title = "High no. of New Sales in Lentor for Q1Y24, but each Project in Lentor is also Different")
+g2 <- g1 + plot_annotation(title = "New Sales in Lentor for Q1Y24 with Lentor Mansion commanding a higher price")
 
 g2 & theme_minimal() +
-  theme(title=element_text(size=8, face='bold'), 
+  theme(title=element_text(size=7, face='bold'), 
         axis.text.x = element_text(size = 5),
         axis.text.y = element_text(size = 5),
         axis.title.y = element_blank(),
