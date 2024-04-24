@@ -397,5 +397,152 @@
     "title": "Take Home Ex 1",
     "section": "2.4 Examining the New Sales Data",
     "text": "2.4 Examining the New Sales Data\nNext, we want to know what are the new sales in Q1Y24 and the prices transacted to understand if there is a range of prices within these projects and how big is this variance.\nFirst, we filter the data:\n\ncondo_new_subset24 &lt;- realis2324_cleaned %&gt;%\n  filter(sale_type %in% c(\"New Sale\"), \n         property_type == \"Condominium\",\n         quarter %in% c(\"Q1Y24\") )\n\nNext, we see which are the top 10 new sales and the projects.\n\n# Select top 10 projects based on transaction count\ntop_10_projects &lt;- condo_new_subset24 %&gt;%\n  count(project) %&gt;%\n  top_n(10, wt = n)\n\n# Subset the original data frame to include only the top 10 projects\ncondo_top_10 &lt;- condo_new_subset24 %&gt;%\n  filter(project %in% top_10_projects$project)\n\n# Plot bar graph with top 10 projects\n\n\ncondo_top10 &lt;- ggplot(data = condo_top_10, aes(x = fct_rev(fct_infreq(project)))) +\n  geom_bar(stat = 'count', position = \"dodge\", color = \"black\", fill = \"#88abff\") +\n  labs(\n    title = \"4 out of 10 projects are situated in Lentor\",\n    y = \"Number of Transactions\", x = \"Projects\"\n  )+\n  coord_flip()\n\nNext, we plot the ridge plot to take a look at the unit price (S$ psm).\n\n\nCode\ncondo_ridge &lt;- ggplot(condo_top_10,\n       aes(x = unit_psm, \n           y = project, \n           fill = factor(stat(quantile))\n           )) +\n  stat_density_ridges(\n    geom = \"density_ridges_gradient\",\n    calc_ecdf = TRUE, \n    quantiles = c(0.025, 0.975)\n    ) +\n  scale_fill_manual(\n    name = \"Probability\",\n    values = c(\"lightblue\", \"lightgrey\", \"darkblue\"),\n    labels = c(\"(0, 0.025]\", \"(0.025, 0.975]\", \"(0.975, 1]\"), guide = \"none\"\n    ) +\n  labs(title=\"High Variance of Unit Price across Projects, even for Lentor Area\", y = \"Projects\", x = \"Unit Price ($psm)\")\n\n\nFurther zoom into the Lentor Projects, namely - Lentoria, Lentor Mansion, Lentor Hill Residences, Hillock Green.\n\ncondo_lentor &lt;- condo_new_subset24 %&gt;%\n  filter(project %in% c(\"LENTORIA\", \"LENTOR MANSION\", \"LENTOR HILLS RESIDENCES\", \"HILLOCK GREEN\"))\n\n\ncondo_lentor_plot &lt;- ggplot(condo_lentor, \n       aes(x = project, \n           y = unit_psm)) +\n  stat_halfeye(adjust = 0.5,\n               justification = -0.2,\n               .width = 0,\n               point_colour = NA) +\n  geom_boxplot(width = .20,\n               outlier.shape = NA) +\n  stat_dots(side = \"left\", \n            justification = 1.2, \n            binwidth = .5,\n            dotsize = 1.5) +\n  coord_flip() +\n  labs(title=\"Higher Prices for Lentor Mansion\", y = \"Projects\", x = \"Unit Price ($psm)\")\n\n\n\nCode\ng1 &lt;- condo_top10 | (condo_ridge / condo_lentor_plot)\n\ng2 &lt;- g1 + plot_annotation(title = \"High no. of New Sales in Lentor for Q1Y24, but each Project in Lentor is also Different\")\n\ng2 & theme_minimal() +\n  theme(title=element_text(size=8, face='bold'), \n        axis.text.x = element_text(size = 5),\n        axis.text.y = element_text(size = 5),\n        axis.title.y = element_blank(),\n        axis.title.x = element_blank(),\n        )\n\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\n\nHere we examine the number of new sales in Q1Y24, focusing on the top 10 condo projects.\nWe notice that there is a concentration of new releases in the Lentor area, with 4 new projects being sold. That said, we observe that the unit price varies within the project and also across the projects even in Lentor.\nFrom the graph, we also notice that the unit price for Lentor Mansion is higher compared to the neighbouring projects. So we know that there is a premium to be paid for this project - which could be due to the developer, and the new GFA harmonisation rules (no more space wastage shenanigans)."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3.2/handson_ex3.2.html",
+    "href": "HandsOnEx/HandsOnEx3.2/handson_ex3.2.html",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "",
+    "text": "When telling a visually-driven data story, animated graphics tends to attract the interest of the audience and make deeper impression than static graphics. In this hands-on exercise, you will learn how to create animated data visualisation by using gganimate and plotly r packages. At the same time, you will also learn how to (i) reshape data by using tidyr package, and (ii) process, wrangle and transform data by using dplyr package.\n\n\nWhen creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology\n\nBefore we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.\n\n\n\n\n\n\n\nNote\n\n\n\nMust think through whether animation is useful or not!!! Presentation?"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3.2/handson_ex3.2.html#basic-concepts-of-animation",
+    "href": "HandsOnEx/HandsOnEx3.2/handson_ex3.2.html#basic-concepts-of-animation",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "",
+    "text": "When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology\n\nBefore we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.\n\n\n\n\n\n\n\nNote\n\n\n\nMust think through whether animation is useful or not!!! Presentation?"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#importing-data",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#importing-data",
+    "title": "Hands-On Ex 3",
+    "section": "1.1 Importing Data",
+    "text": "1.1 Importing Data\nWe will be using the exam data again for this ex.\n\nexam_data &lt;- read_csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "title": "Hands-On Ex 3",
+    "section": "2.1 Tooltip Effect with tooltip aesthetic",
+    "text": "2.1 Tooltip Effect with tooltip aesthetic\nBelow shows a typical code chunk to plot an interactive statistical graph by using ggiraph package. Notice that the code chunk consists of two parts. First, an ggplot object will be created. Next, girafe() of ggiraph will be used to create an interactive svg object.\n\n\n\n\n\n\nNote\n\n\n\nHovering the mouse pointer over a data point will show the Student’s ID.\n\n\n\np &lt;- ggplot(data=exam_data,aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE, \n    binwidth = 1, \n    method = \"histodot\") +\n  scale_y_continuous(NULL,breaks = NULL)\n\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618\n)\n\n\n\n\n\nNotice that two steps are involved. First, an interactive version of ggplot2 geom (i.e. geom_dotplot_interactive()) will be used to create the basic graph. Then, girafe() will be used to generate an svg object to be displayed on an html page."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#multiple-information-on-tooltip",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#multiple-information-on-tooltip",
+    "title": "Hands-On Ex 3",
+    "section": "2.2 Multiple Information on tooltip",
+    "text": "2.2 Multiple Information on tooltip\nThe content of the tooltip can be customised by including a list object as shown in the code chunk below.\n\n\n\n\n\n\nNote\n\n\n\nBy hovering the mouse pointer on an data point of interest, the student’s ID and Class will be displayed.\n\n\n\nexam_data$tooltip &lt;- c(paste0(\"Name = \", exam_data$ID, \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = exam_data$tooltip), \n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\") +\n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(ggobj = p,width_svg = 8, height_svg = 8*0.618)\n\n\n\n\n\nThe first three lines of codes in the code chunk create a new field called tooltip. At the same time, it populates text in ID and CLASS fields into the newly created field. Next, this newly created field is used as tooltip field as shown in the code of line 7."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#customising-the-styles-of-the-tooltip",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#customising-the-styles-of-the-tooltip",
+    "title": "Hands-On Ex 3",
+    "section": "2.3 Customising the Styles of the Tooltip",
+    "text": "2.3 Customising the Styles of the Tooltip\nCode chunk below uses opts_tooltip() of ggiraph to customize tooltip rendering by add css declarations.\n\ntooltip_css &lt;- \"background-color:white; \nfont-style:bold; color:black;\" \n\nexam_data$tooltip &lt;- c(paste0(\"Name = \", exam_data$ID, \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = exam_data$tooltip), \n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\") +\n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(ggobj = p,width_svg = 8, height_svg = 8*0.618, \n       options = list(opts_tooltip(css = tooltip_css)))"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#displaying-statistics-on-tooltip",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#displaying-statistics-on-tooltip",
+    "title": "Hands-On Ex 3",
+    "section": "2.4 Displaying Statistics on Tooltip",
+    "text": "2.4 Displaying Statistics on Tooltip\nCode chunk below shows an advanced way to customise tooltip. In this example, a function is used to compute 90% confident interval of the mean. The derived statistics are then displayed in the tooltip.\n\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean maths scores:\", mean, \"+/-\", sem)\n}\n\ngg_point &lt;- ggplot(data=exam_data,aes(x = RACE)) +\n  stat_summary(aes(y = MATHS, tooltip = after_stat(tooltip(y, ymax))),  \n    fun.data = \"mean_se\", \n    geom = GeomInteractiveCol,  \n    fill = \"light blue\"\n  ) +\n  stat_summary(aes(y = MATHS),\n    fun.data = mean_se,\n    geom = \"errorbar\", width = 0.2, size = 0.2\n  )\n\ngirafe(ggobj = gg_point, width_svg = 8, height_svg = 8*0.618)"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#hover-effect-with-data_id-aesthetic",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#hover-effect-with-data_id-aesthetic",
+    "title": "Hands-On Ex 3",
+    "section": "2.5 Hover Effect with data_id aesthetic",
+    "text": "2.5 Hover Effect with data_id aesthetic\nCode chunk below shows the second interactive feature of ggiraph, namely data_id.\n\np &lt;- ggplot(data=exam_data, aes(x = MATHS))+ \n  geom_dotplot_interactive(           \n    aes(data_id = CLASS),             \n    stackgroups = TRUE,               \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(ggobj = p, width_svg = 8, height_svg = 8*0.618)          \n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nInteractivity: Elements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.\nNote that the default value of the hover css is hover_css = “fill:orange;”."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#styling-hover-effect",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#styling-hover-effect",
+    "title": "Hands-On Ex 3",
+    "section": "2.6 Styling Hover Effect",
+    "text": "2.6 Styling Hover Effect\n\np &lt;- ggplot(data=exam_data, aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)                                        \n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nNote: Different from previous example, in this example the ccs customisation request are encoded directly."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#combining-both-effects",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#combining-both-effects",
+    "title": "Hands-On Ex 3",
+    "section": "2.7 Combining both Effects",
+    "text": "2.7 Combining both Effects\nThere are time that we want to combine tooltip and hover effect on the interactive statistical graph as shown in the code chunk below.\n\np &lt;- ggplot(data=exam_data, aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = CLASS, \n        data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#click-effect-with-onclick",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#click-effect-with-onclick",
+    "title": "Hands-On Ex 3",
+    "section": "2.8 Click effect with onclick",
+    "text": "2.8 Click effect with onclick\nonclick argument of ggiraph provides hotlink interactivity on the web.\nThe code chunk below shown an example of onclick.\n\nexam_data$onclick &lt;- sprintf(\"window.open(\\\"%s%s\\\")\",\n\"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school\",\nas.character(exam_data$ID))\n\np &lt;- ggplot(data=exam_data, aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(onclick = onclick),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618)                                        \n\n\n\n\n\n\n\n\n\n\n\nWarning\n\n\n\nNote that click actions must be a string column in the dataset containing valid javascript instructions."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#coordinated-multiple-views-with-ggiraph",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#coordinated-multiple-views-with-ggiraph",
+    "title": "Hands-On Ex 3",
+    "section": "2.9 Coordinated Multiple Views with ggiraph",
+    "text": "2.9 Coordinated Multiple Views with ggiraph\nWe can build a graph where data point of one of the dotplot is selected, the corresponding data point ID on the second data visualisation will be highlighted too.\nIn order to build a coordinated multiple views, the following programming strategy will be used:\n\nAppropriate interactive functions of ggiraph will be used to create the multiple views.\npatchwork function of patchwork package will be used inside girafe function to create the interactive coordinated multiple views.\n\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\np2 &lt;- ggplot(data=exam_data, \n       aes(x = ENGLISH)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") + \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(code = print(p1 + p2), \n       width_svg = 6,\n       height_svg = 3,\n       options = list(\n         opts_hover(css = \"fill: #202020;\"),\n         opts_hover_inv(css = \"opacity:0.2;\")\n         )\n       )"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#working-with-visual-variable",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#working-with-visual-variable",
+    "title": "Hands-On Ex 3",
+    "section": "3.1 Working with visual variable",
+    "text": "3.1 Working with visual variable\n\nplot_ly(data = exam_data, \n        x = ~ENGLISH, \n        y = ~MATHS, \n        color = ~RACE)"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#using-ggplotly-method",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#using-ggplotly-method",
+    "title": "Hands-On Ex 3",
+    "section": "3.2 Using ggplotly() method",
+    "text": "3.2 Using ggplotly() method\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nggplotly(p)\n\n\n\n\n\nNotice that the only extra line you need to include in the code chunk is ggplotly()."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#coordinated-multiple-views-with-plotly",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#coordinated-multiple-views-with-plotly",
+    "title": "Hands-On Ex 3",
+    "section": "3.3 Coordinated Multiple Views with plotly",
+    "text": "3.3 Coordinated Multiple Views with plotly\nThe creation of a coordinated linked plot by using plotly involves three steps:\n\nhighlight_key() of plotly package is used as shared data.\ntwo scatterplots will be created by using ggplot2 functions.\nlastly, subplot() of plotly package is used to place them next to each other side-by-side.\n\n\nd &lt;- highlight_key(exam_data)\np1 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\np2 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = SCIENCE)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nsubplot(ggplotly(p1),\n        ggplotly(p2))\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\nClick on a data point of one of the scatterplot and see how the corresponding point on the other scatterplot is selected.\n\n\nThing to learn from the code chunk:\n\nhighlight_key() simply creates an object of class crosstalk::SharedData.\nVisit this link to learn more about crosstalk"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#interactive-data-table-dt-package",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#interactive-data-table-dt-package",
+    "title": "Hands-On Ex 3",
+    "section": "4.1 Interactive Data Table: DT package",
+    "text": "4.1 Interactive Data Table: DT package\n\nA wrapper of the JavaScript Library DataTables\nData objects in R can be rendered as HTML tables using the JavaScript library ‘DataTables’ (typically via R Markdown or Shiny).\n\n\nDT::datatable(exam_data, class= \"compact\")"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#linked-brushing-crosstalk-method",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#linked-brushing-crosstalk-method",
+    "title": "Hands-On Ex 3",
+    "section": "4.2 Linked brushing: crosstalk method",
+    "text": "4.2 Linked brushing: crosstalk method\n\nd &lt;- highlight_key(exam_data) \np &lt;- ggplot(d, \n            aes(ENGLISH, \n                MATHS)) + \n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\ngg &lt;- highlight(ggplotly(p),        \n                \"plotly_selected\")  \n\ncrosstalk::bscols(gg,               \n                  DT::datatable(d), \n                  widths = 5)        \n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nThings to learn from the code chunk:\n\nhighlight() is a function of plotly package. It sets a variety of options for brushing (i.e., highlighting) multiple plots. These options are primarily designed for linking multiple plotly graphs, and may not behave as expected when linking plotly to another htmlwidget package via crosstalk. In some cases, other htmlwidgets will respect these options, such as persistent selection in leaflet.\nbscols() is a helper function of crosstalk package. It makes it easy to put HTML elements side by side. It can be called directly from the console but is especially designed to work in an R Markdown document. Warning: This will bring in all of Bootstrap!."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#ggiraph",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#ggiraph",
+    "title": "Hands-On Ex 3",
+    "section": "5.1 ggiraph",
+    "text": "5.1 ggiraph\nThis link provides online version of the reference guide and several useful articles. Use this link to download the pdf version of the reference guide.\n\nHow to Plot With Ggiraph\nInteractive map of France with ggiraph\nCustom interactive sunbursts with ggplot in R\nThis link provides code example on how ggiraph is used to interactive graphs for Swiss Olympians - the solo specialists."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3/handson_ex03.html#plotly-for-r",
+    "href": "HandsOnEx/HandsOnEx3/handson_ex03.html#plotly-for-r",
+    "title": "Hands-On Ex 3",
+    "section": "5.2 plotly for R",
+    "text": "5.2 plotly for R\n\nGetting Started with Plotly in R\nA collection of plotly R graphs are available via this link.\nCarson Sievert (2020) Interactive web-based data visualization with R, plotly, and shiny, Chapman and Hall/CRC is the best resource to learn plotly for R. The online version is available via this link\nPlotly R Figure Reference provides a comprehensive discussion of each visual representations.\nPlotly R Library Fundamentals is a good place to learn the fundamental features of Plotly’s R API.\nGetting Started\nVisit this link for a very interesting implementation of gganimate by your senior.\nBuilding an animation step-by-step with gganimate.\nCreating a composite gif with multiple gganimate panels"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html",
+    "href": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "",
+    "text": "When telling a visually-driven data story, animated graphics tends to attract the interest of the audience and make deeper impression than static graphics. In this hands-on exercise, you will learn how to create animated data visualisation by using gganimate and plotly r packages. At the same time, you will also learn how to (i) reshape data by using tidyr package, and (ii) process, wrangle and transform data by using dplyr package.\n\n\nWhen creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology\n\nBefore we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.\n\n\n\n\n\n\n\nNote\n\n\n\nMust think through whether animation is useful or not!!! Presentation?"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#basic-concepts-of-animation",
+    "href": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#basic-concepts-of-animation",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "",
+    "text": "When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology\n\nBefore we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.\n\n\n\n\n\n\n\nNote\n\n\n\nMust think through whether animation is useful or not!!! Presentation?"
   }
 ]

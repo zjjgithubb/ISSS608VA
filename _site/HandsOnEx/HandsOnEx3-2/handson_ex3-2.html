@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Cheng Chun Chieh">
-<meta name="dcterms.date" content="2024-04-01">
+<meta name="dcterms.date" content="2024-04-24">
 
-<title>Visual Analytics - ISSS608 - Visual Analytics</title>
+<title>Visual Analytics - Hands On Ex 3 - Part 2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -22,25 +22,59 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -63,7 +97,7 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -73,7 +107,7 @@ ul.task-list li input[type="checkbox"] {
     <nav class="navbar navbar-expand-lg navbar-dark ">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Visual Analytics</span>
     </a>
   </div>
@@ -89,27 +123,27 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-hands-on-ex">    
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx1/handson_ex01.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx1/handson_ex01.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 1 - ggplot2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx2/handson_ex02.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx2/handson_ex02.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 2 - Beyond ggplot2</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx3/handson_ex03.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx3/handson_ex03.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 3 - Interactive Graphs</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx3-2/handson_ex3-2.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx3-2/handson_ex3-2.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 3.2 - Using Animation</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx4/handson_ex04.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx4/handson_ex04.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 4</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./HandsOnEx/HandsOnEx5/handson_ex05.html" rel="" target="">
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx5/handson_ex05.html" rel="" target="">
  <span class="dropdown-text">Hands-On Ex 5</span></a>
   </li>  
     </ul>
@@ -120,23 +154,23 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-in-class-ex">    
         <li>
-    <a class="dropdown-item" href="./InClassEx/Ex01/inclassex01.html" rel="" target="">
+    <a class="dropdown-item" href="../../InClassEx/Ex01/inclassex01.html" rel="" target="">
  <span class="dropdown-text">In-Class Ex 01</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./InClassEx/Ex02/inclassex02.html" rel="" target="">
+    <a class="dropdown-item" href="../../InClassEx/Ex02/inclassex02.html" rel="" target="">
  <span class="dropdown-text">In-Class Ex 02</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./InClassEx/Ex03/Inclassex03.html" rel="" target="">
+    <a class="dropdown-item" href="../../InClassEx/Ex03/Inclassex03.html" rel="" target="">
  <span class="dropdown-text">In-Class Ex 03</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./InClassEx/Ex04/inclassex04.html" rel="" target="">
+    <a class="dropdown-item" href="../../InClassEx/Ex04/inclassex04.html" rel="" target="">
  <span class="dropdown-text">In-Class Ex 04</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./InClassEx/Ex05/inclassex05.html" rel="" target="">
+    <a class="dropdown-item" href="../../InClassEx/Ex05/inclassex05.html" rel="" target="">
  <span class="dropdown-text">In-Class Ex 05</span></a>
   </li>  
     </ul>
@@ -147,11 +181,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-take-home-ex">    
         <li>
-    <a class="dropdown-item" href="./TakehomeEx/ex01/takehomeex1.html" rel="" target="">
+    <a class="dropdown-item" href="../../TakehomeEx/ex01/takehomeex1.html" rel="" target="">
  <span class="dropdown-text">Take-Home Ex 01</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./TakehomeEx/Ex02/takehomeex2.html" rel="" target="">
+    <a class="dropdown-item" href="../../TakehomeEx/Ex02/takehomeex2.html" rel="" target="">
  <span class="dropdown-text">Take-Home Ex 02</span></a>
   </li>  
     </ul>
@@ -159,7 +193,7 @@ ul.task-list li input[type="checkbox"] {
 </ul>
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="./index.html" rel="" target="" aria-current="page">
+    <a class="nav-link" href="../../index.html" rel="" target="">
  <span class="menu-text">Home</span></a>
   </li>  
 </ul>
@@ -174,14 +208,24 @@ ul.task-list li input[type="checkbox"] {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#programming-animated-statistical-graphics-with-r" id="toc-programming-animated-statistical-graphics-with-r" class="nav-link active" data-scroll-target="#programming-animated-statistical-graphics-with-r">1 <strong>Programming Animated Statistical Graphics with R</strong></a>
+  <ul class="collapse">
+  <li><a href="#basic-concepts-of-animation" id="toc-basic-concepts-of-animation" class="nav-link" data-scroll-target="#basic-concepts-of-animation">1.1 Basic Concepts of Animation</a></li>
+  </ul></li>
+  <li><a href="#getting-started" id="toc-getting-started" class="nav-link" data-scroll-target="#getting-started">2 Getting Started</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ISSS608 - Visual Analytics</h1>
+<h1 class="title">Hands On Ex 3 - Part 2</h1>
 </div>
 
 
@@ -198,14 +242,14 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">April 1, 2024</p>
+      <p class="date">April 24, 2024</p>
     </div>
   </div>
   
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 15, 2024</p>
+      <p class="date-modified">April 24, 2024</p>
     </div>
   </div>
     
@@ -214,9 +258,49 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<p>This is the website created for ISSS608 - Visual Analytics as part of my journey through MITB in SMU.</p>
+<section id="programming-animated-statistical-graphics-with-r" class="level1">
+<h1>1 <strong>Programming Animated Statistical Graphics with R</strong></h1>
+<p>When telling a visually-driven data story, animated graphics tends to attract the interest of the audience and make deeper impression than static graphics. In this hands-on exercise, you will learn how to create animated data visualisation by using&nbsp;<strong>gganimate</strong>&nbsp;and&nbsp;<strong>plotly r</strong>&nbsp;packages. At the same time, you will also learn how to (i) reshape data by using&nbsp;<strong>tidyr</strong>&nbsp;package, and (ii) process, wrangle and transform data by using&nbsp;<strong>dplyr</strong>&nbsp;package.</p>
+<section id="basic-concepts-of-animation" class="level2">
+<h2 class="anchored" data-anchor-id="basic-concepts-of-animation">1.1 Basic Concepts of Animation</h2>
+<p>When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology</p>
+<p><img src="images/clipboard-2255747727.png" class="img-fluid"></p>
+<p>Before we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.</p>
+<ol type="1">
+<li><p><strong>Frame</strong>: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.</p></li>
+<li><p><strong>Animation Attributes</strong>: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.</p></li>
+</ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Must think through whether animation is useful or not!!! Presentation?</p>
+</div>
+</div>
+</section>
+</section>
+<section id="getting-started" class="level1">
+<h1>2 Getting Started</h1>
+<p>First, write a code chunk to check, install and load the following R packages:</p>
+<ul>
+<li><p><a href="https://plotly.com/r/"><strong>plotly</strong></a>, R library for plotting interactive statistical graphs.</p></li>
+<li><p><a href="https://gganimate.com/"><strong>gganimate</strong></a>, an ggplot extension for creating animated statistical graphs.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/gifski/"><strong>gifski</strong></a> converts video frames to GIF animations using pngquant’s fancy features for efficient cross-frame palettes and temporal dithering. It produces animated GIFs that use thousands of colors per frame.</p></li>
+<li><p><a href="https://cran.r-project.org/web/packages/gapminder/"><strong>gapminder</strong></a>: An excerpt of the data available at Gapminder.org. We just want to use its <em>country_colors</em> scheme.</p></li>
+<li><p><a href="https://www.tidyverse.org/"><strong>tidyverse</strong></a>, a family of modern R packages specially designed to support data science, analysis and communication task including creating static statistical graphs.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(readxl, gifski, gapminder, plotly, gganimate, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
