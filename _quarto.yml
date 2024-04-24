@@ -7,12 +7,14 @@ website:
     left:
       - text: Hands-On Ex
         menu: 
-          - text: Hands-On Ex 1
+          - text: Hands-On Ex 1 - ggplot2 
             href: HandsOnEx/HandsOnEx1/handson_ex01.html
-          - text: Hands-On Ex 2
+          - text: Hands-On Ex 2 - Beyond ggplot2
             href: HandsOnEx/HandsOnEx2/handson_ex02.html
-          - text: Hands-On Ex 3
-            href: HandsOnEx/HandsOnEx3/Handson_ex03.html
+          - text: Hands-On Ex 3 - Interactive Graphs
+            href: HandsOnEx/HandsOnEx3/handson_ex03.html
+          - text: Hands-On Ex 3.2 - Using Animation
+            href: HandsOnEx/HandsOnEx3-2/handson_ex3-2.html
           - text: Hands-On Ex 4
             href: HandsOnEx/HandsOnEx4/handson_ex04.html
           - text: Hands-On Ex 5
