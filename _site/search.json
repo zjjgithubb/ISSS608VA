@@ -544,5 +544,26 @@
     "title": "Hands On Ex 3 - Part 2",
     "section": "",
     "text": "When creating animations, the plot does not actually move. Instead, many individual plots are built and then stitched together as movie frames, just like an old-school flip book or cartoon. Each frame is a different plot when conveying motion, which is built using some relevant subset of the aggregate data. The subset drives the flow of the animation when stitched back together.1.2 Terminology\n\nBefore we dive into the steps for creating an animated statistical graph, it’s important to understand some of the key concepts and terminology related to this type of visualization.\n\nFrame: In an animated line graph, each frame represents a different point in time or a different category. When the frame changes, the data points on the graph are updated to reflect the new data.\nAnimation Attributes: The animation attributes are the settings that control how the animation behaves. For example, you can specify the duration of each frame, the easing function used to transition between frames, and whether to start the animation from the current frame or from the beginning.\n\n\n\n\n\n\n\nNote\n\n\n\nMust think through whether animation is useful or not!!! Presentation?"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#importing-data",
+    "href": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#importing-data",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "2.1 Importing Data",
+    "text": "2.1 Importing Data\nIn this exercise, we will be using the Global Population data.\n\ncol &lt;- c(\"Country\", \"Continent\")\n\nglobalPop &lt;- read_xls(\"data/GlobalPopulation.xls\", sheet = \"Data\") %&gt;%\n  mutate(across(all_of(col), factor)) %&gt;%\n  mutate(Year = as.integer(Year))\n\n\n\n\n\n\n\nNote\n\n\n\nReplaced the deprecated functions in dplyr, so the above is the latest."
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#animated-bubble-plot-1",
+    "href": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#animated-bubble-plot-1",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "4.1 Animated Bubble Plot",
+    "text": "4.1 Animated Bubble Plot\n\ngg &lt;- ggplot(globalPop, \n       aes(x = Old, \n           y = Young, \n           size = Population, \n           colour = Country)) +\n  geom_point(aes(size = Population,\n                 frame = Year),\n             alpha = 0.7, \n             show.legend = FALSE) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(x = '% Aged', \n       y = '% Young')\n\nggplotly(gg)\n\n\n\n\n\n\n\n\n\n\n\nNote\n\n\n\n\nAppropriate ggplot2 functions are used to create a static bubble plot. The output is then saved as an R object called gg.\nggplotly() is then used to convert the R graphic object into an animated svg object.\n\n\n\nNotice that although show.legend = FALSE argument was used, the legend still appears on the plot. To overcome this problem,  theme(legend.position='none')  should be used as shown in the plot and code chunk below.\n\ngg &lt;- ggplot(globalPop, \n       aes(x = Old, \n           y = Young, \n           size = Population, \n           colour = Country)) +\n  geom_point(aes(size = Population,\n                 frame = Year),\n             alpha = 0.7) +\n  scale_colour_manual(values = country_colors) +\n  scale_size(range = c(2, 12)) +\n  labs(x = '% Aged', \n       y = '% Young') + \n  theme(legend.position='none')\n\nggplotly(gg)"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#using-plot_ly-method",
+    "href": "HandsOnEx/HandsOnEx3-2/handson_ex3-2.html#using-plot_ly-method",
+    "title": "Hands On Ex 3 - Part 2",
+    "section": "4.2 using plot_ly() method",
+    "text": "4.2 using plot_ly() method\n\nbp &lt;- globalPop %&gt;%\n  plot_ly(x = ~Old, \n          y = ~Young, \n          size = ~Population, \n          color = ~Continent,\n          sizes = c(2, 100),\n          frame = ~Year, \n          text = ~Country, \n          hoverinfo = \"text\",\n          type = 'scatter',\n          mode = 'markers'\n          ) %&gt;%\n  layout(showlegend = FALSE)\n\nbp"
   }
 ]
