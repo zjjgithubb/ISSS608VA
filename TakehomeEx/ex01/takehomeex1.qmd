@@ -186,6 +186,7 @@ g1 <- ggplot(subset(realis2324_cleaned, sale_type %in% c("Resale", "Sub Sale")),
     position = position_dodge(0.9),
     vjust=0)+
   theme(legend.position="none")+
+  geom_hline(aes(yintercept = 2555), col="darkblue", linewidth=0.2, linetype = "dashed") +
    labs(
     title = "Resale Transactions for Condos in Q1Y24 is comparable to Q1Y23",
     x = "Quarters",
@@ -207,6 +208,7 @@ g2 <- ggplot(subset(realis2324_cleaned, sale_type %in% "New Sale"), aes(x = quar
     size = 2,
     position = position_dodge(0.9),
     vjust=0)+
+  geom_hline(aes(yintercept = 1154), col="darkblue", linewidth=0.2, linetype = "dashed") +
   labs(
     title = "New Sale Transactions for Condos in Q1Y24 is comparable to Q1Y23",
     x = "Quarters",
@@ -476,6 +478,7 @@ condo_new_subset24 <- realis2324_cleaned %>%
 Next, we see which are the top 10 new sales and the projects.
 
 ```{r}
+#| code-fold: true
 # Select top 10 projects based on transaction count
 top_10_projects <- condo_new_subset24 %>%
   count(project) %>%
@@ -485,16 +488,26 @@ top_10_projects <- condo_new_subset24 %>%
 condo_top_10 <- condo_new_subset24 %>%
   filter(project %in% top_10_projects$project)
 
-# Plot bar graph with top 10 projects
+# Define custom colors for Lentor Projects and Others
+custom_colors <- c("Lentor Projects" = "brown", "Others" = "grey50")
 
-
-condo_top10 <- ggplot(data = condo_top_10, aes(x = fct_rev(fct_infreq(project)))) +
-  geom_bar(stat = 'count', position = "dodge", color = "black", fill = "#88abff") +
+# Plotting code
+condo_top10 <- ggplot(data = condo_top_10, 
+                      aes(x = fct_rev(fct_infreq(project)),
+                          fill = factor(ifelse(project %in% c("LENTORIA", "LENTOR MANSION", "LENTOR HILLS RESIDENCES", "HILLOCK GREEN"), 
+                                               "Lentor Projects", "Others")))) +
+  geom_bar(stat = 'count', position = "dodge", color = "black") +
+  scale_fill_manual(name = "Project Category", values = custom_colors) + # Specify colors
   labs(
     title = "4 out of 10 projects are situated in Lentor",
     y = "Number of Transactions", x = "Projects"
-  )+
-  coord_flip()
+  ) +
+  coord_flip() +
+  theme(legend.position = "bottom")
+
+# Print the plot
+condo_top10
+
 ```
 
 Next, we plot the ridge plot to take a look at the unit price (S\$ psm).
@@ -559,6 +572,7 @@ g2 & theme_minimal() +
         axis.text.y = element_text(size = 5),
         axis.title.y = element_blank(),
         axis.title.x = element_blank(),
+        legend.position = "bottom"
         )
 ```
 

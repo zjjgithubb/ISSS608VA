@@ -15,18 +15,18 @@ website:
             href: HandsOnEx/HandsOnEx3/handson_ex03.html
           - text: Hands-On Ex 3.2 - Using Animation
             href: HandsOnEx/HandsOnEx3-2/handson_ex3-2.html
-          - text: Hands-On Ex 4
-            href: HandsOnEx/HandsOnEx4/handson_ex04.html
+          - text: Hands-On Ex 4 - Visualing Distribution
+            href: HandsOnEx/HandsOnEx4/handsonex4.html
           - text: Hands-On Ex 5
             href: HandsOnEx/HandsOnEx5/handson_ex05.html
       - text: In-Class Ex
         menu: 
-          - text: In-Class Ex 01
+          - text: In-Class Ex 01 - ggplot2 basics 
             href: InClassEx/Ex01/inclassex01.html
-          - text: In-Class Ex 02
+          - text: In-Class Ex 02 - data visualisation
             href: InClassEx/Ex02/inclassex02.html
-          - text: In-Class Ex 03
-            href: InClassEx/Ex03/Inclassex03.html
+          - text: In-Class Ex 03 - Tableu Interactivity
+            href: InClassEx/Ex03/inclassex3.html
           - text: In-Class Ex 04
             href: InClassEx/Ex04/inclassex04.html
           - text: In-Class Ex 05

@@ -125,11 +125,11 @@ ggplot(globalPop, aes(x = Old, y = Young,
   ease_aes('linear')          
 ```
 
-# 4 Using plotly 
+# 4 Using plotly
 
 In **Plotly R** package, both `ggplotly()` and `plot_ly()` support key frame animations through the `frame` argument/aesthetic. They also support an `ids` argument/aesthetic to ensure smooth transitions between objects with the same id (which helps facilitate object constancy).
 
-## 4.1 Animated Bubble Plot 
+## 4.1 Animated Bubble Plot
 
 ```{r}
 gg <- ggplot(globalPop, 
@@ -175,7 +175,7 @@ gg <- ggplot(globalPop,
 ggplotly(gg)
 ```
 
-## 4.2 using plot_ly() method 
+## 4.2 using plot_ly() method
 
 ```{r}
 bp <- globalPop %>%
@@ -195,7 +195,7 @@ bp <- globalPop %>%
 bp
 ```
 
-# 5 References 
+# 5 References
 
 -   [Getting Started](https://gganimate.com/articles/gganimate.html)
 

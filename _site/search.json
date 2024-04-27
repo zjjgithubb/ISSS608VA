@@ -60,7 +60,7 @@
     "href": "TakehomeEx/ex01/takehomeex1.html#overview-of-the-private-property-transactions-in-q1y24",
     "title": "Take Home Ex 1",
     "section": "2.1 Overview of the Private Property Transactions in Q1Y24",
-    "text": "2.1 Overview of the Private Property Transactions in Q1Y24\nWe will first start by providing an overview of the private property transactions in the Quarter 1 2024, by trying to answer the following questions:\n\nWhat is the proportion of sales in terms of property type across the quarters? We know that the bulk of transactions would involve Condominiums given their availability as compared to landed properties, but we also want to know the difference between resales/sub-sale as compared to new sales.\n\n\n\nCode\ng1 &lt;- ggplot(subset(realis2324_cleaned, sale_type %in% c(\"Resale\", \"Sub Sale\")), aes(x = quarter, fill = property_type)) +\n  geom_bar(position = \"dodge\", color = \"black\") +\n  geom_text(\n    aes(label = ..count.., y = ..count.. + 50 ),\n    stat = \"count\",\n    size = 2,\n    position = position_dodge(0.9),\n    vjust=0)+\n  theme(legend.position=\"none\")+\n   labs(\n    title = \"Resale Transactions for Condos in Q1Y24 is comparable to Q1Y23\",\n    x = \"Quarters\",\n    y = \"Number of Transactions\"\n  ) +\n  scale_fill_brewer(palette = \"Blues\", name = \"Property Type\") \n\ng1\n\n\n\n\n\n\n\nCode\ng2 &lt;- ggplot(subset(realis2324_cleaned, sale_type %in% \"New Sale\"), aes(x = quarter, fill = property_type)) +\n  geom_bar(position = \"dodge\", color = \"black\") +\n  geom_text(\n    aes(label = ..count.., y = ..count.. + 50 ),\n    stat = \"count\",\n    size = 2,\n    position = position_dodge(0.9),\n    vjust=0)+\n  labs(\n    title = \"New Sale Transactions for Condos in Q1Y24 is comparable to Q1Y23\",\n    x = \"Quarters\",\n    y = \"Number of Transactions\"\n  ) +\n  scale_fill_brewer(palette = \"Blues\", name = \"Property Type\") \n\ng2\n\n\n\n\n\n\np = (g1 / g2) +\n  plot_annotation('Number of Condo Transactions for Q1Y24 is comparable to Q1Y23')\n\np & theme_minimal()+\n  theme(legend.key.size = unit(0.3, 'cm'), #change legend key size\n        legend.key.height = unit(0.3, 'cm'), #change legend key height\n        legend.key.width = unit(0.3, 'cm'), #change legend key width\n        legend.title = element_text(size=6), #change legend title font size\n        legend.text = element_text(size=6),\n        title=element_text(size=8, face='bold'), \n        axis.text.x = element_text(size = 6),\n        axis.text.y = element_text(size = 8),\n        )\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\n\nFrom the graph, we can see that the number of transactions for condominiums is a lot higher as compared to landed properties, with the number of both resale and new sales in Q1Y24 comparable to that in Q1Y23.\nThere are a higher number of new sales in Q2 and Q3 of the year, which is probably explained by the period when the developers like to launch their sales. We can also see that the new sales of landed properties pale in comparison to that of condominiums.\nWhile the new sales in Q1Y24 is comparable to that in Q4Y23, the number of resale transactions decreased by about 305 which is about 10% decrease."
+    "text": "2.1 Overview of the Private Property Transactions in Q1Y24\nWe will first start by providing an overview of the private property transactions in the Quarter 1 2024, by trying to answer the following questions:\n\nWhat is the proportion of sales in terms of property type across the quarters? We know that the bulk of transactions would involve Condominiums given their availability as compared to landed properties, but we also want to know the difference between resales/sub-sale as compared to new sales.\n\n\n\nCode\ng1 &lt;- ggplot(subset(realis2324_cleaned, sale_type %in% c(\"Resale\", \"Sub Sale\")), aes(x = quarter, fill = property_type)) +\n  geom_bar(position = \"dodge\", color = \"black\") +\n  geom_text(\n    aes(label = ..count.., y = ..count.. + 50 ),\n    stat = \"count\",\n    size = 2,\n    position = position_dodge(0.9),\n    vjust=0)+\n  theme(legend.position=\"none\")+\n  geom_hline(aes(yintercept = 2555), col=\"darkblue\", linewidth=0.2, linetype = \"dashed\") +\n   labs(\n    title = \"Resale Transactions for Condos in Q1Y24 is comparable to Q1Y23\",\n    x = \"Quarters\",\n    y = \"Number of Transactions\"\n  ) +\n  scale_fill_brewer(palette = \"Blues\", name = \"Property Type\") \n\ng1\n\n\n\n\n\n\n\nCode\ng2 &lt;- ggplot(subset(realis2324_cleaned, sale_type %in% \"New Sale\"), aes(x = quarter, fill = property_type)) +\n  geom_bar(position = \"dodge\", color = \"black\") +\n  geom_text(\n    aes(label = ..count.., y = ..count.. + 50 ),\n    stat = \"count\",\n    size = 2,\n    position = position_dodge(0.9),\n    vjust=0)+\n  geom_hline(aes(yintercept = 1154), col=\"darkblue\", linewidth=0.2, linetype = \"dashed\") +\n  labs(\n    title = \"New Sale Transactions for Condos in Q1Y24 is comparable to Q1Y23\",\n    x = \"Quarters\",\n    y = \"Number of Transactions\"\n  ) +\n  scale_fill_brewer(palette = \"Blues\", name = \"Property Type\") \n\ng2\n\n\n\n\n\n\np = (g1 / g2) +\n  plot_annotation('Number of Condo Transactions for Q1Y24 is comparable to Q1Y23')\n\np & theme_minimal()+\n  theme(legend.key.size = unit(0.3, 'cm'), #change legend key size\n        legend.key.height = unit(0.3, 'cm'), #change legend key height\n        legend.key.width = unit(0.3, 'cm'), #change legend key width\n        legend.title = element_text(size=6), #change legend title font size\n        legend.text = element_text(size=6),\n        title=element_text(size=8, face='bold'), \n        axis.text.x = element_text(size = 6),\n        axis.text.y = element_text(size = 8),\n        )\n\n\n\n\n\n\n\n\n\n\nImportant\n\n\n\nFrom the graph, we can see that the number of transactions for condominiums is a lot higher as compared to landed properties, with the number of both resale and new sales in Q1Y24 comparable to that in Q1Y23.\nThere are a higher number of new sales in Q2 and Q3 of the year, which is probably explained by the period when the developers like to launch their sales. We can also see that the new sales of landed properties pale in comparison to that of condominiums.\nWhile the new sales in Q1Y24 is comparable to that in Q4Y23, the number of resale transactions decreased by about 305 which is about 10% decrease."
   },
   {
     "objectID": "TakehomeEx/ex01/takehomeex1.html#transaction-price-on-resale-condos",
@@ -502,5 +502,61 @@
     "title": "ISSS608 - Visual Analytics",
     "section": "",
     "text": "This is the website created for ISSS608 - Visual Analytics as part of my journey through MITB in SMU."
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html",
+    "href": "InClassEx/Ex03/inclassex3.html",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "can futher use the quick table calculation to spread the data\n\n\n\n\n\n\nDrop the variables into the “Marks” field\n\nSelect Size for Sum(Sales)\nSelect Colour Sum(Profit)\n\n\nChange the shape to circle - then it will be fill circles\nThe colors can also be further adjusted - together with the range\n\nUsing annotate area to annotate the four quadrants:\n\nCreating filter interactivity - expose the interface for the filters (checkbox)\n\nAdjusting the title of the graph - click on the insert button (to select the fields to show)\n\n\n\n\nCreate a second worksheet\n\nuse of dual-axis (select from the row button)\nadjust the color range (to be red for below 0, and blue for above 0)\n add in the sum(profit) into the color - then adjust the color range\n\n\n\nUse the edit tooltip on the first worksheet, click the insert button to insert from worksheet 2\n\n\n\n\n\nhttps://public.tableau.com/app/profile/chun.chieh.cheng/viz/ProfitLoss_17141962081520/Dashboard1?publish=yes\n\n\n\nInstead of dropping the Order_Date into filter -&gt; drop them into pages\n\n\nIt will show the animation pane on the right hand side.\nNext we adjust the timeframe to show by quarters instead.\n\n\n\nCreate the graphs to show in Tableu\n\nHere we are using the Maths and Science data from Exam_Data\n\nThen we will use the “Actions” under Dashboard menu item to create this.\n\n\n\nNeed to use ID under the scatterplot to sort of link the data up together"
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#drawing-a-scatterplot",
+    "href": "InClassEx/Ex03/inclassex3.html#drawing-a-scatterplot",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "can futher use the quick table calculation to spread the data"
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#changing-to-a-bubbleplot",
+    "href": "InClassEx/Ex03/inclassex3.html#changing-to-a-bubbleplot",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "Drop the variables into the “Marks” field\n\nSelect Size for Sum(Sales)\nSelect Colour Sum(Profit)\n\n\nChange the shape to circle - then it will be fill circles\nThe colors can also be further adjusted - together with the range\n\nUsing annotate area to annotate the four quadrants:\n\nCreating filter interactivity - expose the interface for the filters (checkbox)\n\nAdjusting the title of the graph - click on the insert button (to select the fields to show)"
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#creating-a-custom-tooltip",
+    "href": "InClassEx/Ex03/inclassex3.html#creating-a-custom-tooltip",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "Create a second worksheet\n\nuse of dual-axis (select from the row button)\nadjust the color range (to be red for below 0, and blue for above 0)\n add in the sum(profit) into the color - then adjust the color range\n\n\n\nUse the edit tooltip on the first worksheet, click the insert button to insert from worksheet 2"
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#profit-loss-dashboard",
+    "href": "InClassEx/Ex03/inclassex3.html#profit-loss-dashboard",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "https://public.tableau.com/app/profile/chun.chieh.cheng/viz/ProfitLoss_17141962081520/Dashboard1?publish=yes"
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#creating-animation-from-time",
+    "href": "InClassEx/Ex03/inclassex3.html#creating-animation-from-time",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "Instead of dropping the Order_Date into filter -&gt; drop them into pages\n\n\nIt will show the animation pane on the right hand side.\nNext we adjust the timeframe to show by quarters instead."
+  },
+  {
+    "objectID": "InClassEx/Ex03/inclassex3.html#creating-coordinated-link-view",
+    "href": "InClassEx/Ex03/inclassex3.html#creating-coordinated-link-view",
+    "title": "In-Class Ex 3",
+    "section": "",
+    "text": "Create the graphs to show in Tableu\n\nHere we are using the Maths and Science data from Exam_Data\n\nThen we will use the “Actions” under Dashboard menu item to create this.\n\n\n\nNeed to use ID under the scatterplot to sort of link the data up together"
+  },
+  {
+    "objectID": "HandsOnEx/HandsOnEx4/handsonex4.html",
+    "href": "HandsOnEx/HandsOnEx4/handsonex4.html",
+    "title": "Hands On Ex 4",
+    "section": "",
+    "text": "Visualising Statistical Analysis"
   }
 ]
