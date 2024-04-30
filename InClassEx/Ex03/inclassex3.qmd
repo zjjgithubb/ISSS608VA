@@ -16,9 +16,9 @@ execute:
 editor: visual
 ---
 
-# In Class Ex 3 - Using Tableu  
+# In Class Ex 3 - Using Tableu
 
-## 1. Drawing a scatterplot 
+## 1. Drawing a scatterplot
 
 -   can futher use the quick table calculation to spread the data
 

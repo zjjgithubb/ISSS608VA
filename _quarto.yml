@@ -33,10 +33,10 @@ website:
             href: InClassEx/Ex05/inclassex05.html
       - text: Take-Home Ex
         menu: 
-          - text: Take-Home Ex 01
+          - text: Take-Home Ex 01 - Real Estate Transaction Prices in Singapore
             href: TakehomeEx/ex01/takehomeex1.html
-          - text: Take-Home Ex 02
-            href: TakehomeEx/Ex02/takehomeex2.html
+          - text: Take-Home Ex 02 - Data Visualisation Make-over 
+            href: TakehomeEx/ex02/takehomeex2.html
     right:
       - href: index.qmd
         text: Home
