@@ -179,16 +179,20 @@ realis_subset24 <- realis2324 %>%
          )
 
 realis_subset24 <- realis_subset24 %>%
-  mutate(diff_from_median = unit_psm - resale23_median)
-         
+  mutate(
+    diff_from_median = unit_psm - resale23_median, 
+    percent_difference = ((unit_psm - resale23_median)/resale23_median)* 100
+         )
 
 df_unitprices <- realis_subset24 %>%
   group_by(planning_area, property_type) %>%
   summarize(
     average_diff_from_median = mean(diff_from_median, na.rm = TRUE),
+    average_percent_from_median = mean(percent_difference, na.rm = TRUE),
     planning_region = first(planning_region)
   ) %>%
   mutate(above_median = ifelse(average_diff_from_median > 0, "Above Median", "Below Median"))
+
 
 ```
 
@@ -207,7 +211,7 @@ realis_subset24_ocr <- df_unitprices %>%
 Utilising the code by the originator:
 
 ```{r}
-plot11 <- ggplot(realis_subset24_central, aes(x = planning_area, y = average_diff_from_median)) +
+plot11 <- ggplot(realis_subset24_central, aes(x = planning_area, y = average_percent_from_median)) +
   geom_bar(stat = "identity", aes(fill = above_median), position = position_dodge2(width = 2), width = 0.8) +
   scale_fill_manual(name = "Median Price", labels = c("Above Median", "Below Median"), values = c("below" = "#C83E4D", "above" = "#4A5859")) +
   labs(title = "Unit Price Deviations by Area", y = "", subtitle = "Private") +
@@ -225,12 +229,13 @@ The data is now on two separate graphs, lets see if we can combine them into 1.
 :::
 
 ```{r}
-plot_cr <- ggplot(realis_subset24_central, aes(x = planning_area, y = average_diff_from_median, fill = above_median)) +
+plot_cr <- ggplot(realis_subset24_central, aes(x = planning_area, y = average_percent_from_median, fill = above_median)) +
   geom_bar(aes(fill = property_type), stat = "identity", position = "dodge", width = 0.4, alpha = 0.7) +
   scale_fill_manual(name = "Property Type", labels = c("Condominium",  "Landed"), 
   values = c("Condominium" = "#C83E4D", "Landed" = "#4A5859")) +
-  labs(x = "Planning Area", y = "Diff from Median Unit Price in 2023 ($psm)", subtitle = "Central Region") +
+  labs(x = "Planning Area", y = "Percentage Diff from Median Unit Price in 2023", subtitle = "Central Region") +
   coord_flip() +
+  ylim(-50, 160) +
   theme_minimal() +
   theme(legend.position = "none", 
         text = element_text(size = 8)
@@ -242,13 +247,13 @@ plot_cr
 ```
 
 ```{r}
-plot_ocr <- ggplot(realis_subset24_ocr, aes(x = planning_area, y = average_diff_from_median, fill = above_median)) +
+plot_ocr <- ggplot(realis_subset24_ocr, aes(x = planning_area, y = average_percent_from_median, fill = above_median)) +
   geom_bar(aes(fill = property_type), stat = "identity", position = "dodge", width = 0.4, alpha = 0.7) +
   scale_fill_manual(name = "Property Type", labels = c("Condominium",  "Executive Condominium", "Landed"), 
   values = c("Condominium" = "#C83E4D","Executive Condominium" = "orange", "Landed" = "#4A5859")) +
-  labs(x = "Planning Area", y = "Diff from Median Unit Price in 2023 ($psm)", subtitle = "Outside Central Region")  +
+  labs(x = "Planning Area", y = "Percentage Diff from Median Unit Price in 2023", subtitle = "Outside Central Region")  +
   coord_flip() +
-  ylim(-8000, 26000) +
+  ylim(-50, 160) +
   theme_minimal()+
   theme(legend.position = "none", 
         text = element_text(size = 8), 
