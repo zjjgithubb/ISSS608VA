@@ -42,8 +42,10 @@ website:
         text: Home 
       - icon: bar-chart-fill
         href: https://public.tableau.com/app/profile/chun.chieh.cheng/vizzes
+        aria-label: Tableau Public Profile
       - icon: envelope-fill
         href: mailto:cc.cheng.2023@mitb.smu.edu.sg
+        aria-label: Email
       
 format:
   html:

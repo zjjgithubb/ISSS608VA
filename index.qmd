@@ -1,19 +1,65 @@
 ---
-title: "ISSS608 - Visual Analytics"
+title: "Visual Analytics and Applications"
+listing: 
 
-author: "Cheng Chun Chieh"
-
-date: "Apr 2024"
-date-modified: "last-modified"
-
-format: html
-
-execute: 
-  echo: true
-  eval: true
-  warning: false
+  - id: Hands_on_Exercise
+    contents:
+      - "HandsOnEx/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+  - id: In_Class_Exercise
+    contents:
+      - "InClassEx/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
   
-editor: visual
+  - id: Take_Home_Exercise
+    contents:
+      - "TakehomeEx/*/*.qmd"
+    sort:
+      - "title"
+    type: grid
+    fields: [image, date, title, author]
+toc: false
 ---
 
-This is the website created for ISSS608 - Visual Analytics as part of my journey through MITB in SMU.
+Below are the course work for this module.
+
+<credits to senior for the code for this index>
+
+::: content-container
+::: listing-block
+## Hands On Exercise
+
+</a>
+
+::: {#Hands_on_Exercise}
+:::
+:::
+:::
+
+::: content-container
+::: listing-block
+## In Class Exercise
+
+</a>
+
+::: {#In_Class_Exercise}
+:::
+:::
+:::
+
+::: content-container
+::: listing-block
+## Take Home Exercise
+
+</a>
+
+::: {#Take_Home_Exercise}
+:::
+:::
+:::

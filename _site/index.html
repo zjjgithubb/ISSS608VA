@@ -6,10 +6,8 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="author" content="Cheng Chun Chieh">
-<meta name="dcterms.date" content="2024-04-01">
 
-<title>Visual Analytics - ISSS608 - Visual Analytics</title>
+<title>Visual Analytics - Visual Analytics and Applications</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -32,6 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-listing/list.min.js"></script>
+<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -61,12 +61,99 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
+<script>
 
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-Hands_on_Exercise .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-Hands_on_Exercise'] = new List('listing-Hands_on_Exercise', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-In_Class_Exercise .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-In_Class_Exercise'] = new List('listing-In_Class_Exercise', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  
+
+  window.document.addEventListener("DOMContentLoaded", function (_event) {
+    const listingTargetEl = window.document.querySelector('#listing-Take_Home_Exercise .list');
+    if (!listingTargetEl) {
+      // No listing discovered, do not attach.
+      return; 
+    }
+
+    const options = {
+      valueNames: ['listing-image','listing-date','listing-title','listing-author',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
+      
+      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
+    };
+
+    window['quarto-listings'] = window['quarto-listings'] || {};
+    window['quarto-listings']['listing-Take_Home_Exercise'] = new List('listing-Take_Home_Exercise', options);
+
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  });
+
+  window.addEventListener('hashchange',() => {
+    if (window['quarto-listing-loaded']) {
+      window['quarto-listing-loaded']();
+    }
+  })
+  </script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 
 <div id="quarto-search-results"></div>
@@ -164,12 +251,12 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="https://public.tableau.com/app/profile/chun.chieh.cheng/vizzes" rel="" target=""><i class="bi bi-bar-chart-fill" role="img">
+    <a class="nav-link" href="https://public.tableau.com/app/profile/chun.chieh.cheng/vizzes" rel="" target=""><i class="bi bi-bar-chart-fill" role="img" aria-label="Tableau Public Profile">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
   <li class="nav-item compact">
-    <a class="nav-link" href="mailto:cc.cheng.2023@mitb.smu.edu.sg" rel="" target=""><i class="bi bi-envelope-fill" role="img">
+    <a class="nav-link" href="mailto:cc.cheng.2023@mitb.smu.edu.sg" rel="" target=""><i class="bi bi-envelope-fill" role="img" aria-label="Email">
 </i> 
  <span class="menu-text"></span></a>
   </li>  
@@ -184,48 +271,289 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    </div>
+    
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">ISSS608 - Visual Analytics</h1>
+<h1 class="title">Visual Analytics and Applications</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
-    <div>
-    <div class="quarto-title-meta-heading">Author</div>
-    <div class="quarto-title-meta-contents">
-             <p>Cheng Chun Chieh </p>
-          </div>
-  </div>
     
-    <div>
-    <div class="quarto-title-meta-heading">Published</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date">April 1, 2024</p>
-    </div>
-  </div>
   
-    <div>
-    <div class="quarto-title-meta-heading">Modified</div>
-    <div class="quarto-title-meta-contents">
-      <p class="date-modified">April 15, 2024</p>
-    </div>
-  </div>
     
   </div>
   
 
 </header>
 
-<p>This is the website created for ISSS608 - Visual Analytics as part of my journey through MITB in SMU.</p>
+<p>Below are the course work for this module.</p>
+<p>&lt;credits to</p>
+<div class="content-container">
+<section id="hands-on-exercise" class="level2 listing-block">
+<h2 class="anchored" data-anchor-id="hands-on-exercise">Hands On Exercise</h2>
+<p></p>
+<div id="listing-Hands_on_Exercise" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1713283200000" data-listing-file-modified-sort="1713401084619" data-listing-date-modified-sort="1713401084000" data-listing-reading-time-sort="9">
+<a href="./HandsOnEx/HandsOnEx2/handson_ex02.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="HandsOnEx\HandsOnEx2\handson_ex02_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands On Ex 2
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 17, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-listing-date-sort="1713888000000" data-listing-file-modified-sort="1714013763652" data-listing-date-modified-sort="1714013763000" data-listing-reading-time-sort="8">
+<a href="./HandsOnEx/HandsOnEx3-2/handson_ex3-2.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="HandsOnEx\HandsOnEx3-2\images\clipboard-2255747727.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands On Ex 3 - Part 2
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 24, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-listing-date-sort="1714147200000" data-listing-file-modified-sort="1714797914779" data-listing-date-modified-sort="1714797914000" data-listing-reading-time-sort="24">
+<a href="./HandsOnEx/HandsOnEx4/handsonex4.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="HandsOnEx\HandsOnEx4\images\clipboard-18459593.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands On Ex 4 - Fundamentals of Visual Analytics
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 27, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="3" data-listing-date-sort="1712851200000" data-listing-file-modified-sort="1713327302579" data-listing-date-modified-sort="1713327302000" data-listing-reading-time-sort="16">
+<a href="./HandsOnEx/HandsOnEx1/handson_ex01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="HandsOnEx\HandsOnEx1\images\Untitled.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-On Ex 1
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 12, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="4" data-listing-date-sort="1713888000000" data-listing-file-modified-sort="1713925928011" data-listing-date-modified-sort="1713925928000" data-listing-reading-time-sort="19">
+<a href="./HandsOnEx/HandsOnEx3/handson_ex03.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Hands-On Ex 3
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 24, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+</section>
+</div>
+<div class="content-container">
+<section id="in-class-exercise" class="level2 listing-block">
+<h2 class="anchored" data-anchor-id="in-class-exercise">In Class Exercise</h2>
+<p></p>
+<div id="listing-In_Class_Exercise" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1712937600000" data-listing-file-modified-sort="1713148180639" data-listing-date-modified-sort="1713148180000" data-listing-reading-time-sort="3">
+<a href="./InClassEx/Ex01/inclassex01.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="InClassEx\Ex01\inclassex01_files\figure-html\unnamed-chunk-6-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+In Class Ex 01
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 13, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-listing-date-sort="1713542400000" data-listing-file-modified-sort="1713763219847" data-listing-date-modified-sort="1713763219000" data-listing-reading-time-sort="11">
+<a href="./InClassEx/Ex02/inclassex02.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="InClassEx\Ex02\inclassex02_files\figure-html\unnamed-chunk-3-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+In Class Ex 02
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 20, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="2" data-listing-date-sort="1714752000000" data-listing-file-modified-sort="1714797932024" data-listing-date-modified-sort="1714797932000" data-listing-reading-time-sort="1">
+<a href="./InClassEx/Ex04/inclassex4.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<div class="listing-item-img-placeholder card-img-top" style="height: 150px;">&nbsp;</div>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+In Class Ex 4
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+May 4, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="3" data-listing-date-sort="1713888000000" data-listing-file-modified-sort="1714360630480" data-listing-date-modified-sort="1714360630000" data-listing-reading-time-sort="2">
+<a href="./InClassEx/Ex03/inclassex3.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="InClassEx\Ex03\images\clipboard-2159299747.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+In-Class Ex 3
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 24, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+</section>
+</div>
+<div class="content-container">
+<section id="take-home-exercise" class="level2 listing-block">
+<h2 class="anchored" data-anchor-id="take-home-exercise">Take Home Exercise</h2>
+<p></p>
+<div id="listing-Take_Home_Exercise" class="quarto-listing quarto-listing-container-grid">
+<div class="list grid quarto-listing-cols-3">
+<div class="g-col-1" data-index="0" data-listing-date-sort="1713110400000" data-listing-file-modified-sort="1714201668487" data-listing-date-modified-sort="1714201668000" data-listing-reading-time-sort="19">
+<a href="./TakehomeEx/ex01/takehomeex1.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="TakehomeEx\ex01\takehomeex1_files\figure-html\unnamed-chunk-12-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Take Home Ex 1
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 15, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+<div class="g-col-1" data-index="1" data-listing-date-sort="1714320000000" data-listing-file-modified-sort="1714453957675" data-listing-date-modified-sort="1714453957000" data-listing-reading-time-sort="11">
+<a href="./TakehomeEx/ex02/takehomeex2.html" class="quarto-grid-link">
+<div class="quarto-grid-item card h-100 card-left">
+<p class="card-img-top"><img src="TakehomeEx\ex02\images\clipboard-416862456.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
+<div class="card-body post-contents">
+<h5 class="no-anchor card-title listing-title">
+Take Home Ex 2
+</h5>
+<div class="card-attribution card-text-small justify">
+<div class="listing-author">
+Cheng Chun Chieh
+</div>
+<div class="listing-date">
+Apr 29, 2024
+</div>
+</div>
+</div>
+</div>
+</a>
+</div>
+</div>
+<div class="listing-no-matching d-none">
+No matching items
+</div>
+</div>
+</section>
+</div>
+
 
 
 
