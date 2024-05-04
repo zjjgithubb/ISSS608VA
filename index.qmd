@@ -29,8 +29,6 @@ toc: false
 
 Below are the course work for this module.
 
-<credits to senior for the code for this index>
-
 ::: content-container
 ::: listing-block
 ## Hands On Exercise
@@ -63,3 +61,5 @@ Below are the course work for this module.
 :::
 :::
 :::
+
+<credits to senior for the code for this index>
