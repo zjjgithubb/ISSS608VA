@@ -232,7 +232,7 @@ check_n <- check_normality(model1)
 plot(check_n)
 ```
 
-## 1.14 Checking for Homogeneity of Variances 
+## 1.14 Checking for Homogeneity of Variances
 
 ```{r}
 check_h <- check_heteroscedasticity(model1)
@@ -263,7 +263,7 @@ ggcoefstats(model1,
             output = "plot")
 ```
 
-# 2. Visualising Uncertainty 
+# 2. Visualising Uncertainty
 
 Visualising uncertainty is relatively new in statistical graphics. In this chapter, you will gain hands-on experience on creating statistical graphics for visualising uncertainty. By the end of this chapter you will be able:
 
@@ -340,7 +340,7 @@ Next, the code chunk below will be used to display *my_sum* tibble data frame 
 knitr::kable(head(my_sum), format = 'html')
 ```
 
-### 2.2.1 Plotting Standard Error Bars of Point Estimates 
+### 2.2.1 Plotting Standard Error Bars of Point Estimates
 
 Now we are ready to plot the standard error bars of mean maths score by race as shown below.
 
@@ -364,7 +364,7 @@ ggplot(my_sum) +
   ggtitle("Standard error of mean maths score by race")
 ```
 
-### 2.2.2 Plotting Confidence Interval of Point Estimates 
+### 2.2.2 Plotting Confidence Interval of Point Estimates
 
 ```{r}
 ggplot(my_sum) +
@@ -498,7 +498,7 @@ exam_data %>%
     subtitle = "Mean Point + Multiple-interval plot")
 ```
 
-### 2.3.2 Using stat_gradientinterval() of ggdist 
+### 2.3.2 Using stat_gradientinterval() of ggdist
 
 In the code chunk below, [`stat_gradientinterval()`](https://mjskay.github.io/ggdist/reference/stat_gradientinterval.html) of **ggdist** is used to build a visual for displaying distribution of maths scores by race.
 
@@ -543,7 +543,7 @@ Funnel plot is a specially designed data visualisation for conducting unbiased c
 
 -   plotting interactive funnel plot by using both **plotly R** and **ggplot2** packages.
 
-## 3.1 Getting Started 
+## 3.1 Getting Started
 
 In this exercise, four R packages will be used. They are:
 
@@ -598,13 +598,13 @@ covid19 <- read_csv("data/COVID-19_DKI_Jakarta.csv") %>%
 
 -   Other aesthetic components such as graph title, axis labels etc.
 
-### 3.3.1 Basic Plot 
+### 3.3.1 Basic Plot
 
 ```{r}
 funnel_plot(
-  covid19,
-  numerator = Positive,
-  denominator = Death,
+  .data = covid19,
+  numerator = Death,
+  denominator = Positive,
   group = `Sub-district`
 )
 ```
@@ -621,25 +621,25 @@ Things to learn from the code chunk above.
 
 ```{r}
 funnel_plot(
-  covid19,
-  numerator = Positive,
-  denominator = Death,
-  group = 'Sub-district',
-  data_type = "RC",
-  x_range = c(0, 150),  #<<
-  y_range = c(0, 500)
+  .data = covid19,
+  numerator = Death,
+  denominator = Positive,
+  group = `Sub-district`,
+  data_type = "PR",
+  x_range = c(0, 6500),  #<<
+  y_range = c(0, 0.05)
   )
 ```
 
 ```{r}
 funnel_plot(
   covid19,
-  numerator = Positive,
-  denominator = Death,
+  numerator = Death,
+  denominator = Positive,
   group = `Sub-district`,
-  data_type = "RC",   
-  x_range = c(0, 150),  #<<
-  y_range = c(0, 500),
+  data_type = "PR",   
+  x_range = c(0, 6500),  #<<
+  y_range = c(0, 0.05),
   label = NA,
   title = "Cumulative COVID-19 Fatality Rate by Cumulative Total Number of COVID-19 Positive Cases", #<<           
   x_label = "Cumulative COVID-19 Positive Cases", #<<
@@ -655,7 +655,7 @@ Things to learn from the code chunk above.
 
 -   `x_label` and `y_label` arguments are used to add/edit x-axis and y-axis titles.
 
-## 3.5 Using ggplot2 methods 
+## 3.5 Using ggplot2 methods
 
 In this section, you will gain hands-on experience on building funnel plots step-by-step by using ggplot2. It aims to enhance you working experience of ggplot2 to customise speciallised data visualisation like funnel plot.
 

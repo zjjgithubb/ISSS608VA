@@ -1,0 +1,19 @@
+---
+title: "In Class Ex 4"
+
+author: "Cheng Chun Chieh"
+
+date: "4 May 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+  
+editor: visual
+---
+
+# Tableu? 

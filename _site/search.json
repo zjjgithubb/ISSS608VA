@@ -810,5 +810,12 @@
     "title": "Hands On Ex 4 - Fundamentals of Visual Analytics",
     "section": "3.5 Interactive Funnel Plot: plotly + ggplot2",
     "text": "3.5 Interactive Funnel Plot: plotly + ggplot2\nThe funnel plot created using ggplot2 functions can be made interactive with ggplotly() of plotly r package.\n\nfp_ggplotly &lt;- ggplotly(p,\n  tooltip = c(\"label\", \n              \"x\", \n              \"y\"))\nfp_ggplotly"
+  },
+  {
+    "objectID": "InClassEx/Ex04/inclassex4.html",
+    "href": "InClassEx/Ex04/inclassex4.html",
+    "title": "In Class Ex 4",
+    "section": "",
+    "text": "Tableu?"
   }
 ]
