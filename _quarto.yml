@@ -39,10 +39,9 @@ website:
             href: TakehomeEx/ex02/takehomeex2.html
     right:
       - href: index.qmd
-        text: Home- 
+        text: Home 
       - icon: bar-chart-fill
         href: https://public.tableau.com/app/profile/chun.chieh.cheng/vizzes
-        aria-label: Tableau
       - icon: envelope-fill
         href: mailto:cc.cheng.2023@mitb.smu.edu.sg
       
