@@ -17,8 +17,8 @@ website:
             href: HandsOnEx/HandsOnEx3-2/handson_ex3-2.html
           - text: Hands-On Ex 4 - Fundamentals of Visual Analytics
             href: HandsOnEx/HandsOnEx4/handsonex4.html
-          - text: Hands-On Ex 5
-            href: HandsOnEx/HandsOnEx5/handson_ex05.html
+          - text: Hands-On Ex 5 - Visualising and Analysing Text Data with R
+            href: HandsOnEx/HandsOnEx5/handsonex5.html
       - text: In-Class Ex
         menu: 
           - text: In-Class Ex 01 - ggplot2 basics 
@@ -27,7 +27,7 @@ website:
             href: InClassEx/Ex02/inclassex02.html
           - text: In-Class Ex 03 - Tableu Interactivity
             href: InClassEx/Ex03/inclassex3.html
-          - text: In-Class Ex 04
+          - text: In-Class Ex 04 - Visual Analytics
             href: InClassEx/Ex04/inclassex4.html
           - text: In-Class Ex 05
             href: InClassEx/Ex05/inclassex05.html

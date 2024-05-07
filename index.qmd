@@ -6,14 +6,14 @@ listing:
     contents:
       - "HandsOnEx/*/*.qmd"
     sort:
-      - "title"
+      - "last-modified"
     type: grid
     fields: [image, date, title, author]
   - id: In_Class_Exercise
     contents:
       - "InClassEx/*/*.qmd"
     sort:
-      - "title"
+      - "last-modified"
     type: grid
     fields: [image, date, title, author]
   
@@ -21,7 +21,7 @@ listing:
     contents:
       - "TakehomeEx/*/*.qmd"
     sort:
-      - "title"
+      - "last-modified"
     type: grid
     fields: [image, date, title, author]
 toc: false
