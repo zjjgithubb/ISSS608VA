@@ -830,7 +830,7 @@
     "href": "index.html#in-class-exercise",
     "title": "Visual Analytics and Applications",
     "section": "In Class Exercise",
-    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn Class Ex 01\n\n\n\nCheng Chun Chieh\n\n\nApr 13, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 02\n\n\n\nCheng Chun Chieh\n\n\nApr 20, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Ex 3\n\n\n\nCheng Chun Chieh\n\n\nApr 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 4\n\n\n\nCheng Chun Chieh\n\n\nMay 4, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn Class Ex 01\n\n\n\nCheng Chun Chieh\n\n\nApr 13, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 02\n\n\n\nCheng Chun Chieh\n\n\nApr 20, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Ex 3\n\n\n\nCheng Chun Chieh\n\n\nApr 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 4\n\n\n\nCheng Chun Chieh\n\n\nMay 4, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 5 - Text Analytics\n\n\n\nCheng Chun Chieh\n\n\nMay 11, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#take-home-exercise",
@@ -999,5 +999,47 @@
     "title": "Hands On Ex 5 - Visualising and Anlysing Text with R",
     "section": "3.8 Plotting the bigram",
     "text": "3.8 Plotting the bigram\nggraph package is used to plot the bigram:\n\nset.seed(1234)\n\nggraph(bigram_graph, layout = \"fr\") +\n  geom_edge_link() +\n  geom_node_point() +\n  geom_node_text(aes(label = name), \n                 vjust = 1, \n                 hjust = 1)\n\n\n\n\nRevised Version:\n\nset.seed(1234)\n\na &lt;- grid::arrow(type = \"closed\", \n                 length = unit(.15,\n                               \"inches\"))\n\nggraph(bigram_graph, \n       layout = \"fr\") +\n  geom_edge_link(aes(edge_alpha = n), \n                 show.legend = FALSE,\n                 arrow = a, \n                 end_cap = circle(.07,\n                                  'inches')) +\n  geom_node_point(color = \"lightblue\", \n                  size = 5) +\n  geom_node_text(aes(label = name), \n                 vjust = 1, \n                 hjust = 1) +\n  theme_void()"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html",
+    "href": "InClassEx/Ex05/inclassex5.html",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "",
+    "text": "pacman::p_load(tidytext, tidyverse, readtext, quanteda, ggwordcloud)\n\nCan refer to the following links for info about the packages:\n\nquanteda - https://quanteda.io/articles/quickstart.html\nreadtext - https://readtext.quanteda.io/articles/readtext_vignette.html\n\n\n\n\narticles &lt;- \"data/articles/*\"\n\n\ntext_data &lt;- readtext(articles)\n\n\n\n\n\n\n\n\nA corpus is designed to be a “library” of original documents that have been converted to plain, UTF-8 encoded text, and stored along with meta-data at the corpus level and at the document-level. We have a special name for document-level meta-data: docvars. These are variables or features that describe attributes of each document.\nA corpus is designed to be a more or less static container of texts with respect to processing and analysis. This means that the texts in corpus are not designed to be changed internally through (for example) cleaning or pre-processing steps, such as stemming or removing punctuation. Rather, texts can be extracted from the corpus as part of processing, and assigned to new objects, but the idea is that the corpus will remain as an original reference copy so that other analyses – for instance those in which stems and punctuation were required, such as analysing a reading ease index – can be performed on the same corpus.\nA corpus is a special form of character vector, meaning most functions that work with a character input will also work on a corpus. But a corpus object (as do other quanteda core objects) has its own convenient print method.\n\ncorpus_text &lt;- corpus(text_data)\nsummary(corpus_text,5)\n\nCorpus consisting of 338 documents, showing 5 documents:\n\n                                   Text Types Tokens Sentences\n Alvarez PLC__0__0__Haacklee Herald.txt   206    433        18\n    Alvarez PLC__0__0__Lomark Daily.txt   102    170        12\n   Alvarez PLC__0__0__The News Buoy.txt    90    200         9\n Alvarez PLC__0__1__Haacklee Herald.txt    96    187         8\n    Alvarez PLC__0__1__Lomark Daily.txt   241    504        21\n\n\n\n\n\n\n\n\nusenet_words &lt;- text_data %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  filter(str_detect(word, \"[a-z']$\"),\n         !word %in% stop_words$word)\n\nDoing a word count:\n\nusenet_words %&gt;%\n  count(word, sort = TRUE)\n\nreadtext object consisting of 3260 documents and 0 docvars.\n# A data frame: 3,260 × 3\n  word             n text     \n  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    \n1 fishing       2177 \"\\\"\\\"...\"\n2 sustainable   1525 \"\\\"\\\"...\"\n3 company       1036 \"\\\"\\\"...\"\n4 practices      838 \"\\\"\\\"...\"\n5 industry       715 \"\\\"\\\"...\"\n6 transactions   696 \"\\\"\\\"...\"\n# ℹ 3,254 more rows\n\n\n\nwords_by_doc_id &lt;- usenet_words %&gt;%\n  count(doc_id, word, sort = TRUE) %&gt;%\n  ungroup()\n\n\n\n\n\ntext_data_split &lt;- text_data %&gt;%\n  mutate(Company = str_extract(doc_id, \"^[^_]+\"),\n         News_Agencies = str_extract(doc_id, \"(?&lt;=__)[^_]+(?=\\\\.txt)\"))\n\n\n(?&lt;=__) is a positive lookbehind assertion that ensures the match occurs after “__”.\n[^_]+ matches one or more characters that are not underscores, representing the news agency.\n(?=\\\\.txt) is a positive lookahead assertion that ensures the match occurs before “.txt”.\n\n\ntext_data_splitted &lt;- text_data %&gt;%\n  separate_wider_delim(\"doc_id\",\n                       delim=\"__0__\",\n                       names = c(\"X\",\"Y\"),\n                       too_few = \"align_end\"\n  )\n\n\nusenet_words1 &lt;- text_data_split %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  filter(str_detect(word, \"[a-z']$\"),\n         !word %in% stop_words$word)\n\nwords_by_news_agencies &lt;- usenet_words1 %&gt;%\n  count(News_Agencies, word, sort = TRUE) %&gt;%\n  ungroup()"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html#importing-text-data-using-readtext",
+    "href": "InClassEx/Ex05/inclassex5.html#importing-text-data-using-readtext",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "",
+    "text": "articles &lt;- \"data/articles/*\"\n\n\ntext_data &lt;- readtext(articles)"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html#corpus",
+    "href": "InClassEx/Ex05/inclassex5.html#corpus",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "",
+    "text": "A corpus is designed to be a “library” of original documents that have been converted to plain, UTF-8 encoded text, and stored along with meta-data at the corpus level and at the document-level. We have a special name for document-level meta-data: docvars. These are variables or features that describe attributes of each document.\nA corpus is designed to be a more or less static container of texts with respect to processing and analysis. This means that the texts in corpus are not designed to be changed internally through (for example) cleaning or pre-processing steps, such as stemming or removing punctuation. Rather, texts can be extracted from the corpus as part of processing, and assigned to new objects, but the idea is that the corpus will remain as an original reference copy so that other analyses – for instance those in which stems and punctuation were required, such as analysing a reading ease index – can be performed on the same corpus.\nA corpus is a special form of character vector, meaning most functions that work with a character input will also work on a corpus. But a corpus object (as do other quanteda core objects) has its own convenient print method.\n\ncorpus_text &lt;- corpus(text_data)\nsummary(corpus_text,5)\n\nCorpus consisting of 338 documents, showing 5 documents:\n\n                                   Text Types Tokens Sentences\n Alvarez PLC__0__0__Haacklee Herald.txt   206    433        18\n    Alvarez PLC__0__0__Lomark Daily.txt   102    170        12\n   Alvarez PLC__0__0__The News Buoy.txt    90    200         9\n Alvarez PLC__0__1__Haacklee Herald.txt    96    187         8\n    Alvarez PLC__0__1__Lomark Daily.txt   241    504        21"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html#cleaning-text",
+    "href": "InClassEx/Ex05/inclassex5.html#cleaning-text",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "",
+    "text": "usenet_words &lt;- text_data %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  filter(str_detect(word, \"[a-z']$\"),\n         !word %in% stop_words$word)\n\nDoing a word count:\n\nusenet_words %&gt;%\n  count(word, sort = TRUE)\n\nreadtext object consisting of 3260 documents and 0 docvars.\n# A data frame: 3,260 × 3\n  word             n text     \n  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;    \n1 fishing       2177 \"\\\"\\\"...\"\n2 sustainable   1525 \"\\\"\\\"...\"\n3 company       1036 \"\\\"\\\"...\"\n4 practices      838 \"\\\"\\\"...\"\n5 industry       715 \"\\\"\\\"...\"\n6 transactions   696 \"\\\"\\\"...\"\n# ℹ 3,254 more rows\n\n\n\nwords_by_doc_id &lt;- usenet_words %&gt;%\n  count(doc_id, word, sort = TRUE) %&gt;%\n  ungroup()"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html#splitting-up-the-doc_id",
+    "href": "InClassEx/Ex05/inclassex5.html#splitting-up-the-doc_id",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "",
+    "text": "text_data_split &lt;- text_data %&gt;%\n  mutate(Company = str_extract(doc_id, \"^[^_]+\"),\n         News_Agencies = str_extract(doc_id, \"(?&lt;=__)[^_]+(?=\\\\.txt)\"))\n\n\n(?&lt;=__) is a positive lookbehind assertion that ensures the match occurs after “__”.\n[^_]+ matches one or more characters that are not underscores, representing the news agency.\n(?=\\\\.txt) is a positive lookahead assertion that ensures the match occurs before “.txt”.\n\n\ntext_data_splitted &lt;- text_data %&gt;%\n  separate_wider_delim(\"doc_id\",\n                       delim=\"__0__\",\n                       names = c(\"X\",\"Y\"),\n                       too_few = \"align_end\"\n  )\n\n\nusenet_words1 &lt;- text_data_split %&gt;%\n  unnest_tokens(word, text) %&gt;%\n  filter(str_detect(word, \"[a-z']$\"),\n         !word %in% stop_words$word)\n\nwords_by_news_agencies &lt;- usenet_words1 %&gt;%\n  count(News_Agencies, word, sort = TRUE) %&gt;%\n  ungroup()"
+  },
+  {
+    "objectID": "InClassEx/Ex05/inclassex5.html#importing-mc3-data",
+    "href": "InClassEx/Ex05/inclassex5.html#importing-mc3-data",
+    "title": "In Class Ex 5 - Text Analytics",
+    "section": "2.2 Importing mc3 data",
+    "text": "2.2 Importing mc3 data\n\n# Specify the file paths\ninput_file &lt;- \"data/mc3.json\"\noutput_file &lt;- \"data/mc3_processed.json\"\n\n# Read the JSON file\njson_data &lt;- readLines(input_file)\n\n# Replace NaN with null\njson_data &lt;- gsub(\"NaN\", \"null\", json_data)\n\n# Write the updated JSON data back to a file\nwriteLines(json_data, con = output_file)\n\n# Now you can read the processed JSON file into R\nmc3_data &lt;- fromJSON(output_file)"
   }
 ]

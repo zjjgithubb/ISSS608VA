@@ -29,8 +29,8 @@ website:
             href: InClassEx/Ex03/inclassex3.html
           - text: In-Class Ex 04 - Visual Analytics
             href: InClassEx/Ex04/inclassex4.html
-          - text: In-Class Ex 05
-            href: InClassEx/Ex05/inclassex05.html
+          - text: In-Class Ex 05 - Text Analytics
+            href: InClassEx/Ex05/inclassex5.html
       - text: Take-Home Ex
         menu: 
           - text: Take-Home Ex 01 - Real Estate Transaction Prices in Singapore
