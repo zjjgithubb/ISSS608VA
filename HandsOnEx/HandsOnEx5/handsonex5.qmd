@@ -16,7 +16,7 @@ execute:
 editor: visual
 ---
 
-# 1. Overview and Getting Started 
+# 1. Overview and Getting Started
 
 In this hands-on exercise, we will learn how to visualise and analyse text data using R.
 
@@ -36,7 +36,7 @@ By the end of this hands-on exercise, we will be able to:
 
 -   visualising texts and terms relationship.
 
-## 1.1 Installing the Packages 
+## 1.1 Installing the Packages
 
 In this hands-on exercise, the following R packages for handling, processing, wrangling, analysing and visualising text data will be used:
 
@@ -56,7 +56,7 @@ In this hands-on exercise, the following R packages for handling, processing, wr
 pacman::p_load(tidytext, widyr, wordcloud, DT, ggwordcloud, textplot, lubridate, hms,tidyverse, tidygraph, ggraph, igraph)
 ```
 
-## 1.2 Importing Multiple Text Files 
+## 1.2 Importing Multiple Text Files
 
 The files are stored in a folder named 20news under data.
 
@@ -107,7 +107,7 @@ write_rds(raw_text, "data/rds/news20.rds")
 -   [`read_rds()`](https://readr.tidyverse.org/reference/read_rds.html) is used to save the extracted and combined data frame as rds file for future use.
 :::
 
-## 1.3 Initial EDA 
+## 1.3 Initial EDA
 
 ```{r}
 raw_text %>%
@@ -118,7 +118,7 @@ raw_text %>%
   labs(y = NULL)
 ```
 
-# 2. Using tidytext 
+# 2. Using tidytext
 
 -   Using tidy data principles in processing, analysing and visualising text data.
 
@@ -196,7 +196,7 @@ words_by_newsgroup <- usenet_words %>%
   ungroup()
 ```
 
-## 2.4 Visualising words in newsgroups 
+## 2.4 Visualising words in newsgroups
 
 In this code chunk below, `wordcloud()` of **wordcloud** package is used to plot a static wordcloud.
 
@@ -206,7 +206,7 @@ wordcloud(words_by_newsgroup$word,
           max.words = 300)
 ```
 
-## 2.5 Visualising Words using ggwordcloud package 
+## 2.5 Visualising Words using ggwordcloud package
 
 ```{r}
 set.seed(1234)
@@ -260,7 +260,7 @@ DT::datatable(tf_idf, filter = 'top') %>%
 
 To learn more about customising DT’s table, visit this [link](https://rstudio.github.io/DT/functions.html).
 
-## 3.3 Visualising with bar charts 
+## 3.3 Visualising with bar charts
 
 Facet bar charts technique is used to visualise the tf-idf values of science related newsgroup.
 
@@ -304,7 +304,7 @@ newsgroup_cors <- words_by_newsgroup %>%
                sort = TRUE)
 ```
 
-## 3.5 Visualising correlation as network 
+## 3.5 Visualising correlation as network
 
 ```{r}
 set.seed(2017)
@@ -423,7 +423,7 @@ ggraph(bigram_graph,
   theme_void()
 ```
 
-# 4. References 
+# 4. References
 
 ### **Core Readings**
 

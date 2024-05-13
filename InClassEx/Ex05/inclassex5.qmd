@@ -38,7 +38,7 @@ articles <- "data/articles/*"
 text_data <- readtext(articles)
 ```
 
-## 1.2 Corpus 
+## 1.2 Corpus
 
 ### **1.2.1 Working with a quanteda corpus**
 
@@ -55,7 +55,7 @@ corpus_text <- corpus(text_data)
 summary(corpus_text,5)
 ```
 
-## 1.3 Cleaning Text 
+## 1.3 Cleaning Text
 
 ```{r}
 
@@ -78,7 +78,7 @@ words_by_doc_id <- usenet_words %>%
   ungroup()
 ```
 
-## 1.4 Splitting up the doc_id 
+## 1.4 Splitting up the doc_id
 
 ```{r}
 text_data_split <- text_data %>%
@@ -113,7 +113,7 @@ words_by_news_agencies <- usenet_words1 %>%
   ungroup()
 ```
 
-# 2. Importing json files 
+# 2. Importing json files
 
 ```{r}
 pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, tidyr)
@@ -133,7 +133,7 @@ mc1_data_node <- mc1_data[["nodes"]]
 mc1_data_links <- mc1_data[["links"]]
 ```
 
-## 2.2 Importing mc3 data 
+## 2.2 Importing mc3 data
 
 ```{r}
 # Specify the file paths
