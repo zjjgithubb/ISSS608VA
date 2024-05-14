@@ -19,7 +19,7 @@ website:
             href: HandsOnEx/HandsOnEx4/handsonex4.html
           - text: Hands-On Ex 5 - Visualising and Analysing Text Data with R
             href: HandsOnEx/HandsOnEx5/handsonex5.html
-          - text: Hands-On Ex 6 - Network Graphs
+          - text: Hands-On Ex 6 - Network Data Analytics
             href: HandsOnEx/HandsOnEx6/handsonex6.html
       - text: In-Class Ex
         menu: 
