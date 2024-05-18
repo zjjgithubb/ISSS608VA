@@ -41,7 +41,7 @@ pacman::p_load(igraph, tidygraph, ggraph, visNetwork, lubridate, clock,
                tidyverse, graphlayouts)
 ```
 
-## 1.1 Data 
+## 1.1 Data
 
 The data sets used in this hands-on exercise is from an oil exploration and extraction company. There are two data sets. One contains the nodes data and the other contains the edges (also know as link) data.
 
@@ -54,7 +54,7 @@ GAStech_nodes <- read_csv("data/GAStech_email_node.csv")
 GAStech_edges <- read_csv("data/GAStech_email_edge-v2.csv")
 ```
 
-## 1.2 Examine the Data 
+## 1.2 Examine the Data
 
 Using `glimpse()` from dplyr package.
 
@@ -64,7 +64,7 @@ glimpse(GAStech_edges)
 
 The output report of GAStech_edges above reveals that the *SentDate* is treated as “Character” data type instead of *date* data type. This is an error! Before we continue, it is important for us to change the data type of *SentDate* field back to “Date”” data type.
 
-## 1.3 Adjusting Time Data 
+## 1.3 Adjusting Time Data
 
 ```{r}
 GAStech_edges <- GAStech_edges %>%
@@ -90,7 +90,7 @@ glimpse(GAStech_edges)
 
 Notice that SendDate is now a date field.
 
-## 1.4 Adjusting the Attributes 
+## 1.4 Adjusting the Attributes
 
 A close examination of *GAStech_edges* data.frame reveals that it consists of individual e-mail flow records. This is not very useful for visualisation.
 
@@ -164,7 +164,7 @@ e.g.
 
 -   In the above the *.N()* function is used to gain access to the node data while manipulating the edge data. Similarly *.E()* will give you the edge data and *.G()* will give you the **tbl_graph** object itself.
 
-## 2.3 Building the graph model 
+## 2.3 Building the graph model
 
 In this section, you will use `tbl_graph()` of **tidygraph** package to build an tidygraph’s network graph data.frame.
 
@@ -298,7 +298,7 @@ Things to learn from the code chunks above:
 
 -   *geom_node_point* is equivalent in functionality to *geo_point* of **ggplot2**. It allows for simple plotting of nodes in different shapes, colours and sizes. In the codes chunk above - colour and size are used.
 
-## 3.7 Modifying Edges 
+## 3.7 Modifying Edges
 
 ```{r}
 g <- ggraph(GAStech_graph, 
@@ -314,7 +314,7 @@ g + theme_graph()
 
 -   *geom_edge_link* draws edges in the simplest way - as straight lines between the start and end nodes. But, it can do more that that. In the example above, argument *width* is used to map the width of the line in proportional to the Weight attribute and argument alpha is used to introduce opacity on the line.
 
-## 3.8 Creating facet graphs 
+## 3.8 Creating facet graphs
 
 Another very useful feature of **ggraph** is faceting. In visualising network data, this technique can be used to reduce edge over-plotting in a very meaning way by spreading nodes and edges out based on their attributes. In this section, you will learn how to use faceting technique to visualise network data.
 
@@ -357,7 +357,7 @@ g <- ggraph(GAStech_graph,
 g + facet_edges(~Weekday)
 ```
 
-## 3.10 Framed Facet 
+## 3.10 Framed Facet
 
 ```{r}
 set_graph_style() 
@@ -395,9 +395,9 @@ g + facet_nodes(~Department)+
   theme(legend.position = 'bottom')
 ```
 
-# 4. Network Metrics Analysis 
+# 4. Network Metrics Analysis
 
-## 4.1 Computing Centrality Indices 
+## 4.1 Computing Centrality Indices
 
 Centrality measures are a collection of statistical indices use to describe the relative important of the actors are to a network. There are four well-known centrality measures, namely: degree, betweenness, closeness and eigenvector. It is beyond the scope of this hands-on exercise to cover the principles and mathematics of these measure here. Students are encouraged to refer to *Chapter 7: Actor Prominence* of **A User’s Guide to Network Analysis in R** to gain better understanding of theses network measures.
 
@@ -419,7 +419,7 @@ Things to learn from the code chunk above:
 
 -   the algorithm used, on the other hand, is the *centrality_betweenness()* of **tidygraph**.
 
-## 4.2 Visualising network metrics 
+## 4.2 Visualising network metrics
 
 It is important to note that from **ggraph v2.0** onward tidygraph algorithms such as centrality measures can be accessed directly in ggraph calls. This means that it is no longer necessary to precompute and store derived node and edge centrality measures on the graph in order to use them in a plot.
 
@@ -434,7 +434,7 @@ g <- GAStech_graph %>%
 g + theme_graph()
 ```
 
-## 4.3 Visualising Communities 
+## 4.3 Visualising Communities
 
 tidygraph package inherits many of the community detection algorithms imbedded into igraph and makes them available to us, including *Edge-betweenness (group_edge_betweenness)*, *Leading eigenvector (group_leading_eigen)*, *Fast-greedy (group_fast_greedy)*, *Louvain (group_louvain)*, *Walktrap (group_walktrap)*, *Label propagation (group_label_prop)*, *InfoMAP (group_infomap)*, *Spinglass (group_spinglass)*, and *Optimal (group_optimal)*. Some community algorithms are designed to take into account direction or weight, while others ignore it. Use this [link](https://tidygraph.data-imaginist.com/reference/group_graph.html) to find out more about community detection functions provided by tidygraph,
 
@@ -468,7 +468,7 @@ g + theme_graph()
 
     -   You can also zoom in and out on the plot and move it around to re-center it.
 
-## 5.1 Data Prep 
+## 5.1 Data Prep
 
 ```{r}
 GAStech_edges_aggregated <- GAStech_edges %>%
