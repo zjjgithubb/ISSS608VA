@@ -32,28 +32,268 @@ FishEye analysts need your help to perform geographic and temporal analysis of t
 
 4.  How did fishing activity change after SouthSeafood Express Corp was caught? What new behaviors in the Oceanus commercial fishing community are most suspicious and why?
 
+::: callout-note
+For this Take-home Ex 3 - I will be focusing on Qn 1 and 2 first. If time is available, I will also attempt to go in to Qn 4.
+
+To note that we will subsequently package these as part of our project.
+:::
+
 ## 1.1 Loading Packages
 
+Because the data are given in a json file format - we will have to load it using jsonlite. The following are the packages that we will be using for this ex.
+
 ```{r}
-pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, tidyr)
+pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse)
 ```
 
-## 1.2 Importing the data
+## 1.2 Data Provided by the Challenge
+
+### 1.2.1 Geography Data of Oceanus
+
+![](data/Oceanus%20Geography.png)
+
+### 1.2.2 Graph Data
+
+The following is the graph data provided:
+
+-   Directed multi-graph, allowing multiple edges between nodes
+
+-   5637 nodes
+
+-   271752 edges
+
+-   1 (weakly) connected component
+
+Which covers:
+
+-   **Vessel Movements:** Oceanus is outfitted with a transponder/ping system named the Oceanus Vessel Locator System (OVLS).  Vessels are outfitted with a transponder and periodic 'pings' from base-stations results in a report of vessel locations at any time.  The raw ping granularity is at the minute-level but post-processing has converted it into visit/dwell times. OVLS is generally reliable, though vessel records may be missing for a variety of reasons.
+
+    -   Node/Edge types and properties present
+
+        -   Entity.Vessel: Description of the vessel
+
+        -   Entity.Location: Description of a geographic location
+
+        -   Event.TransponderPing: Links a vessel to a location
+
+-   **Harbor Reports:** Harbor masters regularly report the vessels found in their purview anytime during the day.  This data is derived from a different system than OVLS (see "Vessel Movements"), though the data overlaps.  Harbor Reports are provided on a different schedule from different harbors. Since no harbor reports every day, this data has lower temporal granularity than vessel movement data. Additionally, the Harbor Master is also responsible for proximate navigational beacon(s), so this data has lower spatial granularity as well.  However, the list of vessels observed is considered canonical.
+
+    -   Node/edge types present:
+
+        -   Entity.Vessel
+
+        -   Entity.location
+
+        -   Event.HarborReport
+
+-   **Harbor Import Records**: Vessels deliver cargo to the ports, and that cargo is brought into Oceanus.  These records reflect the goods that \*leave\* the harbor to go to businesses in Oceanus or to be exported.  It was filtered pre-ingest to focus on the delivery of raw fish.  Because it is raw, fish leave the port quickly (generally one day after delivery).  Due to clerical error, the records purchased by FishEye do not include the vessel that delivered the cargo.
+
+    -   Node/Edge types present:
+
+        -   Entity.location
+
+        -   Entity.Commodity.Fish
+
+        -   Entity.Document.DeliveryReport
+
+        -   Event.Transaction
+
+## 1.3 Importing the Data
+
+We will use jsonlite to import the data:
 
 ```{r}
 mc2_data <- fromJSON ("data/mc2.json")
 ```
 
-```{r}
-mc2_data_node <- mc2_data[["nodes"]]
+Importing the nodes and edges as tibble data
 
-mc2_data_links <- mc2_data[["links"]]
+```{r}
+mc2_edges <-
+  as_tibble(mc2_data$links) %>%
+  distinct()
 ```
 
 ```{r}
-glimpse(mc2_data_links)
+mc2_nodes <-
+  as_tibble(mc2_data$nodes) %>%
+  distinct()
+```
+
+# 2. Examining the Data
+
+## 2.1 Looking at the Nodes
+
+We first look at the types of nodes and how many of each are present in the data set:
+
+```{r}
+type_counts_nodes <- mc2_nodes %>% count(type)
+
+print(type_counts_nodes)
+```
+
+Of note we have:
+
+-   5307 Delivery Reports
+
+-   178 Fishing Vessel (which is our key focus here)
+
+-   10 Fish
+
+```{r}
+mc2_nodes_others <- mc2_nodes %>%
+  filter(!(type %in% c("Entity.Vessel.FishingVessel", "Entity.Document.DeliveryReport")))
+```
+
+### 2.1.1 Tidying the Text 
+
+From the table above, beside the date data type and inappropriate field name issues we discussed earlier, two additional data issues can be observed. They are:
+
+-   The values in Activities and fish_species_present fields are in **list** data type, which will affect the ability to process and to analyse the data.
+
+-   As shown in the screenshot below, some values in the Activities field are not ready to be analyse without further tidying (i.e. removing c(““)).
+
+In the code chunk below, `mutate()` of dplyr and `gsub()` of Base R are used to perform the data todying task.
+
+```{r}
+mc2_nodes_tidied <- mc2_nodes %>%
+  mutate(Activities = gsub("c[(]", "", Activities)) %>% 
+  mutate(Activities = gsub("\"", "", Activities)) %>%
+  mutate(Activities = gsub("[)]", "", Activities)) 
 ```
 
 ```{r}
-glimpse(mc2_data_node)
+mc2_nodes_tidied <- mc2_nodes_tidied %>%
+  mutate(fish_species_present = gsub("c[(]", "", fish_species_present)) %>% 
+  mutate(fish_species_present = gsub("\"", "", fish_species_present)) %>%
+  mutate(fish_species_present = gsub("[)]", "", fish_species_present)) 
+```
+
+```{r}
+write_rds(mc2_nodes_tidied, "data/rds/mc2_nodes_tidied.rds")
+```
+
+## 2.2 Looking at the Edges
+
+```{r}
+type_counts_edges <- mc2_edges %>% count(type)
+
+print(type_counts_edges)
+```
+
+### 2.2.1 Correcting date data type
+
+The date format is not easily readable - so we need to convert them into something useful.
+
+```{r}
+mc2_edges$time <- as_datetime(mc2_edges$time)
+mc2_edges$"_last_edited_date" <- as_datetime(mc2_edges$"_last_edited_date")
+mc2_edges$"_date_added" <- as_datetime(mc2_edges$"_date_added")
+mc2_edges$"date" <- as_datetime("mc2_edges$date")
+```
+
+```{r}
+glimpse(mc2_edges)
+```
+
+### 2.2.2 Changing the field names 
+
+```{r}
+mc2_edges <- mc2_edges %>%
+  rename("last_edited_by" = "_last_edited_by",
+         "date_added" = "_date_added",
+         "last_edited_date" = "_last_edited_date",
+         "raw_source" = "_raw_source",
+         "algo" = "_algorithm") 
+```
+
+### 2.2.3 Splitting the Text under Type 
+
+```{r}
+word_list <- strsplit(mc2_edges$type, "\\.")
+max_elements <- max(lengths(word_list))
+word_list_padded <- lapply(word_list, 
+function(x) c(x, rep(NA, max_elements - length(x))))
+word_df <- do.call(rbind, word_list_padded)
+colnames(word_df) <- paste0("event", 1:max_elements)
+```
+
+```{r}
+word_df <- as_tibble(word_df) %>%
+  select(event2, event3)
+class(word_df)
+```
+
+```{r}
+mc2_edges <- mc2_edges %>%
+  cbind(word_df)
+```
+
+```{r}
+write_rds(mc2_edges, "data/rds/mc2_edges.rds")
+```
+
+## Work in Progress
+
+```{r}
+mc2_edges_transaction <- mc2_edges %>%
+  filter(type == "Event.Transaction")
+```
+
+1.  develop a visualization system to associate vessels with their probable cargos. Which vessels deliver which products and when? What are the seasonal trends and anomalies in the port exit records?
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+# Sample vessel data
+vessel_records <- data.frame(
+  vessel_id = c(1, 2, 3, 1, 2, 3),
+  port = c("PortA", "PortB", "PortA", "PortA", "PortB", "PortA"),
+  offload_date = as.Date(c("2023-01-15", "2023-01-16", "2023-01-17", "2023-02-15", "2023-02-16", "2023-02-17")),
+  cargo_type = c("Fish", "Shrimp", "Fish", "Crab", "Lobster", "Fish")
+)
+
+# Sample port exit data
+port_exit_records <- data.frame(
+  exit_id = 1:6,
+  port = c("PortA", "PortB", "PortA", "PortA", "PortB", "PortA"),
+  exit_date = as.Date(c("2023-01-16", "2023-01-17", "2023-01-18", "2023-02-16", "2023-02-17", "2023-02-18")),
+  cargo_type = c("Fish", "Shrimp", "Fish", "Crab", "Lobster", "Fish"),
+  quantity = c(100, 200, 150, 180, 220, 160)
+)
+
+# Merging data based on port and date
+combined_data <- port_exit_records %>%
+  left_join(vessel_records, by = c("port", "cargo_type"), suffix = c(".exit", ".offload")) %>%
+  filter(exit_date >= offload_date & exit_date <= offload_date + days(1))
+
+print(combined_data)
+
+```
+
+```{r}
+
+
+# Plotting the cargo flow through ports
+cargo_flow_plot <- ggplot(combined_data, aes(x = exit_date, y = quantity, color = cargo_type)) +
+  geom_line() +
+  facet_wrap(~ port) +
+  labs(title = "Cargo Flow Through Ports", x = "Date", y = "Quantity") +
+  theme_minimal()
+
+print(cargo_flow_plot)
+
+# Plotting seasonal trends
+seasonal_trends_plot <- combined_data %>%
+  mutate(month = month(exit_date, label = TRUE)) %>%
+  group_by(month, cargo_type) %>%
+  summarise(total_quantity = sum(quantity)) %>%
+  ggplot(aes(x = month, y = total_quantity, fill = cargo_type)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Seasonal Trends in Cargo Types", x = "Month", y = "Total Quantity") +
+  theme_minimal()
+
+print(seasonal_trends_plot)
+
 ```

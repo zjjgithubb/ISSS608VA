@@ -157,6 +157,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx6/handsonex6.html">
  <span class="dropdown-text">Hands-On Ex 6 - Network Data Analytics</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx7/handsonex7.html">
+ <span class="dropdown-text">Hands-On Ex 7 - Time-Oriented Data</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -244,7 +248,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">1. Overview</a>
   <ul class="collapse">
   <li><a href="#loading-packages" id="toc-loading-packages" class="nav-link" data-scroll-target="#loading-packages">1.1 Loading Packages</a></li>
-  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">1.2 Importing the data</a></li>
+  <li><a href="#data-provided-by-the-challenge" id="toc-data-provided-by-the-challenge" class="nav-link" data-scroll-target="#data-provided-by-the-challenge">1.2 Data Provided by the Challenge</a>
+  <ul class="collapse">
+  <li><a href="#geography-data-of-oceanus" id="toc-geography-data-of-oceanus" class="nav-link" data-scroll-target="#geography-data-of-oceanus">1.2.1 Geography Data of Oceanus</a></li>
+  <li><a href="#graph-data" id="toc-graph-data" class="nav-link" data-scroll-target="#graph-data">1.2.2 Graph Data</a></li>
+  </ul></li>
+  <li><a href="#importing-the-data" id="toc-importing-the-data" class="nav-link" data-scroll-target="#importing-the-data">1.3 Importing the Data</a></li>
+  </ul></li>
+  <li><a href="#examining-the-data" id="toc-examining-the-data" class="nav-link" data-scroll-target="#examining-the-data">2. Examining the Data</a>
+  <ul class="collapse">
+  <li><a href="#looking-at-the-nodes" id="toc-looking-at-the-nodes" class="nav-link" data-scroll-target="#looking-at-the-nodes">2.1 Looking at the Nodes</a>
+  <ul class="collapse">
+  <li><a href="#tidying-the-text" id="toc-tidying-the-text" class="nav-link" data-scroll-target="#tidying-the-text">2.1.1 Tidying the Text</a></li>
+  </ul></li>
+  <li><a href="#looking-at-the-edges" id="toc-looking-at-the-edges" class="nav-link" data-scroll-target="#looking-at-the-edges">2.2 Looking at the Edges</a>
+  <ul class="collapse">
+  <li><a href="#correcting-date-data-type" id="toc-correcting-date-data-type" class="nav-link" data-scroll-target="#correcting-date-data-type">2.2.1 Correcting date data type</a></li>
+  <li><a href="#changing-the-field-names" id="toc-changing-the-field-names" class="nav-link" data-scroll-target="#changing-the-field-names">2.2.2 Changing the field names</a></li>
+  <li><a href="#splitting-the-text-under-type" id="toc-splitting-the-text-under-type" class="nav-link" data-scroll-target="#splitting-the-text-under-type">2.2.3 Splitting the Text under Type</a></li>
+  </ul></li>
+  <li><a href="#work-in-progress" id="toc-work-in-progress" class="nav-link" data-scroll-target="#work-in-progress">Work in Progress</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -278,7 +301,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">May 18, 2024</p>
+      <p class="date-modified">May 28, 2024</p>
     </div>
   </div>
     
@@ -300,39 +323,197 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p>To support further Fisheye investigations, develop visual analytics workflows that allow you to discover other vessels engaging in behaviors similar to SouthSeafood Express Corp’s illegal activities? Provide visual evidence of the similarities.</p></li>
 <li><p>How did fishing activity change after SouthSeafood Express Corp was caught? What new behaviors in the Oceanus commercial fishing community are most suspicious and why?</p></li>
 </ol>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>For this Take-home Ex 3 - I will be focusing on Qn 1 and 2 first. If time is available, I will also attempt to go in to Qn 4.</p>
+<p>To note that we will subsequently package these as part of our project.</p>
+</div>
+</div>
 <section id="loading-packages" class="level2">
 <h2 class="anchored" data-anchor-id="loading-packages">1.1 Loading Packages</h2>
+<p>Because the data are given in a json file format - we will have to load it using jsonlite. The following are the packages that we will be using for this ex.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, tidyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
+<section id="data-provided-by-the-challenge" class="level2">
+<h2 class="anchored" data-anchor-id="data-provided-by-the-challenge">1.2 Data Provided by the Challenge</h2>
+<section id="geography-data-of-oceanus" class="level3">
+<h3 class="anchored" data-anchor-id="geography-data-of-oceanus">1.2.1 Geography Data of Oceanus</h3>
+<p><img src="data/Oceanus Geography.png" class="img-fluid"></p>
+</section>
+<section id="graph-data" class="level3">
+<h3 class="anchored" data-anchor-id="graph-data">1.2.2 Graph Data</h3>
+<p>The following is the graph data provided:</p>
+<ul>
+<li><p>Directed multi-graph, allowing multiple edges between nodes</p></li>
+<li><p>5637 nodes</p></li>
+<li><p>271752 edges</p></li>
+<li><p>1 (weakly) connected component</p></li>
+</ul>
+<p>Which covers:</p>
+<ul>
+<li><p><strong>Vessel Movements:</strong> Oceanus is outfitted with a transponder/ping system named the Oceanus Vessel Locator System (OVLS).&nbsp; Vessels are outfitted with a transponder and periodic ‘pings’ from base-stations results in a report of vessel locations at any time.&nbsp; The raw ping granularity is at the minute-level but post-processing has converted it into visit/dwell times. OVLS is generally reliable, though vessel records may be missing for a variety of reasons.</p>
+<ul>
+<li><p>Node/Edge types and properties present</p>
+<ul>
+<li><p>Entity.Vessel: Description of the vessel</p></li>
+<li><p>Entity.Location: Description of a geographic location</p></li>
+<li><p>Event.TransponderPing: Links a vessel to a location</p></li>
+</ul></li>
+</ul></li>
+<li><p><strong>Harbor Reports:</strong> Harbor masters regularly report the vessels found in their purview anytime during the day.&nbsp; This data is derived from a different system than OVLS (see “Vessel Movements”), though the data overlaps.&nbsp; Harbor Reports are provided on a different schedule from different harbors. Since no harbor reports every day, this data has lower temporal granularity than vessel movement data. Additionally, the Harbor Master is also responsible for proximate navigational beacon(s), so this data has lower spatial granularity as well.&nbsp; However, the list of vessels observed is considered canonical.</p>
+<ul>
+<li><p>Node/edge types present:</p>
+<ul>
+<li><p>Entity.Vessel</p></li>
+<li><p>Entity.location</p></li>
+<li><p>Event.HarborReport</p></li>
+</ul></li>
+</ul></li>
+<li><p><strong>Harbor Import Records</strong>: Vessels deliver cargo to the ports, and that cargo is brought into Oceanus.&nbsp; These records reflect the goods that *leave* the harbor to go to businesses in Oceanus or to be exported.&nbsp; It was filtered pre-ingest to focus on the delivery of raw fish.&nbsp; Because it is raw, fish leave the port quickly (generally one day after delivery).&nbsp; Due to clerical error, the records purchased by FishEye do not include the vessel that delivered the cargo.</p>
+<ul>
+<li><p>Node/Edge types present:</p>
+<ul>
+<li><p>Entity.location</p></li>
+<li><p>Entity.Commodity.Fish</p></li>
+<li><p>Entity.Document.DeliveryReport</p></li>
+<li><p>Event.Transaction</p></li>
+</ul></li>
+</ul></li>
+</ul>
+</section>
+</section>
 <section id="importing-the-data" class="level2">
-<h2 class="anchored" data-anchor-id="importing-the-data">1.2 Importing the data</h2>
+<h2 class="anchored" data-anchor-id="importing-the-data">1.3 Importing the Data</h2>
+<p>We will use jsonlite to import the data:</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>mc2_data <span class="ot">&lt;-</span> <span class="fu">fromJSON</span> (<span class="st">"data/mc2.json"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Importing the nodes and edges as tibble data</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mc2_data_node <span class="ot">&lt;-</span> mc2_data[[<span class="st">"nodes"</span>]]</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>mc2_data_links <span class="ot">&lt;-</span> mc2_data[[<span class="st">"links"</span>]]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>mc2_edges <span class="ot">&lt;-</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>(mc2_data<span class="sc">$</span>links) <span class="sc">%&gt;%</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mc2_data_links)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>mc2_nodes <span class="ot">&lt;-</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as_tibble</span>(mc2_data<span class="sc">$</span>nodes) <span class="sc">%&gt;%</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="examining-the-data" class="level1">
+<h1>2. Examining the Data</h1>
+<section id="looking-at-the-nodes" class="level2">
+<h2 class="anchored" data-anchor-id="looking-at-the-nodes">2.1 Looking at the Nodes</h2>
+<p>We first look at the types of nodes and how many of each are present in the data set:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>type_counts_nodes <span class="ot">&lt;-</span> mc2_nodes <span class="sc">%&gt;%</span> <span class="fu">count</span>(type)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(type_counts_nodes)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 12 × 2
+   type                               n
+   &lt;chr&gt;                          &lt;int&gt;
+ 1 Entity.Commodity.Fish             10
+ 2 Entity.Document.DeliveryReport  5307
+ 3 Entity.Location.City               6
+ 4 Entity.Location.Point             12
+ 5 Entity.Location.Region             6
+ 6 Entity.Vessel.CargoVessel        100
+ 7 Entity.Vessel.Ferry.Cargo          2
+ 8 Entity.Vessel.Ferry.Passenger      3
+ 9 Entity.Vessel.FishingVessel      178
+10 Entity.Vessel.Other                5
+11 Entity.Vessel.Research             2
+12 Entity.Vessel.Tour                 6</code></pre>
+</div>
+</div>
+<p>Of note we have:</p>
+<ul>
+<li><p>5307 Delivery Reports</p></li>
+<li><p>178 Fishing Vessel (which is our key focus here)</p></li>
+<li><p>10 Fish</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>mc2_nodes_others <span class="ot">&lt;-</span> mc2_nodes <span class="sc">%&gt;%</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>(type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Entity.Vessel.FishingVessel"</span>, <span class="st">"Entity.Document.DeliveryReport"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="tidying-the-text" class="level3">
+<h3 class="anchored" data-anchor-id="tidying-the-text">2.1.1 Tidying the Text</h3>
+<p>From the table above, beside the date data type and inappropriate field name issues we discussed earlier, two additional data issues can be observed. They are:</p>
+<ul>
+<li><p>The values in Activities and fish_species_present fields are in <strong>list</strong> data type, which will affect the ability to process and to analyse the data.</p></li>
+<li><p>As shown in the screenshot below, some values in the Activities field are not ready to be analyse without further tidying (i.e.&nbsp;removing c(““)).</p></li>
+</ul>
+<p>In the code chunk below,&nbsp;<code>mutate()</code>&nbsp;of dplyr and&nbsp;<code>gsub()</code>&nbsp;of Base R are used to perform the data todying task.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>mc2_nodes_tidied <span class="ot">&lt;-</span> mc2_nodes <span class="sc">%&gt;%</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Activities =</span> <span class="fu">gsub</span>(<span class="st">"c[(]"</span>, <span class="st">""</span>, Activities)) <span class="sc">%&gt;%</span> </span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Activities =</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\"</span><span class="st">"</span>, <span class="st">""</span>, Activities)) <span class="sc">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">Activities =</span> <span class="fu">gsub</span>(<span class="st">"[)]"</span>, <span class="st">""</span>, Activities)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>mc2_nodes_tidied <span class="ot">&lt;-</span> mc2_nodes_tidied <span class="sc">%&gt;%</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fish_species_present =</span> <span class="fu">gsub</span>(<span class="st">"c[(]"</span>, <span class="st">""</span>, fish_species_present)) <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fish_species_present =</span> <span class="fu">gsub</span>(<span class="st">"</span><span class="sc">\"</span><span class="st">"</span>, <span class="st">""</span>, fish_species_present)) <span class="sc">%&gt;%</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">fish_species_present =</span> <span class="fu">gsub</span>(<span class="st">"[)]"</span>, <span class="st">""</span>, fish_species_present)) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(mc2_nodes_tidied, <span class="st">"data/rds/mc2_nodes_tidied.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="looking-at-the-edges" class="level2">
+<h2 class="anchored" data-anchor-id="looking-at-the-edges">2.2 Looking at the Edges</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>type_counts_edges <span class="ot">&lt;-</span> mc2_edges <span class="sc">%&gt;%</span> <span class="fu">count</span>(type)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(type_counts_edges)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 2
+  type                                      n
+  &lt;chr&gt;                                 &lt;int&gt;
+1 Event.HarborReport                     2487
+2 Event.Transaction                     10614
+3 Event.TransportEvent.TransponderPing 258542</code></pre>
+</div>
+</div>
+<section id="correcting-date-data-type" class="level3">
+<h3 class="anchored" data-anchor-id="correcting-date-data-type">2.2.1 Correcting date data type</h3>
+<p>The date format is not easily readable - so we need to convert them into something useful.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mc2_edges<span class="sc">$</span>time <span class="ot">&lt;-</span> <span class="fu">as_datetime</span>(mc2_edges<span class="sc">$</span>time)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mc2_edges<span class="sc">$</span><span class="st">"_last_edited_date"</span> <span class="ot">&lt;-</span> <span class="fu">as_datetime</span>(mc2_edges<span class="sc">$</span><span class="st">"_last_edited_date"</span>)</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>mc2_edges<span class="sc">$</span><span class="st">"_date_added"</span> <span class="ot">&lt;-</span> <span class="fu">as_datetime</span>(mc2_edges<span class="sc">$</span><span class="st">"_date_added"</span>)</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>mc2_edges<span class="sc">$</span><span class="st">"date"</span> <span class="ot">&lt;-</span> <span class="fu">as_datetime</span>(<span class="st">"mc2_edges$date"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mc2_edges)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Rows: 271,643
 Columns: 17
 $ type                &lt;chr&gt; "Event.TransportEvent.TransponderPing", "Event.Tra…
-$ time                &lt;chr&gt; "2035-09-16T04:06:48.185987", "2035-09-20T05:21:33…
+$ time                &lt;dttm&gt; 2035-09-16 04:06:48, 2035-09-20 05:21:33, 2035-09…
 $ dwell               &lt;dbl&gt; 115074.79, 412706.32, 286092.88, 327623.95, 243225…
 $ `_last_edited_by`   &lt;chr&gt; "Olokun Daramola", "Melinda Manning", "Olokun Dara…
-$ `_date_added`       &lt;chr&gt; "2035-09-16T00:59:46.300100", "2035-09-22T02:37:37…
-$ `_last_edited_date` &lt;chr&gt; "2035-09-16T00:59:46.300100", "2035-09-22T02:37:37…
+$ `_date_added`       &lt;dttm&gt; 2035-09-16 00:59:46, 2035-09-22 02:37:37, 2035-09…
+$ `_last_edited_date` &lt;dttm&gt; 2035-09-16 00:59:46, 2035-09-22 02:37:37, 2035-10…
 $ `_raw_source`       &lt;chr&gt; "Oceanus Vessel Locator System", "Oceanus Vessel L…
 $ `_algorithm`        &lt;chr&gt; "OVLS-Catch&amp;Hook", "OVLS-Catch&amp;Hook", "OVLS-Catch&amp;…
 $ source              &lt;chr&gt; "City of Haacklee", "City of Haacklee", "City of H…
 $ target              &lt;chr&gt; "perchplundererbc0", "perchplundererbc0", "perchpl…
 $ key                 &lt;int&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3, 4, 5, 6, 7,…
-$ date                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
+$ date                &lt;dttm&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
 $ data_author         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 $ aphorism            &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
 $ holiday_greeting    &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…
@@ -340,31 +521,124 @@ $ wisdom              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 $ `saying of the sea` &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA…</code></pre>
 </div>
 </div>
+</section>
+<section id="changing-the-field-names" class="level3">
+<h3 class="anchored" data-anchor-id="changing-the-field-names">2.2.2 Changing the field names</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(mc2_data_node)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>mc2_edges <span class="ot">&lt;-</span> mc2_edges <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="st">"last_edited_by"</span> <span class="ot">=</span> <span class="st">"_last_edited_by"</span>,</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>         <span class="st">"date_added"</span> <span class="ot">=</span> <span class="st">"_date_added"</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>         <span class="st">"last_edited_date"</span> <span class="ot">=</span> <span class="st">"_last_edited_date"</span>,</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>         <span class="st">"raw_source"</span> <span class="ot">=</span> <span class="st">"_raw_source"</span>,</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>         <span class="st">"algo"</span> <span class="ot">=</span> <span class="st">"_algorithm"</span>) </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="splitting-the-text-under-type" class="level3">
+<h3 class="anchored" data-anchor-id="splitting-the-text-under-type">2.2.3 Splitting the Text under Type</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>word_list <span class="ot">&lt;-</span> <span class="fu">strsplit</span>(mc2_edges<span class="sc">$</span>type, <span class="st">"</span><span class="sc">\\</span><span class="st">."</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>max_elements <span class="ot">&lt;-</span> <span class="fu">max</span>(<span class="fu">lengths</span>(word_list))</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>word_list_padded <span class="ot">&lt;-</span> <span class="fu">lapply</span>(word_list, </span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="cf">function</span>(x) <span class="fu">c</span>(x, <span class="fu">rep</span>(<span class="cn">NA</span>, max_elements <span class="sc">-</span> <span class="fu">length</span>(x))))</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>word_df <span class="ot">&lt;-</span> <span class="fu">do.call</span>(rbind, word_list_padded)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(word_df) <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="st">"event"</span>, <span class="dv">1</span><span class="sc">:</span>max_elements)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>word_df <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(word_df) <span class="sc">%&gt;%</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(event2, event3)</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="fu">class</span>(word_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 5,637
-Columns: 20
-$ type                 &lt;chr&gt; "Entity.Commodity.Fish", "Entity.Commodity.Fish",…
-$ `_last_edited_by`    &lt;chr&gt; "Clepper Jessen", "Clepper Jessen", "Haenyeo Hyun…
-$ `_date_added`        &lt;chr&gt; "2033-09-04T00:00:00", "2034-01-21T00:00:00", "20…
-$ `_last_edited_date`  &lt;chr&gt; "2035-01-25T00:00:00", "2035-01-04T00:00:00", "20…
-$ `_raw_source`        &lt;chr&gt; "", "", "", "", "", "", "", "", "", "", "Oceanus:…
-$ `_algorithm`         &lt;chr&gt; "", "", "", "", "", "", "", "", "", "", "", "", "…
-$ name                 &lt;chr&gt; "Cod/Gadus n.specificatae", "Birdseye/Pisces frig…
-$ id                   &lt;chr&gt; "gadusnspecificatae4ba", "piscesfrigus900", "pisc…
-$ Name                 &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "Haacklee…
-$ Description          &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ Activities           &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, …
-$ kind                 &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, "city", "…
-$ qty_tons             &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ date                 &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ flag_country         &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ company              &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ tonnage              &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ length_overall       &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ style                &lt;chr&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
-$ fish_species_present &lt;list&gt; &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, &lt;NULL&gt;, …</code></pre>
+<pre><code>[1] "tbl_df"     "tbl"        "data.frame"</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>mc2_edges <span class="ot">&lt;-</span> mc2_edges <span class="sc">%&gt;%</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cbind</span>(word_df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span>(mc2_edges, <span class="st">"data/rds/mc2_edges.rds"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+<section id="work-in-progress" class="level2">
+<h2 class="anchored" data-anchor-id="work-in-progress">Work in Progress</h2>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>mc2_edges_transaction <span class="ot">&lt;-</span> mc2_edges <span class="sc">%&gt;%</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">==</span> <span class="st">"Event.Transaction"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol type="1">
+<li>develop a visualization system to associate vessels with their probable cargos. Which vessels deliver which products and when? What are the seasonal trends and anomalies in the port exit records?</li>
+</ol>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample vessel data</span></span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>vessel_records <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">vessel_id =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">port =</span> <span class="fu">c</span>(<span class="st">"PortA"</span>, <span class="st">"PortB"</span>, <span class="st">"PortA"</span>, <span class="st">"PortA"</span>, <span class="st">"PortB"</span>, <span class="st">"PortA"</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">offload_date =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2023-01-15"</span>, <span class="st">"2023-01-16"</span>, <span class="st">"2023-01-17"</span>, <span class="st">"2023-02-15"</span>, <span class="st">"2023-02-16"</span>, <span class="st">"2023-02-17"</span>)),</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">cargo_type =</span> <span class="fu">c</span>(<span class="st">"Fish"</span>, <span class="st">"Shrimp"</span>, <span class="st">"Fish"</span>, <span class="st">"Crab"</span>, <span class="st">"Lobster"</span>, <span class="st">"Fish"</span>)</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Sample port exit data</span></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>port_exit_records <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">exit_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">6</span>,</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">port =</span> <span class="fu">c</span>(<span class="st">"PortA"</span>, <span class="st">"PortB"</span>, <span class="st">"PortA"</span>, <span class="st">"PortA"</span>, <span class="st">"PortB"</span>, <span class="st">"PortA"</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">exit_date =</span> <span class="fu">as.Date</span>(<span class="fu">c</span>(<span class="st">"2023-01-16"</span>, <span class="st">"2023-01-17"</span>, <span class="st">"2023-01-18"</span>, <span class="st">"2023-02-16"</span>, <span class="st">"2023-02-17"</span>, <span class="st">"2023-02-18"</span>)),</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">cargo_type =</span> <span class="fu">c</span>(<span class="st">"Fish"</span>, <span class="st">"Shrimp"</span>, <span class="st">"Fish"</span>, <span class="st">"Crab"</span>, <span class="st">"Lobster"</span>, <span class="st">"Fish"</span>),</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>  <span class="at">quantity =</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">200</span>, <span class="dv">150</span>, <span class="dv">180</span>, <span class="dv">220</span>, <span class="dv">160</span>)</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a><span class="co"># Merging data based on port and date</span></span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>combined_data <span class="ot">&lt;-</span> port_exit_records <span class="sc">%&gt;%</span></span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(vessel_records, <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"port"</span>, <span class="st">"cargo_type"</span>), <span class="at">suffix =</span> <span class="fu">c</span>(<span class="st">".exit"</span>, <span class="st">".offload"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(exit_date <span class="sc">&gt;=</span> offload_date <span class="sc">&amp;</span> exit_date <span class="sc">&lt;=</span> offload_date <span class="sc">+</span> <span class="fu">days</span>(<span class="dv">1</span>))</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(combined_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  exit_id  port  exit_date cargo_type quantity vessel_id offload_date
+1       1 PortA 2023-01-16       Fish      100         1   2023-01-15
+2       2 PortB 2023-01-17     Shrimp      200         2   2023-01-16
+3       3 PortA 2023-01-18       Fish      150         3   2023-01-17
+4       4 PortA 2023-02-16       Crab      180         1   2023-02-15
+5       5 PortB 2023-02-17    Lobster      220         2   2023-02-16
+6       6 PortA 2023-02-18       Fish      160         3   2023-02-17</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting the cargo flow through ports</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>cargo_flow_plot <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(combined_data, <span class="fu">aes</span>(<span class="at">x =</span> exit_date, <span class="at">y =</span> quantity, <span class="at">color =</span> cargo_type)) <span class="sc">+</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>() <span class="sc">+</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span> port) <span class="sc">+</span></span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Cargo Flow Through Ports"</span>, <span class="at">x =</span> <span class="st">"Date"</span>, <span class="at">y =</span> <span class="st">"Quantity"</span>) <span class="sc">+</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(cargo_flow_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehomeex3_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Plotting seasonal trends</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>seasonal_trends_plot <span class="ot">&lt;-</span> combined_data <span class="sc">%&gt;%</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">month</span>(exit_date, <span class="at">label =</span> <span class="cn">TRUE</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(month, cargo_type) <span class="sc">%&gt;%</span></span>
+<span id="cb26-5"><a href="#cb26-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">total_quantity =</span> <span class="fu">sum</span>(quantity)) <span class="sc">%&gt;%</span></span>
+<span id="cb26-6"><a href="#cb26-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> total_quantity, <span class="at">fill =</span> cargo_type)) <span class="sc">+</span></span>
+<span id="cb26-7"><a href="#cb26-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_bar</span>(<span class="at">stat =</span> <span class="st">"identity"</span>, <span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb26-8"><a href="#cb26-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Seasonal Trends in Cargo Types"</span>, <span class="at">x =</span> <span class="st">"Month"</span>, <span class="at">y =</span> <span class="st">"Total Quantity"</span>) <span class="sc">+</span></span>
+<span id="cb26-9"><a href="#cb26-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span>
+<span id="cb26-10"><a href="#cb26-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb26-11"><a href="#cb26-11" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(seasonal_trends_plot)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="takehomeex3_files/figure-html/unnamed-chunk-20-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 
