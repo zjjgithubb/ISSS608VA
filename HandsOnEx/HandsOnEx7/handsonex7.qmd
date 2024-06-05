@@ -42,7 +42,7 @@ In this section, we will learn how to plot a calender heatmap programmatically b
 
 ![](images/clipboard-109595281.png)
 
-## 2.1 Data 
+## 2.1 Data
 
 For the purpose of this hands-on exercise, *eventlog.csv* file will be used. This data file consists of 199,999 rows of time-series cyber attack records by country.
 
@@ -223,13 +223,13 @@ ggplot(top4_attacks,
         legend.text = element_text(size = 5) )
 ```
 
-# 3. Plotting Cycle Plot 
+# 3. Plotting Cycle Plot
 
 In this section, you will learn how to plot a cycle plot showing the time-series patterns and trend of visitor arrivals from Vietnam programmatically by using ggplot2 functions.
 
 ![](images/clipboard-4115758163.png)
 
-## 3.1 Data 
+## 3.1 Data
 
 For the purpose of this hands-on exercise, *arrivals_by_air.xlsx* will be used.
 
@@ -292,13 +292,13 @@ ggplot() +
   theme(axis.text.x = element_blank())
 ```
 
-# 4. Plotting Slopegraph 
+# 4. Plotting Slopegraph
 
 In this section we will learn how to plot a [slopegraph](https://www.storytellingwithdata.com/blog/2020/7/27/what-is-a-slopegraph) by using R.
 
 Before getting start, make sure that **CGPfunctions** has been installed and loaded onto R environment. Then, refer to [Using newggslopegraph](https://cran.r-project.org/web/packages/CGPfunctions/vignettes/Using-newggslopegraph.html) to learn more about the function. Lastly, read more about `newggslopegraph()` and its arguments by referring to this [link](https://www.rdocumentation.org/packages/CGPfunctions/versions/0.6.3/topics/newggslopegraph).
 
-## 4.1 Data 
+## 4.1 Data
 
 ```{r}
 rice <- read_csv("data/rice.csv")
@@ -310,7 +310,7 @@ kable(rice)
 
 The data comprise the country, year, yield and production.
 
-## 4.2 Plotting 
+## 4.2 Plotting
 
 ```{r}
 rice %>% 

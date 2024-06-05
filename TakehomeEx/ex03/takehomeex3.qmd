@@ -12,7 +12,7 @@ execute:
   eval: true
   warning: false
   freeze: true
-  
+server: shiny  
 editor: visual
 ---
 
@@ -43,7 +43,7 @@ To note that we will subsequently package these as part of our project.
 Because the data are given in a json file format - we will have to load it using jsonlite. The following are the packages that we will be using for this ex.
 
 ```{r}
-pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse)
+pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, plotly, shiny, DT)
 ```
 
 ## 1.2 Data Provided by the Challenge
@@ -120,7 +120,7 @@ mc2_nodes <-
   distinct()
 ```
 
-# 2. Examining the Data
+# 2. Tidying the Data
 
 ## 2.1 Looking at the Nodes
 
@@ -142,10 +142,10 @@ Of note we have:
 
 ```{r}
 mc2_nodes_others <- mc2_nodes %>%
-  filter(!(type %in% c("Entity.Vessel.FishingVessel", "Entity.Document.DeliveryReport")))
+  filter(type %in% c("Entity.Vessel.CargoVessel"))
 ```
 
-### 2.1.1 Tidying the Text 
+### 2.1.1 Tidying the Text
 
 From the table above, beside the date data type and inappropriate field name issues we discussed earlier, two additional data issues can be observed. They are:
 
@@ -196,7 +196,7 @@ mc2_edges$"date" <- as_datetime("mc2_edges$date")
 glimpse(mc2_edges)
 ```
 
-### 2.2.2 Changing the field names 
+### 2.2.2 Changing the field names
 
 ```{r}
 mc2_edges <- mc2_edges %>%
@@ -207,7 +207,7 @@ mc2_edges <- mc2_edges %>%
          "algo" = "_algorithm") 
 ```
 
-### 2.2.3 Splitting the Text under Type 
+### 2.2.3 Splitting the Text under Type
 
 ```{r}
 word_list <- strsplit(mc2_edges$type, "\\.")
@@ -233,67 +233,620 @@ mc2_edges <- mc2_edges %>%
 write_rds(mc2_edges, "data/rds/mc2_edges.rds")
 ```
 
-## Work in Progress
+# 3. Examining the data
+
+Loading the rds files:
 
 ```{r}
-mc2_edges_transaction <- mc2_edges %>%
-  filter(type == "Event.Transaction")
+mc2_edges <- read_rds("data/rds/mc2_edges.rds")
+
+mc2_nodes <- read_rds("data/rds/mc2_nodes_tidied.rds")
 ```
 
-1.  develop a visualization system to associate vessels with their probable cargos. Which vessels deliver which products and when? What are the seasonal trends and anomalies in the port exit records?
+## 3.1 Nodes Data
+
+From the nodes data, we have the following information:
 
 ```{r}
-library(dplyr)
-library(lubridate)
+type_counts <- mc2_nodes %>%
+  group_by(type) %>%
+  summarise(count = n())
 
-# Sample vessel data
-vessel_records <- data.frame(
-  vessel_id = c(1, 2, 3, 1, 2, 3),
-  port = c("PortA", "PortB", "PortA", "PortA", "PortB", "PortA"),
-  offload_date = as.Date(c("2023-01-15", "2023-01-16", "2023-01-17", "2023-02-15", "2023-02-16", "2023-02-17")),
-  cargo_type = c("Fish", "Shrimp", "Fish", "Crab", "Lobster", "Fish")
-)
+# Display the result
+print(type_counts)
+```
 
-# Sample port exit data
-port_exit_records <- data.frame(
-  exit_id = 1:6,
-  port = c("PortA", "PortB", "PortA", "PortA", "PortB", "PortA"),
-  exit_date = as.Date(c("2023-01-16", "2023-01-17", "2023-01-18", "2023-02-16", "2023-02-17", "2023-02-18")),
-  cargo_type = c("Fish", "Shrimp", "Fish", "Crab", "Lobster", "Fish"),
-  quantity = c(100, 200, 150, 180, 220, 160)
-)
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Data            | Description                                  | Remarks                                                                                                                                 |
++=================+==============================================+=========================================================================================================================================+
+| Fish            | 10 Species of Fish                           | Key fields are the:                                                                                                                     |
+|                 |                                              |                                                                                                                                         |
+|                 |                                              | `name` and `id`                                                                                                                         |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Location        | Contains Point, City and Region              | Contains the `Name` and id of the location - key field is the `id`                                                                      |
+|                 |                                              |                                                                                                                                         |
+|                 |                                              | `fish_species_present` is only listed for the region. Only 3 region for commercial fishing - **Cod Table, Tuna Shelf and Wrasse Beds**. |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Delivery Report | 5307 Delivery Report                         | Contains the `id` tied to the cargo id.                                                                                                 |
+|                 |                                              |                                                                                                                                         |
+|                 |                                              | Also contains the qty by tons (`qty_tons`) and the date of the delivery (`date`).                                                       |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Fishing Vessel  | 178 Fishing Vessel                           | Contains the `Name` and id of the vessel. We can use `id` to identify the vessels.                                                      |
+|                 |                                              |                                                                                                                                         |
+|                 |                                              | Other info includes: `flag_country`, `company`, `tonnage`, `length_overall`,                                                            |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Cargo Vessel    | 100 Cargo Vessels                            | To explore given that these vessels can be used for transshipment or IUU activities.                                                    |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
+| Other Vessels   | Such as Passenger, Research, Tour and Others | KIV - but dont think needed for our analysis                                                                                            |
++-----------------+----------------------------------------------+-----------------------------------------------------------------------------------------------------------------------------------------+
 
-# Merging data based on port and date
-combined_data <- port_exit_records %>%
-  left_join(vessel_records, by = c("port", "cargo_type"), suffix = c(".exit", ".offload")) %>%
-  filter(exit_date >= offload_date & exit_date <= offload_date + days(1))
+We noticed that there are two columns for the name - one with `name` and the other with `Name`. Let us try to combine them into one column for easier analysis:
 
-print(combined_data)
+```{r}
+overlaps <- mc2_nodes %>%
+  filter(!is.na(Name) & !is.na(name) & tolower(Name) == tolower(name))
+
+# Print overlaps
+print("Overlaps between 'Name' and 'name' columns:")
+print(overlaps)
+
+# Combine columns into one named 'name'
+mc2_nodes <- mc2_nodes %>%
+  mutate(name = ifelse(is.na(name), Name, name)) %>%
+  select(-Name)
+
+```
+
+## 3.2 Splitting the text under type
+
+Like how we split the text for edges, we will do so for the nodes data.
+
+```{r}
+word_list <- strsplit(mc2_nodes$type, "\\.")
+max_elements <- max(lengths(word_list))
+
+word_list_padded <- lapply(word_list, 
+function(x) c(x, rep(NA, max_elements - length(x))))
+word_df <- do.call(rbind, word_list_padded)
+colnames(word_df) <- paste0("entity", 1:max_elements)
+```
+
+```{r}
+word_df <- as_tibble(word_df) %>%
+  select(entity2, entity3)
+class(word_df)
+```
+
+```{r}
+mc2_nodes <- mc2_nodes %>%
+  cbind(word_df)
+```
+
+## 3.3 Filter out the Species in Region
+
+```{r}
+fish_species_df <- mc2_nodes %>%
+  filter(entity3 == 'Region') %>%
+  select(entity3, fish_species_present)
+```
+
+## 3.4 Edges Data
+
+```{r}
+type_counts <- mc2_edges %>%
+  group_by(type) %>%
+  summarise(count = n())
+
+# Display the result
+print(type_counts)
+```
+
+We have 3 groups of data in the edges mainly the HarborReport, Transaction and the TransponderPing.
+
++------------------+------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+
+| Data             | Description                                                                                                | Remarks                                                                                                       |
++==================+============================================================================================================+===============================================================================================================+
+| Harbor Reports   | Contains information about the vessel docking at which harbor.                                             | Key fields here are:                                                                                          |
+|                  |                                                                                                            |                                                                                                               |
+|                  | There is a key column, but not sure what it means.                                                         | `source` which is tied to the `id` of a vessel.                                                               |
+|                  |                                                                                                            |                                                                                                               |
+|                  | Contains a few other columns with aphorism, holiday greeting etc but seems not impt for our analysis here. | `target` which is tied to the `name` of the city.                                                             |
+|                  |                                                                                                            |                                                                                                               |
+|                  |                                                                                                            | `date_added` and `last_edited_date` are the two key dates available                                           |
++------------------+------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+
+| Transaction      | Information from OCEANS                                                                                    | Key fields here are:                                                                                          |
+|                  |                                                                                                            |                                                                                                               |
+|                  | Each transaction has two rows - one connecting the transaction to the City, the other to the fish species. | `source` which is tied to the `id` of a cargo.                                                                |
+|                  |                                                                                                            |                                                                                                               |
+|                  |                                                                                                            | `target` which is tied to the `name` of the city and the `id` of the fish.                                    |
+|                  |                                                                                                            |                                                                                                               |
+|                  |                                                                                                            | `date_added` and `last_edited_date` are the two key dates available                                           |
++------------------+------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+
+| Transponder Ping | Information from OVLS                                                                                      | Key fields here are:                                                                                          |
+|                  |                                                                                                            |                                                                                                               |
+|                  | Contains information about the time of ping, dwell time, and location.                                     | `source` which is tied to the `name`of a location.                                                            |
+|                  |                                                                                                            |                                                                                                               |
+|                  |                                                                                                            | `target` which is tied to the `id` of the vessel.                                                             |
+|                  |                                                                                                            |                                                                                                               |
+|                  |                                                                                                            | `time`, `date_added`and `last_edited_date` are the three dates available - should be focusing on `time` here. |
++------------------+------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------+
+
+# 4. Qn 1 - Associate Vessels with their Cargo
+
+We want to know which **vessel offload their cargo** at **which port** on **which date and time**.
+
+We can first utilised the harbor reports to find out which vessels have been to which harbor - this would give us an initial starting point. As the list of vessels observed is canonical (i.e. accurate) - this can help with our analysis later. However, we note that the date/time is not very accurate here.
+
+Next, we need to wrangle with the transponder data. We want to have a list of all the vessels, by their date/time, which date they visited a harbor and on which day they left a harbor.
+
+So based on the above data, we would generate a data frame with the different rows of date/time and list out in the columns - vessel, location_transponder (which port), within harbor report (yes or no).
+
+Next we will combine the transaction with the delivery report first. So we will be able to match the date of delivery, cargo_id, qty, fish, and which harbor.
+
+Then finally, we can combine the data based on the date that a vessel enter the port, and exit the port, the cargo during this time point.
+
+## 4.1 Visualising the Harbor Records
+
+```{r}
+vessel_list <- mc2_nodes %>%
+  filter(type %in% c("Entity.Vessel.FishingVessel", "Entity.Vessel.CargoVessel")) %>%
+  mutate(type = case_when(
+    type == "Entity.Vessel.FishingVessel" ~ "FishingVessel",
+    type == "Entity.Vessel.CargoVessel" ~ "CargoVessel"
+  )) %>%
+  select(type, name, id, flag_country, tonnage, length_overall, company) %>%
+  rename(vessel = id)
+```
+
+```{r}
+harbor_records <- mc2_edges %>%
+  filter(type == "Event.HarborReport") %>%
+  select(date_added, last_edited_date, source, target) %>%
+  rename("vessel" = "source",
+         "port" = "target") 
+```
+
+```{r}
+harbor_records <- harbor_records %>%
+  left_join(vessel_list, by = "vessel") %>%
+  filter(!is.na(name) & name != "")
 
 ```
 
 ```{r}
+visit_counts <- harbor_records %>%
+  mutate(month = month(date_added, label = TRUE)) %>%
+  group_by(port, vessel, type, month) %>%
+  summarise(visit_count = n(), 
+            visit_dates = paste(date_added, collapse = ', ')) %>%
+  ungroup()
 
+# Print the summarized data frame
+print(visit_counts)
+```
 
-# Plotting the cargo flow through ports
-cargo_flow_plot <- ggplot(combined_data, aes(x = exit_date, y = quantity, color = cargo_type)) +
-  geom_line() +
-  facet_wrap(~ port) +
-  labs(title = "Cargo Flow Through Ports", x = "Date", y = "Quantity") +
+```{r}
+heatmap_plot <- ggplot(visit_counts, aes(x = month, y = port, fill = visit_count)) +
+  geom_tile(color = "black") +
+  scale_fill_gradient(low = "azure1", high = "deepskyblue4") +
+  labs(title = "Heatmap of Vessel Visits by Port and Month",
+       x = "Month",
+       y = "Port",
+       fill = "Number of Visits") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Print the heatmap
+print(heatmap_plot)
+```
+
+```{r}
+#| context: server
+
+# Function to create interactive heatmap
+create_interactive_heatmap <- function(data, vessel_type) {
+  filtered_data <- data %>%
+    filter(type == vessel_type)
+  
+  heatmap_plot <- ggplot(filtered_data, aes(x = month, y = port, fill = visit_count)) +
+    geom_tile(color = "white") +
+    scale_fill_gradientn(colors = c("lightyellow", "orange", "red", "darkred")) +
+    labs(title = paste("Heatmap of Vessel Visits by Port and Month -", vessel_type),
+         x = "Month",
+         y = "Port",
+         fill = "Number of Visits") +
+    theme_minimal() +
+    theme(axis.text.x = element_text(angle = 45, hjust = 1))
+}
+
+# UI
+ui <- fluidPage(
+  titlePanel("Interactive Heatmap of Vessel Visits"),
+  sidebarLayout(
+    sidebarPanel(
+      selectInput("vessel_type", "Select Vessel Type:", choices = unique(visit_counts$type))
+    ),
+    mainPanel(
+      plotlyOutput("heatmap")
+    )
+  )
+)
+
+# Server
+server <- function(input, output) {
+  output$heatmap <- renderPlotly({
+    create_interactive_heatmap(visit_counts, input$vessel_type)
+  })
+}
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+```
+
+## 4.2 Wrangling the Transponder Data
+
+```{r}
+transponder <- mc2_edges %>%
+  filter(type == "Event.TransportEvent.TransponderPing") %>%
+  select(time, dwell, source, target) %>%
+  rename("id" = "target")
+```
+
+```{r}
+transponder <- merge(transponder, vessel_list[, c('id', 'name')], by = "id", all.x = TRUE)
+```
+
+```{r}
+transponder <- transponder %>%
+  filter(!is.na(name) & name != "")
+```
+
+```{r}
+transponder_port <- transponder %>%
+  filter(startsWith(source, "City of"))
+```
+
+```{r}
+ggplot(transponder_port, aes(x = dwell)) +
+  geom_histogram(binwidth = 1000, fill = "azure4", color = "black") +
+  xlim (0, 500000) +
+  labs(title = "Histogram of Dwell Time", x = "Dwell Time", y = "Frequency")+
   theme_minimal()
+```
 
-print(cargo_flow_plot)
+We will notice that there are vessels with dwell time = 0. This is so for the first row of data for each vessel, where it seems to initialise the starting of the location tracking of each vessel. However, there are also other times, where the dwell time was 0. Thinking that this could due to the vessel passing by the Port or could have travelled within the vicinity.
 
-# Plotting seasonal trends
-seasonal_trends_plot <- combined_data %>%
-  mutate(month = month(exit_date, label = TRUE)) %>%
-  group_by(month, cargo_type) %>%
-  summarise(total_quantity = sum(quantity)) %>%
-  ggplot(aes(x = month, y = total_quantity, fill = cargo_type)) +
-  geom_bar(stat = "identity", position = "dodge") +
-  labs(title = "Seasonal Trends in Cargo Types", x = "Month", y = "Total Quantity") +
+## 4.3 Finding out the catches within the Vessel
+
+```{r}
+fishes <- mc2_nodes %>%
+  filter(type == "Entity.Commodity.Fish") %>%
+  select("name", "id") %>%
+  rename("fishid" = "id")
+```
+
+```{r}
+region <- mc2_nodes %>%
+  filter(type == "Entity.Location.Region")
+```
+
+```{r}
+region <- region %>%
+  separate_rows(fish_species_present, sep = ",\\s*") 
+
+```
+
+```{r}
+region <- region %>%
+  left_join(fishes, by = c( "fish_species_present" = "name"))
+```
+
+```{r}
+possible_catches <- region %>%
+  group_by(name) %>%
+  summarize(fishes = list(unique(fishid))) %>%
+  rename ("source" = "name")
+```
+
+```{r}
+mapped_data <- transponder %>%
+  left_join(possible_catches, by = "source") %>%
+  arrange(id, time)
+```
+
+```{r}
+# Identify port returns
+mapped_data$is_port_return <- grepl("^City of", mapped_data$source)
+```
+
+```{r}
+catch_summary <- mapped_data %>%
+  group_by(id, return_number = cumsum(is_port_return)) %>%
+  summarise(
+    start_port = first(source),
+    start_leg = first(time),
+    last_point_b4_port = last(source),
+    time_before_port = last(time),
+    time_check = first(time + dwell),
+    possible_catches = list(unique(unlist(fishes)))
+  )
+```
+
+```{r}
+catch_summary <- catch_summary %>%
+  mutate(end_port = lead(start_port, order_by = id),
+         time_into_port = lead(start_leg, order_by = id),
+         time_exit_port = lead(time_check, order_by = id))
+```
+
+## 4.4 Wrangling with the Delivery Reports
+
+```{r}
+deliveryreports <- mc2_nodes %>%
+  filter(type == "Entity.Document.DeliveryReport")%>%
+  select(id, qty_tons, date, `_date_added`, `_last_edited_date`) %>%
+  rename ("date_added" = "_date_added",
+          "last_edited" = "_last_edited_date")
+```
+
+```{r}
+# Plot histogram
+ggplot(deliveryreports, aes(x = qty_tons)) +
+  geom_histogram(binwidth = 5, fill = "azure4", color = "black") +
+  labs(title = "There are 5307 delivery reports and the qty ranges from 0 to ~80tons",
+       x = "Quantity in Tons",
+       y = "Frequency",
+       subtitle = "315 values are 0 and below (to remove these data)") +
+  theme_minimal() +
+  geom_vline(xintercept = 0, linetype = "dashed", color = "deepskyblue4", size = 1)
+```
+
+```{r}
+delivery_reports_0andbelow <- deliveryreports %>%
+  filter (qty_tons <= 0)
+```
+
+```{r}
+delivery_reports <- deliveryreports %>%
+  filter (qty_tons > 0)
+```
+
+```{r}
+delivery_trans <- mc2_edges %>%
+  filter(type == "Event.Transaction") %>%
+  select(source, target, date_added, last_edited_date) %>%
+  rename("id" = "source",
+        "date_added_1" = "date_added", 
+        "last_edited_date_1" = "last_edited_date" ) 
+```
+
+```{r}
+delivery_trans$index <- ifelse(seq(nrow(delivery_trans)) %% 2 == 0, "port", "fish")
+
+delivery_trans1 <- delivery_trans %>%
+  pivot_wider(names_from = index, values_from = target)
+```
+
+```{r}
+delivery_reports <- delivery_reports %>%
+  left_join(delivery_trans1, by = "id")
+
+```
+
+### 4.4.1 Deliveries by the Ports
+
+```{r}
+custom_labels <- c("City of Haacklee" = "Haacklee", 
+                   "City of Himark" = "Himark",
+                   "City of Lomark" = "Lomark",
+                   "City of Paackland" = "Paackland",
+                   "City of South Paackland" = "S.Paackland")
+
+
+ggplot(delivery_reports, aes(x = port, y = qty_tons)) +
+  geom_boxplot(fill = "azure4", color = "black") +
+  labs(title = "Similar Range in terms of Qty at the different Ports",
+       x = "Port",
+       y = "Quantity in Tons") +
+  scale_x_discrete(labels = custom_labels) +
   theme_minimal()
+```
 
-print(seasonal_trends_plot)
+```{r}
+
+ggplot(delivery_reports, aes(x = port, fill = fish)) +
+  geom_bar(position = "dodge") +
+  labs(title = "Fish Types at Each Port",
+       x = "Type of Fish",
+       y = "Count") +
+  scale_x_discrete(labels = custom_labels) +
+  theme_minimal()
+```
+
+## 4.5 Trying to Merge all the data together
+
+May be difficult to visualise down to the actual seconds
+
+```{r}
+transponder_port1 <- transponder_port%>%
+  group_by(name, date, source) %>%
+  summarize(
+    first_date = first(date),
+    min_entry_time = min(date),
+    max_exit_time = max(date_next)
+  ) %>%
+  ungroup() %>%
+  mutate(grouped = ifelse(min_entry_time == max_exit_time, "Same day", "Different day"))
+
+```
+
+```{r}
+transponder_summary <- transponder_port1 %>%
+  rowwise() %>%
+  mutate(
+    harbor = ifelse(any(harbor_records$name == name &
+                        harbor_records$port == source & 
+                       harbor_records$date_added >= min_entry_time - 2 &
+                       harbor_records$date_added <= max_exit_time + 3), "Y", "N")
+  ) %>%
+  ungroup()
+
+```
+
+```{r}
+harbor_count <- transponder_summary %>%
+  count(harbor)
+
+print(harbor_count)
+```
+
+```{r}
+transponder_port_data <- transponder_summary %>%
+  filter(harbor == "Y")
+```
+
+```{r}
+deliveryreports <- deliveryreports %>%
+  mutate(date = as.Date(date))
+
+transponder_port_data <- transponder_port_data %>%
+  mutate(
+    min_entry_time = as.Date(min_entry_time),
+    max_exit_time = as.Date(max_exit_time)) %>%
+  rename("port" = "source")
+    
+```
+
+```{r}
+
+matched <- transponder_port_data %>%
+  rowwise() %>%
+  mutate(
+    harbor = ifelse(any(deliveryreports$port == port &
+                        deliveryreports$date_added >= min_entry_time + 1 &
+                       deliveryreports$date_added <= max_exit_time), deliveryreports$id, "N")
+  ) %>%
+  ungroup()
+
+
+```
+
+```{r}
+# Replace NA values in the 'cargo' column with "N"
+result <- result %>%
+  mutate(delivery = ifelse(is.na(id), "N", "Y")) %>%
+  filter (delivery == "Y")
+```
+
+```{r}
+summary_cargo <- result %>%
+  group_by(id) %>%
+  summarise(count = n())
+
+summary_cargo_unique <- summary_cargo %>%
+  filter(count==1)
+```
+
+## 4.5 Merging the Catch Summary Data with Delivery Reports
+
+```{r}
+expanded_catch_summary <- catch_summary %>%
+  unnest(possible_catches) %>%
+  rename ("fish" = "possible_catches",
+          "port" = "end_port",
+          "vessel" = "id")
+```
+
+```{r}
+expanded_catch_summary <- expanded_catch_summary %>%
+  left_join(vessel_list, by = "vessel")
+```
+
+```{r}
+matched_data <- expanded_catch_summary %>%
+  left_join(delivery_reports, by = c("port", "fish")) %>%
+  filter(date >= time_into_port + 0.5 &
+         date <= time_exit_port + 1) %>%
+  mutate(cargo = ifelse(!is.na(id), as.character(id), "N")) %>%
+  select (-date_added, -last_edited, -date_added_1, -last_edited_date_1)
+```
+
+```{r}
+summary_cargo <- matched_data1 %>%
+  group_by(id) %>%
+  summarise(count = n())
+
+summary_cargo_unique <- summary_cargo %>%
+  filter(count==1)
+```
+
+**Check delivery report - Qty \< tonnage of vessel.**
+
+```{r}
+expanded_catch_summary1 <- expanded_catch_summary%>%
+  filter(vessel == "barracudabaiter8b3" )
+```
+
+```{r}
+# Perform the matching and cumulative sum calculation
+matched_data1 <- expanded_catch_summary %>%
+  left_join(delivery_reports, by = c("port", "fish")) %>%
+  filter(date >= time_into_port + 0.5 & date <= time_exit_port + 1) %>%
+  group_by(vessel, date) %>%
+  arrange(date) %>%
+  mutate(cumulative_qty = cumsum(qty_tons)) %>%
+  filter(cumulative_qty <= tonnage) %>%
+  ungroup()
+```
+
+# 5. Visualising
+
+```{r}
+
+#| context: server
+
+shinyApp(
+  ui = fluidPage(
+    titlePanel("Vessel Cargo Matching Visualization"),
+    sidebarLayout(
+      sidebarPanel(
+        selectInput("vessel", "Select Vessel:", choices = unique(matched_data1$vessel), selected = unique(matched_data1$vessel)[1]),
+        selectInput("port", "Select Port:", choices = unique(matched_data1$port), selected = unique(matched_data1$port)[1]),
+        dateRangeInput("date", "Select Date Range:", start = min(matched_data1$time_into_port), end = max(matched_data1$time_exit_port)),
+        selectInput("fish", "Select Fish Type:", choices = unique(matched_data1$fish), selected = unique(matched_data1$fish)[1])
+      ),
+      mainPanel(
+        tabsetPanel(
+          tabPanel("Table", DTOutput("cargoTable")),
+          tabPanel("Plot", plotOutput("cargoPlot"))
+        )
+      )
+    )
+  ),
+  server = function(input, output) {
+    filtered_data <- reactive({
+      matched_data1 %>%
+        filter(vessel == input$vessel,
+               port == input$port,
+               time_into_port >= input$date[1],
+               time_exit_port <= input$date[2],
+               fish == input$fish)
+    })
+    
+    output$cargoTable <- renderDT({
+      datatable(filtered_data(), options = list(pageLength = 10))
+    })
+    
+    output$cargoPlot <- renderPlot({
+      ggplot(filtered_data(), aes(x = id, y = qty_tons, fill = fish)) +
+        geom_bar(stat = "identity") +
+        labs(title = paste("Cargo Match for Vessel", input$vessel),
+             x = "Cargo ID",
+             y = "Quantity in Tons") +
+        theme_minimal()
+    })
+  }
+)
+
 
 ```
