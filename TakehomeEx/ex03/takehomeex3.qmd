@@ -103,18 +103,24 @@ Which covers:
 We will use jsonlite to import the data:
 
 ```{r}
+#| eval: false
+
 mc2_data <- fromJSON ("data/mc2.json")
 ```
 
 Importing the nodes and edges as tibble data
 
 ```{r}
+#| eval: false
+
 mc2_edges <-
   as_tibble(mc2_data$links) %>%
   distinct()
 ```
 
 ```{r}
+#| eval: false
+
 mc2_nodes <-
   as_tibble(mc2_data$nodes) %>%
   distinct()
@@ -127,6 +133,8 @@ mc2_nodes <-
 We first look at the types of nodes and how many of each are present in the data set:
 
 ```{r}
+#| eval: false
+
 type_counts_nodes <- mc2_nodes %>% count(type)
 
 print(type_counts_nodes)
@@ -140,11 +148,6 @@ Of note we have:
 
 -   10 Types of Fish
 
-```{r}
-mc2_nodes_others <- mc2_nodes %>%
-  filter(type %in% c("Entity.Vessel.CargoVessel"))
-```
-
 ### 2.1.1 Tidying the Text
 
 From the table above, beside the date data type and inappropriate field name issues we discussed earlier, two additional data issues can be observed. They are:
@@ -156,6 +159,8 @@ From the table above, beside the date data type and inappropriate field name iss
 In the code chunk below, `mutate()` of dplyr and `gsub()` of Base R are used to perform the data todying task.
 
 ```{r}
+#| eval: false
+
 mc2_nodes_tidied <- mc2_nodes %>%
   mutate(Activities = gsub("c[(]", "", Activities)) %>% 
   mutate(Activities = gsub("\"", "", Activities)) %>%
@@ -163,6 +168,8 @@ mc2_nodes_tidied <- mc2_nodes %>%
 ```
 
 ```{r}
+#| eval: false
+
 mc2_nodes_tidied <- mc2_nodes_tidied %>%
   mutate(fish_species_present = gsub("c[(]", "", fish_species_present)) %>% 
   mutate(fish_species_present = gsub("\"", "", fish_species_present)) %>%
@@ -170,12 +177,16 @@ mc2_nodes_tidied <- mc2_nodes_tidied %>%
 ```
 
 ```{r}
+#| eval: false
+
 write_rds(mc2_nodes_tidied, "data/rds/mc2_nodes_tidied.rds")
 ```
 
 ## 2.2 Looking at the Edges
 
 ```{r}
+#| eval: false
+
 type_counts_edges <- mc2_edges %>% count(type)
 
 print(type_counts_edges)
@@ -186,6 +197,8 @@ print(type_counts_edges)
 The date format is not easily readable - so we need to convert them into something useful.
 
 ```{r}
+#| eval: false
+
 mc2_edges$time <- as_datetime(mc2_edges$time)
 mc2_edges$"_last_edited_date" <- as_datetime(mc2_edges$"_last_edited_date")
 mc2_edges$"_date_added" <- as_datetime(mc2_edges$"_date_added")
@@ -193,12 +206,16 @@ mc2_edges$"date" <- as_datetime("mc2_edges$date")
 ```
 
 ```{r}
+#| eval: false
+
 glimpse(mc2_edges)
 ```
 
 ### 2.2.2 Changing the field names
 
 ```{r}
+#| eval: false
+
 mc2_edges <- mc2_edges %>%
   rename("last_edited_by" = "_last_edited_by",
          "date_added" = "_date_added",
@@ -210,6 +227,9 @@ mc2_edges <- mc2_edges %>%
 ### 2.2.3 Splitting the Text under Type
 
 ```{r}
+#| eval: false
+
+
 word_list <- strsplit(mc2_edges$type, "\\.")
 max_elements <- max(lengths(word_list))
 word_list_padded <- lapply(word_list, 
@@ -219,17 +239,23 @@ colnames(word_df) <- paste0("event", 1:max_elements)
 ```
 
 ```{r}
+#| eval: false
+
 word_df <- as_tibble(word_df) %>%
   select(event2, event3)
 class(word_df)
 ```
 
 ```{r}
+#| eval: false
+
 mc2_edges <- mc2_edges %>%
   cbind(word_df)
 ```
 
 ```{r}
+#| eval: false
+
 write_rds(mc2_edges, "data/rds/mc2_edges.rds")
 ```
 
@@ -572,7 +598,7 @@ boxplot <- ggplot(reserves_data, aes(x = type, y = stay_duration, fill = type)) 
   labs(title = "Many Instances of Fishing Vessel Overspending Time in Reserves",
        x = NULL,
        y = "Stay Duration (mins) - Log Scale",
-       subtitle = "71 Cargo Vessels and 131 Fishing Vessels passed through Reserves") +
+       subtitle = "71 Cargo Vessels and 131 Fishing Vessels spent time in Reserves") +
   scale_y_log10() + 
   theme_minimal()
 
@@ -790,6 +816,11 @@ delivery_reports <- delivery_reports %>%
 
 ```{r}
 delivery_reports <- delivery_reports %>%
+  left_join(fishes, by = "fishid")
+```
+
+```{r}
+delivery_reports <- delivery_reports %>%
   mutate(fishtype = sub("/.*", "", name))
 
 ```
@@ -841,9 +872,12 @@ ggplot(delivery_summary, aes(x = port, y = fishtype, color = fishtype, size = nu
 
 From the graph, we identified that **Sockfish, Salmon, Offidiaa and Helenaa** are found at the various ports. These are fishes that are not found in the fishing grounds, so identifying the vessels that offload these cargoes can help to narrow down IUU fishing.
 
-### 4.4.3 Monthly Delivery Trend by Fish Types 
+### 4.4.3 Monthly Delivery Trend by Fish Types
 
 ```{r}
+delivery_reports <- delivery_reports %>%
+  mutate (date = as.Date(date))
+
 # Extract month from the date
 delivery_reports <- delivery_reports %>%
   mutate(month = floor_date(date, "month"))
@@ -904,90 +938,6 @@ ggplot(filtered_summary, aes(x = month, y = num_deliveries, color = fishtype)) +
   theme(plot.title = element_text(size = 14, face = "bold"))
 ```
 
-## 4.5 Trying to Merge all the data together
-
-May be difficult to visualise down to the actual seconds
-
-```{r}
-transponder_port1 <- transponder_port%>%
-  group_by(name, date, source) %>%
-  summarize(
-    first_date = first(date),
-    min_entry_time = min(date),
-    max_exit_time = max(date_next)
-  ) %>%
-  ungroup() %>%
-  mutate(grouped = ifelse(min_entry_time == max_exit_time, "Same day", "Different day"))
-
-```
-
-```{r}
-transponder_summary <- transponder_port1 %>%
-  rowwise() %>%
-  mutate(
-    harbor = ifelse(any(harbor_records$name == name &
-                        harbor_records$port == source & 
-                       harbor_records$date_added >= min_entry_time - 2 &
-                       harbor_records$date_added <= max_exit_time + 3), "Y", "N")
-  ) %>%
-  ungroup()
-
-```
-
-```{r}
-harbor_count <- transponder_summary %>%
-  count(harbor)
-
-print(harbor_count)
-```
-
-```{r}
-transponder_port_data <- transponder_summary %>%
-  filter(harbor == "Y")
-```
-
-```{r}
-deliveryreports <- deliveryreports %>%
-  mutate(date = as.Date(date))
-
-transponder_port_data <- transponder_port_data %>%
-  mutate(
-    min_entry_time = as.Date(min_entry_time),
-    max_exit_time = as.Date(max_exit_time)) %>%
-  rename("port" = "source")
-    
-```
-
-```{r}
-
-matched <- transponder_port_data %>%
-  rowwise() %>%
-  mutate(
-    harbor = ifelse(any(deliveryreports$port == port &
-                        deliveryreports$date_added >= min_entry_time + 1 &
-                       deliveryreports$date_added <= max_exit_time), deliveryreports$id, "N")
-  ) %>%
-  ungroup()
-
-
-```
-
-```{r}
-# Replace NA values in the 'cargo' column with "N"
-result <- result %>%
-  mutate(delivery = ifelse(is.na(id), "N", "Y")) %>%
-  filter (delivery == "Y")
-```
-
-```{r}
-summary_cargo <- result %>%
-  group_by(id) %>%
-  summarise(count = n())
-
-summary_cargo_unique <- summary_cargo %>%
-  filter(count==1)
-```
-
 ## 4.5 Merging the Catch Summary Data with Delivery Reports
 
 ```{r}
@@ -1006,6 +956,11 @@ expanded_catch_summary <- expanded_catch_summary %>%
 ```{r}
 expanded_catch_summary <- expanded_catch_summary %>%
   left_join(fishes, by = c("fish" = "fishid"))
+```
+
+```{r}
+expanded_catch_summary <- expanded_catch_summary %>%
+  mutate(fishtype = sub("/.*", "", name.y))
 ```
 
 Clean up the summary.
@@ -1081,10 +1036,10 @@ match_summary <- matched_data_harbor %>%
 
 ggplot(match_summary, aes(x = port, y = fishtype, color = fishtype, size = num_deliveries)) +
   geom_point(alpha = 1) +  # Adjust alpha for transparency if needed
-  labs(title = "Delivery of the 4 illegal species are not matched fully",
+  labs(title = "More records matched, with 1613 unique matches",
        x = NULL,
        y = NULL,
-       subtitle = "Perhaps the transponder is off when such deliveries are made",
+       subtitle = "Matching with the harbor records only could be more accurate",
        size = "Number of Deliveries") +
   scale_x_discrete(labels = custom_labels) +
   theme_minimal() +
@@ -1104,6 +1059,8 @@ nodes <- data.frame(name = unique(c(edges$vessel, edges$id)))
 graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
 ```
 
+Trying to plot using network graphs - but this is a mess - need to tidy up!
+
 ```{r}
 # Plot the network graph
 ggraph(graph, layout = "fr") + 
@@ -1117,19 +1074,19 @@ ggraph(graph, layout = "fr") +
 
 # 6. Qn 2 - Illegal Activities for SouthSeafood Express Corp (SEC)
 
-## 6.1 Identify Vessels belonging to SEC 
+## 6.1 Identify Vessels belonging to SEC
 
 ```{r}
 SEC_vessel <- vessel_list %>%
   filter (company == "SouthSeafood Express Corp")
-  
+
 ```
 
 We found only 2 vessels linked to SEC:
 
--   Snapper Snatcher - a small 100 ton vessel
+-   Snapper Snatcher (snappersnatcher7be)- a small 100 ton vessel
 
--   Roach Robber - a 11700 ton bigger vessel
+-   Roach Robber (roachrobberdb6)- a 11700 ton bigger vessel
 
 ## 6.2 Introducing the Geospatial Data to help in visualising
 
@@ -1171,7 +1128,7 @@ ggplot(data = OceanusLocations) +
 write_rds(OceanusLocations, "data/rds/OceanusLocations.rds")
 ```
 
-## 6.4 Visualising Vessel Movement Data 
+## 6.4 Data Prep for Vessel Movement Data
 
 ```{r}
 vessel_movement_data <- mc2_edges %>%
@@ -1225,11 +1182,15 @@ vessel_movement_data <- vessel_movement_data %>%
 write_rds(vessel_movement_data, "data/rds/vessel_movement_data.rds")
 ```
 
-### 6.4.1
+## 6.5 Visualising the Trajectories of Snappy Snatcher and Roach Robber
 
-In this section, you will learn how to convert the vessel movement data into vessel trajectory data. A trajectory is a sequence of observations in time and space, for examples, the path formed by fishing vessels.
+### 6.5.1 Transforming the vessel movement data to a path
 
-In the code chunk below, `st_as_sf()` of **sf** package is used to convert *vessel_movement_data* data.frame into sf point data.frame by using values in XCOORD and YCOORD columns. The output is an sf data.frame called *vessel_movement_sf*.
+```{r}
+vessel_movement_data <- read_rds("data/rds/vessel_movement_data.rds")
+
+OceanusGeography <- read_rds("data/rds/OceanusGeography.rds")
+```
 
 ```{r}
 vessel_movement_sf <- vessel_movement_data %>%
@@ -1254,21 +1215,15 @@ vessel_trajectory_selected <- vessel_trajectory %>%
   filter(target == "snappersnatcher7be")
 ```
 
-```{r}
-ggplot() +
-  geom_sf(data = OceanusGeography) +
-  geom_sf(data = vessel_trajectory_selected, 
-          aes(color = factor(target)), 
-          size = 1) +
-  theme_minimal() +
-  labs(title = "Trajectories of Snapper Snatcher", 
-  x = "Longitude", y = "Latitude", color = "ID")
-```
+### 6.5.2 Calculating the Dwell Time (mins) at each point
+
+For now, we will look at the total amount of time that each vessel has spent at each location. We will sum the dwell time (converted to mins) at each location.
 
 ```{r}
 points_data <- vessel_movement_sf %>%
+  filter (target == "snappersnatcher7be") %>%
   group_by(target, geometry) %>%
-  summarize(dwell_time = sum(dwell))
+  summarize(dwell_time = sum(dwell)/60)
 
 # Ensure the geometry column is retained as a 'geometry' class
 st_geometry(points_data) <- points_data$geometry
@@ -1277,19 +1232,220 @@ st_geometry(points_data) <- points_data$geometry
 print(points_data)
 ```
 
+Subsequently, it will be richer if we are able to plot the data by months. This would help us better visualise and compare the movement of the vessels.
+
+### 6.5.3 Path of Snapper Snatcher
+
 ```{r}
+
 ggplot() +
   geom_sf(data = OceanusGeography) +
+  geom_sf_text(data = OceanusGeography, aes(label = Name), nudge_y = 0.1, size = 2) + 
   geom_sf(data = vessel_trajectory_selected, 
-          aes(color = factor(target)), 
-          size = 1) +
+          color = "blue",  # Set the color of the trajectory
+          linewidth = 1.2, alpha = 0.5) +
   geom_point(data = points_data, 
              aes(x = st_coordinates(geometry)[, "X"], 
                  y = st_coordinates(geometry)[, "Y"], 
-                 size = dwell_time), 
-             color = "black", alpha = 0.7) +  # Add points with size based on dwell time
-  scale_size_continuous(name = "Dwell Time") +  # Customize size legend
+                 size = dwell_time, color = dwell_time), 
+             alpha = 0.7) +  # Add points with size based on dwell time
+  scale_size_continuous(name = "Dwell Time (mins)") +  
+  scale_color_gradient(name = "Dwell Time (mins)", low = "lavender", high = "mediumpurple4") +  
   theme_minimal() +
-  labs(title = "Trajectories of albacoreangler47d and Dwell Time", 
-       x = "Longitude", y = "Latitude", color = "ID")
+  labs(title = "Snapper Snatcher spent substantial time within Ghouti Preserve", 
+       x = "Longitude", y = "Latitude")
+
 ```
+
+Snapper Snatcher also **spent time at Exit East - they are likely to engage in Deep Sea Fishing** there (activities tied to the Exit Areas). This is also likely where they can fish for Salmon (assumption) - given that Salmon was not found in the other fishing grounds.
+
+### 6.5.4 Path of Roach Robber
+
+```{r}
+vessel_trajectory_robber <- vessel_trajectory %>%
+  filter(target == "roachrobberdb6")
+
+points_data_robber <- vessel_movement_sf %>%
+  filter (target == "roachrobberdb6") %>%
+  group_by(target, geometry) %>%
+  summarize(dwell_time = sum(dwell)/60)
+
+# Ensure the geometry column is retained as a 'geometry' class
+st_geometry(points_data_robber) <- points_data_robber$geometry
+
+# Print the resulting points data
+print(points_data_robber)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = OceanusGeography) +
+  geom_sf_text(data = OceanusGeography, aes(label = Name), nudge_y = 0.1, size = 2) + 
+  geom_sf(data = vessel_trajectory_robber, 
+          color = "blue",  # Set the color of the trajectory
+          linewidth = 1.2, alpha = 0.5) +
+  geom_point(data = points_data_robber, 
+             aes(x = st_coordinates(geometry)[, "X"], 
+                 y = st_coordinates(geometry)[, "Y"], 
+                 size = dwell_time, color = dwell_time), 
+             alpha = 0.7) +  # Add points with size based on dwell time
+  scale_size_continuous(name = "Dwell Time (mins)") +  
+  scale_color_gradient(name = "Dwell Time (mins)", low = "lavender", high = "mediumpurple4") +  
+  theme_minimal() +
+  labs(title = "Roach Robber spent time mostly at Himark, Wrasse Beds and Nav C", 
+       x = "Longitude", y = "Latitude")
+
+```
+
+### 6.5.5 When and Where did the illegal fishing took place?  
+
+```{r}
+all_catch_summary <- catch_summary %>%
+  unnest(possible_catches) %>%
+  rename ("fish" = "possible_catches",
+          "port" = "end_port",
+          "name" = "vessel")
+
+all_catch_summary <- all_catch_summary %>%
+  left_join(vessel_list, by = "name")
+
+all_catch_summary <- all_catch_summary %>%
+  left_join(fishes, by = c("fish" = "fishid"))
+
+all_catch_summary <- all_catch_summary %>%
+  mutate(fishtype = sub("/.*", "", name.y))
+
+all_catch_summary <- all_catch_summary %>%
+  select (name.x, port, time_into_port, time_exit_port, type, flag_country, tonnage, company, fishtype) %>%
+  rename ("vessel" = "name.x")
+
+SEC_catches <- all_catch_summary %>%
+  filter (vessel %in% c("Snapper Snatcher", "Roach Robber"))
+```
+
+```{r}
+SEC_catch_summary <- SEC_catches %>%
+  group_by(vessel, fishtype) %>%
+  summarise(fishtype_count = n()) %>%
+  ungroup()
+
+SEC_catch_summary
+```
+
+From the table above, we would notice that because Snapper Snatcher spent time in the **Ghoti Preserve**, it would like have caught species like **Helenaa and Offidiaa** which are species that are found in the preserve only. These data is collated based on the vessel's transponder ping location.
+
+Next we will try to find out when did such fishing took place based on the transponder data.
+
+```{r}
+# Define the location and vessel of interest
+location_of_interest <- "Ghoti Preserve"
+vessel_of_interest <- "Snapper Snatcher"
+
+# Filter data for the specific location and vessel
+trespassing_dates <- transponder %>%
+  filter(location == location_of_interest, vessel == vessel_of_interest) %>%
+  select(time, month, day) 
+
+print(trespassing_dates)
+```
+
+We note from the data that the activities took place in **Feb and Mar** - however, this did not correspond to any cargo delivery reports from the earlier data.
+
+We will also check the other vessels that spent time in Ghoti Preserve.
+
+```{r}
+other_trespassers <- transponder %>%
+  filter(location == "Ghoti Preserve") %>%
+  select(vessel, time, month, day, stay_duration, location) 
+```
+
+```{r}
+monthly_summary <- other_trespassers %>%
+  group_by(month) %>%
+  summarise(
+    unique_vessels = n_distinct(vessel),
+    mean_stay_duration = mean(stay_duration/360, na.rm = TRUE)
+  )
+```
+
+```{r}
+ggplot(monthly_summary, aes(x = month)) +
+  geom_bar(aes(y = unique_vessels), stat = "identity", fill = "azure4") +
+  geom_line(aes(y = mean_stay_duration * 10), color = "lightpink", size = 1) +  # Scale mean stay duration for visibility
+  geom_point(aes(y = mean_stay_duration * 10), color = "red", size = 2) +  # Add points for mean stay duration
+  scale_y_continuous(
+    name = "Number of Unique Vessels",
+    sec.axis = sec_axis(~./10, name = "Mean Stay Duration (hours)")  # Adjust secondary axis scale
+  ) +
+  labs(title = "Monthly Trespass into Ghouti Preserve",
+       x = "Month",
+       y = "Number of Unique Vessels") +
+  theme_minimal()
+
+```
+
+```{r}
+# Convert month and day to Date object
+other_trespassers <- other_trespassers %>%
+  mutate (month = month(time, label = TRUE))
+
+
+other_trespassers <- other_trespassers %>%
+  mutate (stay_duration = stay_duration/360)
+
+# Create the boxplot
+ggplot(other_trespassers, aes(x = month, y = stay_duration)) +
+  geom_boxplot() +
+  labs(title = "Box plot of Duration in Ghoti Preserve",
+       x = "Month",
+       y = "Stay Duration (hours)",
+       subtitle = "Mean time spent dropped in Apr to Jul; Increased from Aug to Nov") +
+  theme_minimal()
+```
+
+From the charts, I postulate that after Snapper Snatcher was caught in May, the other vessels chose to spend lesser time in Ghoti Preserve, but their time in the Preserve subsequently picked up again from Aug onwards. This corresponds to the delivery pattern of **Helenaa and Offidiaa**, where their deliveries started to increase from Sep onwards. That said - we may also need to note the species habitual patterns and whether are they present in Ghoti Preserve during these months. (Tried to google these species, but seems like they are fictitious).
+
+```{r}
+vessel_movement_robber <- vessel_movement_sf %>%
+  filter(target == "snappersnatcher7be")
+```
+
+### 6.5.6 Other Vessels Movement Path
+
+```{r}
+vessel_trajectory_carp <- vessel_trajectory %>%
+  filter(target == "carpcapturer993")
+
+points_data_carp <- vessel_movement_sf %>%
+  filter (target == "carpcapturer993") %>%
+  group_by(target, geometry) %>%
+  summarize(dwell_time = sum(dwell)/60)
+
+# Ensure the geometry column is retained as a 'geometry' class
+st_geometry(points_data_carp) <- points_data_carp$geometry
+
+# Print the resulting points data
+print(points_data_carp)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = OceanusGeography) +
+  geom_sf_text(data = OceanusGeography, aes(label = Name), nudge_y = 0.1, size = 2) + 
+  geom_sf(data = vessel_trajectory_carp, 
+          color = "blue",  # Set the color of the trajectory
+          linewidth = 1.2, alpha = 0.5) +
+  geom_point(data = points_data_carp, 
+             aes(x = st_coordinates(geometry)[, "X"], 
+                 y = st_coordinates(geometry)[, "Y"], 
+                 size = dwell_time, color = dwell_time), 
+             alpha = 0.7) +  # Add points with size based on dwell time
+  scale_size_continuous(name = "Dwell Time (mins)") +  
+  scale_color_gradient(name = "Dwell Time (mins)", low = "lavender", high = "mediumpurple4") +  
+  theme_minimal() +
+  labs(title = " Carp Capturer spent time at Himark, Wrasse Beds and Nav C", 
+       subtitle = "No illegal activities detected", 
+       x = "Longitude", y = "Latitude")
+```
+
+Carp Capturer seems like a fishing vessel that engages only in legal fishing activities, with no time spent in the reserves and mostly shuttling between the ports, navigation lines and the fishing grounds.

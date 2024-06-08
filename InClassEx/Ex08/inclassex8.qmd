@@ -18,7 +18,7 @@ editor: visual
 
 # 1. Using Tableau
 
-## 1.1 Using Realis 2023 Data 
+## 1.1 Using Realis 2023 Data
 
 Prepare the data using Tableau - using the drag and drop function to union the various datasets
 
@@ -34,13 +34,13 @@ Drag and drop the postal code into the center:
 
 ![There can be unknown postal code - as the SLA records are real -time and some postal codes could have been deleted. Will need to download the postal code and search via Google (they maintain the historical data).](images/clipboard-3434141215.png)
 
-## 1.2 Looking at the median price etc 
+## 1.2 Looking at the median price etc
 
 ![](images/clipboard-3710222943.png)
 
 Include filters to the map:
 
-## 1.3. Chloropleth Maps 
+## 1.3. Chloropleth Maps
 
 Tableau can auto-recognise the planning areas - but may not be 100% correct.
 
