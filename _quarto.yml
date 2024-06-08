@@ -39,6 +39,8 @@ website:
             href: InClassEx/Ex05/inclassex5.html
           - text: In-Class Ex 06 - 
             href: InClassEx/Ex06/inclassex6.html
+          - text: In-Class Ex 08 - Geospatial 
+            href: InClassEx/Ex08/inclassex8.html
             
       - text: Take-Home Ex
         menu: 

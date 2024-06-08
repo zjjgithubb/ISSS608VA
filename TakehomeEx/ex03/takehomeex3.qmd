@@ -12,7 +12,7 @@ execute:
   eval: true
   warning: false
   freeze: true
-server: shiny  
+ 
 editor: visual
 ---
 
@@ -43,7 +43,7 @@ To note that we will subsequently package these as part of our project.
 Because the data are given in a json file format - we will have to load it using jsonlite. The following are the packages that we will be using for this ex.
 
 ```{r}
-pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, plotly, shiny, DT)
+pacman::p_load(jsonlite, tidygraph, igraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, plotly, shiny, DT)
 ```
 
 ## 1.2 Data Provided by the Challenge
@@ -136,9 +136,9 @@ Of note we have:
 
 -   5307 Delivery Reports
 
--   178 Fishing Vessel (which is our key focus here)
+-   178 Fishing Vessel and 100 Cargo Vessels
 
--   10 Fish
+-   10 Types of Fish
 
 ```{r}
 mc2_nodes_others <- mc2_nodes %>%
@@ -327,7 +327,38 @@ mc2_nodes <- mc2_nodes %>%
 ```{r}
 fish_species_df <- mc2_nodes %>%
   filter(entity3 == 'Region') %>%
-  select(entity3, fish_species_present)
+  select(name, fish_species_present)
+```
+
+```{r}
+# Convert the fish_species_present column into a long format data frame for plotting
+long_fish_species_df <- fish_species_df %>%
+  separate_rows(fish_species_present, sep = ",") %>%
+  mutate(fish_species_present = str_trim(fish_species_present)) %>%
+  rename(region = name, fish_species = fish_species_present)
+
+reserve_only_species <- c('Sockfish/Pisces foetida', 'Offidiaa/Piscis osseus', 'Helenaa/Pisces satis')  # Example reserve-only species
+
+# Add a column to indicate if a fish species is reserve-only
+long_fish_species_df <- long_fish_species_df %>%
+  mutate(reserve_only = ifelse(fish_species %in% reserve_only_species, TRUE, FALSE)) %>%
+  mutate(fishtype = sub("/.*", "", fish_species))
+
+
+```
+
+```{r}
+ggplot(long_fish_species_df, aes(x = region, y = fishtype, color = fishtype, size = reserve_only)) +
+  geom_point() +
+  scale_size_manual(values = c(`FALSE` = 2, `TRUE` = 4), guide = FALSE) +
+  labs(title = "Fish Species Present in Different Regions", 
+       subtitle = "Salmon is not found in the Regions",
+       x = "Region") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1),
+        legend.position = "none",
+        axis.title.y = element_blank())
+        
 ```
 
 ## 3.4 Edges Data
@@ -429,7 +460,7 @@ print(visit_counts)
 heatmap_plot <- ggplot(visit_counts, aes(x = month, y = port, fill = visit_count)) +
   geom_tile(color = "black") +
   scale_fill_gradient(low = "azure1", high = "deepskyblue4") +
-  labs(title = "Heatmap of Vessel Visits by Port and Month",
+  labs(title = "Paackland and Haacklee are the busier ports",
        x = "Month",
        y = "Port",
        fill = "Number of Visits") +
@@ -438,49 +469,6 @@ heatmap_plot <- ggplot(visit_counts, aes(x = month, y = port, fill = visit_count
 
 # Print the heatmap
 print(heatmap_plot)
-```
-
-```{r}
-#| context: server
-
-# Function to create interactive heatmap
-create_interactive_heatmap <- function(data, vessel_type) {
-  filtered_data <- data %>%
-    filter(type == vessel_type)
-  
-  heatmap_plot <- ggplot(filtered_data, aes(x = month, y = port, fill = visit_count)) +
-    geom_tile(color = "white") +
-    scale_fill_gradientn(colors = c("lightyellow", "orange", "red", "darkred")) +
-    labs(title = paste("Heatmap of Vessel Visits by Port and Month -", vessel_type),
-         x = "Month",
-         y = "Port",
-         fill = "Number of Visits") +
-    theme_minimal() +
-    theme(axis.text.x = element_text(angle = 45, hjust = 1))
-}
-
-# UI
-ui <- fluidPage(
-  titlePanel("Interactive Heatmap of Vessel Visits"),
-  sidebarLayout(
-    sidebarPanel(
-      selectInput("vessel_type", "Select Vessel Type:", choices = unique(visit_counts$type))
-    ),
-    mainPanel(
-      plotlyOutput("heatmap")
-    )
-  )
-)
-
-# Server
-server <- function(input, output) {
-  output$heatmap <- renderPlotly({
-    create_interactive_heatmap(visit_counts, input$vessel_type)
-  })
-}
-
-# Run the application 
-shinyApp(ui = ui, server = server)
 ```
 
 ## 4.2 Wrangling the Transponder Data
@@ -493,28 +481,183 @@ transponder <- mc2_edges %>%
 ```
 
 ```{r}
-transponder <- merge(transponder, vessel_list[, c('id', 'name')], by = "id", all.x = TRUE)
+# Selecting only the 'id' and 'vessel' columns from vessel_list
+vessel_subset <- vessel_list %>% 
+  select(vessel, name, type) %>%
+  rename (id = vessel)
+
+# Performing left join on transponder and vessel_subset
+transponder <- left_join(transponder, vessel_subset, by = "id")
+
+# Filtering only those Cargo and Fishing Vessels
+
+transponder <- transponder %>%
+  filter(!is.na(type))
+```
+
+### 4.2.1 Visualising the Transponder Data
+
+For us to better visualise the transponder data, we will split the data by months and also group it by the days of the week.
+
+```{r}
+transponder <- transponder %>%
+  mutate(month = month(time),
+         day = wday(time, label = TRUE))
+```
+
+We want to also indicate if the vessel was within a port or not.
+
+```{r}
+transponder <- transponder %>%
+  mutate(area = 
+          ifelse (grepl("^City of", source), "Ports", 
+          ifelse(source %in% c("Cod Table", "Tuna Shelf", "Wrasse Beds"), "Fishing Grounds",
+        ifelse(grepl("^Nav", source), "Nav Areas",
+        ifelse(source %in% c("Don Limpet Preserve", "Nemo Reef", "Ghoti Preserve"), "Reserves",
+        ifelse(grepl("^Exit", source), "Exit Areas",
+                              "Unknown")))))) %>%
+  rename("location" = "source",
+         "vessel" = "name")
 ```
 
 ```{r}
 transponder <- transponder %>%
-  filter(!is.na(name) & name != "")
+  arrange(vessel, time) %>%
+  group_by(vessel, location) %>%
+  mutate(
+    stay_start = time,
+    stay_end = time + dwell,
+    stay_duration = as.numeric(difftime(stay_end, stay_start, units = "mins"))
+  )
+
+# Filter out rows where location is NA or stay_duration is NA or negative
+transponder <- transponder %>%
+  filter(!is.na(location) & !is.na(stay_duration) & stay_duration >= 0)
 ```
 
-```{r}
-transponder_port <- transponder %>%
-  filter(startsWith(source, "City of"))
-```
+### 4.2.2 Looking at the areas that the vessels visited
 
 ```{r}
-ggplot(transponder_port, aes(x = dwell)) +
-  geom_histogram(binwidth = 1000, fill = "azure4", color = "black") +
-  xlim (0, 500000) +
-  labs(title = "Histogram of Dwell Time", x = "Dwell Time", y = "Frequency")+
+# Plotting
+ggplot(transponder, aes(x = area, fill = type)) +
+  geom_bar(position = "dodge", stat = "count") +
+  labs(title = "Cargo Vessels should not visit Fishing Grounds or Reserves",
+       x = "Location Type",
+       y = "Count",
+       fill = "Vessel Type",
+       subtitle = "Fishing Vessels were present in Reserves as well") +
+  scale_fill_manual(values = c("azure4", "lightskyblue4")) +
   theme_minimal()
 ```
 
-We will notice that there are vessels with dwell time = 0. This is so for the first row of data for each vessel, where it seems to initialise the starting of the location tracking of each vessel. However, there are also other times, where the dwell time was 0. Thinking that this could due to the vessel passing by the Port or could have travelled within the vicinity.
+### 4.2.3 Vessels within Reserve Areas
+
+```{r}
+reserves_data <- transponder %>%
+  filter(area == "Reserves")
+
+# Count the number of unique vessels in the reserves area by vessel type
+unique_vessels_count <- reserves_data %>%
+  group_by(type) %>%
+  summarize(unique_vessels = n_distinct(vessel))
+
+mean_value <- mean(reserves_data$stay_duration)
+median_value <- median(reserves_data$stay_duration)
+
+# Plot a box plot of the dwell time in the reserves area
+boxplot <- ggplot(reserves_data, aes(x = type, y = stay_duration, fill = type)) +
+  geom_boxplot(fill = "azure3", color = "lightskyblue4", outlier.shape = 16, outlier.size = 2, outlier.colour = "deepskyblue4") +
+  geom_hline(yintercept = mean_value, color = "azure4", linetype = "dashed", size = 1) +  # Add mean line
+  geom_hline(yintercept = median_value, color = "lightblue", linetype = "dotted", size = 1) + 
+  labs(title = "Many Instances of Fishing Vessel Overspending Time in Reserves",
+       x = NULL,
+       y = "Stay Duration (mins) - Log Scale",
+       subtitle = "71 Cargo Vessels and 131 Fishing Vessels passed through Reserves") +
+  scale_y_log10() + 
+  theme_minimal()
+
+# Print the number of unique vessels in the reserves area
+print(unique_vessels_count)
+
+# Display the box plot
+print(boxplot)
+```
+
+### 4.2.4 Cargo Vessels within Fishing Grounds
+
+```{r}
+# Filter the data for cargo vessels in fishing grounds
+cargo_fishing_data <- transponder %>%
+  filter(type == "CargoVessel" & area == "Fishing Grounds")
+
+# Calculate mean and median values
+mean_value <- mean(cargo_fishing_data$stay_duration)
+median_value <- median(cargo_fishing_data$stay_duration)
+
+# Plot a box plot of the dwell time for cargo vessels in fishing grounds
+ggplot(cargo_fishing_data, aes(x = "", y = stay_duration)) +
+  geom_boxplot(fill = "azure3", color = "lightskyblue4") +
+  geom_hline(yintercept = mean_value, color = "azure4", linetype = "dashed", size = 1) +  # Add mean line
+  geom_hline(yintercept = median_value, color = "lightblue", linetype = "dotted", size = 1) +  
+  scale_y_log10() +
+  labs(title = "Cargo Vessels spending more time in Fishing Grounds",
+       x = NULL,
+       y = "Stay Duration (min) (log scale)") +
+  theme_minimal()
+
+```
+
+```{r}
+vessels_above_mean <- cargo_fishing_data %>%
+  filter(stay_duration > mean_value)
+
+# Count the number of unique vessels
+num_vessels_above_mean <- n_distinct(vessels_above_mean$vessel)
+
+# Print the count
+print(num_vessels_above_mean)
+```
+
+Notice that there is only 1 Cargo Vessel which stays in the fishing grounds above the mean duration - **Nautical Nomad** (**Tuna Shelf and Wrasse Beds**).
+
+Why is this out of the norm? Typical cargo vessels could have only just transited across the fishing grounds, but if the cargo vessel stays beyond the transit time, they could be involved in illegal fishing activities, e.g. transshipment at sea as shown in the photo below.
+
+![](images/clipboard-2365353441.png)
+
+```{r}
+ggplot(transponder, aes(x = stay_duration)) +
+  geom_histogram(binwidth = 100, fill = "azure4", color = "black") +
+  xlim (0, 5000) +
+  labs(title = "Stay Duration is typically about 100 mins", x = "Stay Duration (mins)", y = "Frequency")+
+  theme_minimal()
+```
+
+We will notice that there are vessels with dwell time = 0. This is so for the first row of data for each vessel, where it seems to initialise the starting of the location tracking of each vessel. However, there are also other times, where the dwell time was 0. Thinking that this could due to the vessel passing by the Port or could have traveled within the vicinity.
+
+### 4.2.5 Vessels' Stay Duration at the Ports
+
+```{r}
+port_data <- transponder %>%
+  filter(area == "Ports")
+
+mean_value <- mean(port_data$stay_duration)
+median_value <- median(port_data$stay_duration)
+
+# Plot a box plot of the dwell time in the reserves area
+boxplot <- ggplot(port_data, aes(x = type, y = stay_duration, fill = type)) +
+  geom_boxplot(fill = "azure3", color = "lightskyblue4", outlier.shape = 16, outlier.size = 2, outlier.colour = "deepskyblue4") +
+  geom_hline(yintercept = mean_value, color = "azure4", linetype = "dashed", size = 1) +  # Add mean line
+  geom_hline(yintercept = median_value, color = "lightblue", linetype = "dotted", size = 1) + 
+  labs(title = "Cargo Vessels spend less time at ports as compared to Fishing Vessels",
+       x = NULL,
+       y = "Stay Duration (mins) - Log Scale",
+       subtitle = "Average Time: 1985mins ; Median Time: 1675mins") +
+  scale_y_log10() + 
+  theme_minimal()
+
+# Display the box plot
+print(boxplot)
+```
 
 ## 4.3 Finding out the catches within the Vessel
 
@@ -538,34 +681,34 @@ region <- region %>%
 
 ```{r}
 region <- region %>%
-  left_join(fishes, by = c( "fish_species_present" = "name"))
+  left_join(fishes, by = c("fish_species_present" = "name"))
 ```
 
 ```{r}
 possible_catches <- region %>%
   group_by(name) %>%
   summarize(fishes = list(unique(fishid))) %>%
-  rename ("source" = "name")
+  rename ("location" = "name")
 ```
 
 ```{r}
 mapped_data <- transponder %>%
-  left_join(possible_catches, by = "source") %>%
+  left_join(possible_catches, by = "location") %>%
   arrange(id, time)
 ```
 
 ```{r}
 # Identify port returns
-mapped_data$is_port_return <- grepl("^City of", mapped_data$source)
+mapped_data$is_port_return <- grepl("^City of", mapped_data$location)
 ```
 
 ```{r}
 catch_summary <- mapped_data %>%
-  group_by(id, return_number = cumsum(is_port_return)) %>%
+  group_by(id, vessel, return_number = cumsum(is_port_return)) %>%
   summarise(
-    start_port = first(source),
+    start_port = first(location),
     start_leg = first(time),
-    last_point_b4_port = last(source),
+    last_point_b4_port = last(location),
     time_before_port = last(time),
     time_check = first(time + dwell),
     possible_catches = list(unique(unlist(fishes)))
@@ -579,14 +722,27 @@ catch_summary <- catch_summary %>%
          time_exit_port = lead(time_check, order_by = id))
 ```
 
+```{r}
+harbor_summary <- catch_summary %>%
+  rowwise() %>%
+  mutate(
+    harbor = ifelse(any(harbor_records$name == vessel &
+                        harbor_records$port == end_port &
+                        harbor_records$date_added >= time_into_port),
+              "Y", "N")
+  ) %>%
+  ungroup()
+
+harbor_summary <- harbor_summary%>%
+  filter(harbor == "Y")
+```
+
 ## 4.4 Wrangling with the Delivery Reports
 
 ```{r}
 deliveryreports <- mc2_nodes %>%
   filter(type == "Entity.Document.DeliveryReport")%>%
-  select(id, qty_tons, date, `_date_added`, `_last_edited_date`) %>%
-  rename ("date_added" = "_date_added",
-          "last_edited" = "_last_edited_date")
+  select(id, qty_tons, date) 
 ```
 
 ```{r}
@@ -614,23 +770,33 @@ delivery_reports <- deliveryreports %>%
 ```{r}
 delivery_trans <- mc2_edges %>%
   filter(type == "Event.Transaction") %>%
-  select(source, target, date_added, last_edited_date) %>%
-  rename("id" = "source",
-        "date_added_1" = "date_added", 
-        "last_edited_date_1" = "last_edited_date" ) 
+  select(source, target, date_added) %>%
+  rename("id" = "source") 
 ```
 
 ```{r}
 delivery_trans$index <- ifelse(seq(nrow(delivery_trans)) %% 2 == 0, "port", "fish")
 
 delivery_trans1 <- delivery_trans %>%
-  pivot_wider(names_from = index, values_from = target)
+  pivot_wider(names_from = index, values_from = target) %>%
+  rename ("fishid" = "fish")
 ```
 
 ```{r}
 delivery_reports <- delivery_reports %>%
   left_join(delivery_trans1, by = "id")
 
+```
+
+```{r}
+delivery_reports <- delivery_reports %>%
+  mutate(fishtype = sub("/.*", "", name))
+
+```
+
+```{r}
+delivery_reports <- delivery_reports %>%
+  select(-fishid, -name, -date_added)
 ```
 
 ### 4.4.1 Deliveries by the Ports
@@ -652,15 +818,90 @@ ggplot(delivery_reports, aes(x = port, y = qty_tons)) +
   theme_minimal()
 ```
 
+### 4.4.2 Fish Species not found in Fishing Grounds but Delivered at the Ports
+
 ```{r}
 
-ggplot(delivery_reports, aes(x = port, fill = fish)) +
-  geom_bar(position = "dodge") +
-  labs(title = "Fish Types at Each Port",
-       x = "Type of Fish",
-       y = "Count") +
+# Summarize the data to count the number of deliveries for each combination of port and fish type
+delivery_summary <- delivery_reports %>%
+  group_by(port, fishtype) %>%
+  summarize(num_deliveries = n())
+
+ggplot(delivery_summary, aes(x = port, y = fishtype, color = fishtype, size = num_deliveries)) +
+  geom_point(alpha = 1) +  # Adjust alpha for transparency if needed
+  labs(title = "Sockfish, Salmon, Offidiaa and Helenaa are found at the Ports",
+       x = NULL,
+       y = NULL,
+       size = "Number of Deliveries") +
   scale_x_discrete(labels = custom_labels) +
-  theme_minimal()
+  theme_minimal() +
+  theme(plot.title = element_text(size = 10))  
+
+```
+
+From the graph, we identified that **Sockfish, Salmon, Offidiaa and Helenaa** are found at the various ports. These are fishes that are not found in the fishing grounds, so identifying the vessels that offload these cargoes can help to narrow down IUU fishing.
+
+### 4.4.3 Monthly Delivery Trend by Fish Types 
+
+```{r}
+# Extract month from the date
+delivery_reports <- delivery_reports %>%
+  mutate(month = floor_date(date, "month"))
+
+# Summarize the data to count the number of deliveries for each combination of month and fish type
+monthly_summary <- delivery_reports %>%
+  group_by(month, fishtype) %>%
+  summarize(num_deliveries = n())
+
+# Calculate the mean deliveries per fish type
+mean_deliveries <- monthly_summary %>%
+  group_by(fishtype) %>%
+  summarize(mean_deliveries = mean(num_deliveries))
+
+# Find the highest delivery per fish type
+max_deliveries <- monthly_summary %>%
+  group_by(fishtype) %>%
+  filter(num_deliveries == max(num_deliveries))
+
+# Merge the summary data to add the mean delivery to each row
+monthly_summary <- monthly_summary %>%
+  left_join(mean_deliveries, by = "fishtype")
+
+# Plot the monthly delivery
+ggplot(monthly_summary, aes(x = month, y = num_deliveries, color = fishtype)) +
+  geom_line(size = 1) +  # Line plot for monthly trend
+  geom_point(size = 2) +  # Add points for each month
+  labs(title = "Cod has the highest number of deliveries",
+       x = "Month",
+       y = "Number of Deliveries",
+       subtitle = "The four illegal fish species are delivered in certain months only",
+       color = "Fish Type") +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"),
+        legend.position = "none") +
+  geom_text(data = max_deliveries, aes(label = num_deliveries), size = 2, vjust = -1) + 
+  scale_y_continuous(expand = expansion(mult = c(0, 0.2))) +
+  facet_wrap(~ fishtype)  
+```
+
+```{r}
+
+filtered_summary <- monthly_summary %>%
+  filter(fishtype %in% c("Sockfish", "Salmon", "Offidiaa", "Helenaa"))
+
+# Plot the monthly delivery
+ggplot(filtered_summary, aes(x = month, y = num_deliveries, color = fishtype)) +
+  geom_line(size = 1) +  # Line plot for monthly trend
+  geom_point(size = 2) +  # Add points for each month
+  labs(title = "Deliveries of Sockfish, Salmon, Offidiaa, and Helenaa",
+       x = "Month",
+       y = "Number of Deliveries",
+       subtitle = "Delivery of Salmon peaked in Sep, the rest in Nov",
+       color = "Fish Type") +
+  theme_minimal() +
+  scale_x_date(date_breaks = "1 month", date_labels = "%b", limits = as.Date(c("2035-02-01", "2035-11-31"))) +
+  geom_text(data = filtered_summary, aes(label = num_deliveries), size = 2, vjust = -1) + 
+  theme(plot.title = element_text(size = 14, face = "bold"))
 ```
 
 ## 4.5 Trying to Merge all the data together
@@ -750,29 +991,41 @@ summary_cargo_unique <- summary_cargo %>%
 ## 4.5 Merging the Catch Summary Data with Delivery Reports
 
 ```{r}
-expanded_catch_summary <- catch_summary %>%
+expanded_catch_summary <- harbor_summary %>%
   unnest(possible_catches) %>%
   rename ("fish" = "possible_catches",
           "port" = "end_port",
-          "vessel" = "id")
+          "name" = "vessel")
 ```
 
 ```{r}
 expanded_catch_summary <- expanded_catch_summary %>%
-  left_join(vessel_list, by = "vessel")
+  left_join(vessel_list, by = "name")
 ```
 
 ```{r}
-matched_data <- expanded_catch_summary %>%
-  left_join(delivery_reports, by = c("port", "fish")) %>%
+expanded_catch_summary <- expanded_catch_summary %>%
+  left_join(fishes, by = c("fish" = "fishid"))
+```
+
+Clean up the summary.
+
+```{r}
+final_catch_summary <- expanded_catch_summary %>%
+  select (name.x, port, time_into_port, time_exit_port, type, flag_country, tonnage, company, fishtype) %>%
+  rename ("vessel" = "name.x")
+```
+
+```{r}
+matched_data <- final_catch_summary %>%
+  left_join(delivery_reports, by = c("port", "fishtype")) %>%
   filter(date >= time_into_port + 0.5 &
          date <= time_exit_port + 1) %>%
-  mutate(cargo = ifelse(!is.na(id), as.character(id), "N")) %>%
-  select (-date_added, -last_edited, -date_added_1, -last_edited_date_1)
+  mutate(cargo = ifelse(!is.na(id), as.character(id), "N"))
 ```
 
 ```{r}
-summary_cargo <- matched_data1 %>%
+summary_cargo <- matched_data %>%
   group_by(id) %>%
   summarise(count = n())
 
@@ -780,73 +1033,263 @@ summary_cargo_unique <- summary_cargo %>%
   filter(count==1)
 ```
 
-**Check delivery report - Qty \< tonnage of vessel.**
-
-```{r}
-expanded_catch_summary1 <- expanded_catch_summary%>%
-  filter(vessel == "barracudabaiter8b3" )
-```
-
-```{r}
-# Perform the matching and cumulative sum calculation
-matched_data1 <- expanded_catch_summary %>%
-  left_join(delivery_reports, by = c("port", "fish")) %>%
-  filter(date >= time_into_port + 0.5 & date <= time_exit_port + 1) %>%
-  group_by(vessel, date) %>%
-  arrange(date) %>%
-  mutate(cumulative_qty = cumsum(qty_tons)) %>%
-  filter(cumulative_qty <= tonnage) %>%
-  ungroup()
-```
-
 # 5. Visualising
 
 ```{r}
 
-#| context: server
+# Summarize the data to count the number of deliveries for each combination of port and fish type
+match_summary <- matched_data %>%
+  group_by(port, fishtype) %>%
+  summarize(num_deliveries = n())
 
-shinyApp(
-  ui = fluidPage(
-    titlePanel("Vessel Cargo Matching Visualization"),
-    sidebarLayout(
-      sidebarPanel(
-        selectInput("vessel", "Select Vessel:", choices = unique(matched_data1$vessel), selected = unique(matched_data1$vessel)[1]),
-        selectInput("port", "Select Port:", choices = unique(matched_data1$port), selected = unique(matched_data1$port)[1]),
-        dateRangeInput("date", "Select Date Range:", start = min(matched_data1$time_into_port), end = max(matched_data1$time_exit_port)),
-        selectInput("fish", "Select Fish Type:", choices = unique(matched_data1$fish), selected = unique(matched_data1$fish)[1])
-      ),
-      mainPanel(
-        tabsetPanel(
-          tabPanel("Table", DTOutput("cargoTable")),
-          tabPanel("Plot", plotOutput("cargoPlot"))
-        )
-      )
-    )
-  ),
-  server = function(input, output) {
-    filtered_data <- reactive({
-      matched_data1 %>%
-        filter(vessel == input$vessel,
-               port == input$port,
-               time_into_port >= input$date[1],
-               time_exit_port <= input$date[2],
-               fish == input$fish)
-    })
-    
-    output$cargoTable <- renderDT({
-      datatable(filtered_data(), options = list(pageLength = 10))
-    })
-    
-    output$cargoPlot <- renderPlot({
-      ggplot(filtered_data(), aes(x = id, y = qty_tons, fill = fish)) +
-        geom_bar(stat = "identity") +
-        labs(title = paste("Cargo Match for Vessel", input$vessel),
-             x = "Cargo ID",
-             y = "Quantity in Tons") +
-        theme_minimal()
-    })
-  }
-)
+ggplot(match_summary, aes(x = port, y = fishtype, color = fishtype, size = num_deliveries)) +
+  geom_point(alpha = 1) +  # Adjust alpha for transparency if needed
+  labs(title = "Delivery of the 4 illegal species are not matched fully",
+       x = NULL,
+       y = NULL,
+       subtitle = "Perhaps the transponder is off when such deliveries are made",
+       size = "Number of Deliveries") +
+  scale_x_discrete(labels = custom_labels) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold"))  
+```
 
+## 5.1 Match with Harbor Records Instead
 
+```{r}
+matched_data_harbor <- harbor_records %>%
+  left_join(delivery_reports, by = c("port")) %>%
+  filter(date >= date_added  &
+           date <= date_added + 1)
+```
+
+```{r}
+summary_cargo <- matched_data_harbor %>%
+  group_by(id) %>%
+  summarise(count = n())
+
+summary_cargo_unique <- summary_cargo %>%
+  filter(count==1)
+```
+
+```{r}
+
+# Summarize the data to count the number of deliveries for each combination of port and fish type
+match_summary <- matched_data_harbor %>%
+  group_by(port, fishtype) %>%
+  summarize(num_deliveries = n())
+
+ggplot(match_summary, aes(x = port, y = fishtype, color = fishtype, size = num_deliveries)) +
+  geom_point(alpha = 1) +  # Adjust alpha for transparency if needed
+  labs(title = "Delivery of the 4 illegal species are not matched fully",
+       x = NULL,
+       y = NULL,
+       subtitle = "Perhaps the transponder is off when such deliveries are made",
+       size = "Number of Deliveries") +
+  scale_x_discrete(labels = custom_labels) +
+  theme_minimal() +
+  theme(plot.title = element_text(size = 11, face = "bold")) 
+```
+
+```{r}
+edges <- matched_data_harbor %>%
+  select(vessel, id) %>%
+  distinct() %>%
+  filter(!is.na(vessel) & !is.na(id))
+
+# Create nodes for the network graph
+nodes <- data.frame(name = unique(c(edges$vessel, edges$id)))
+
+# Create igraph object
+graph <- graph_from_data_frame(d = edges, vertices = nodes, directed = FALSE)
+```
+
+```{r}
+# Plot the network graph
+ggraph(graph, layout = "fr") + 
+  geom_edge_link(aes(start_cap = label_rect(node1.name), end_cap = label_rect(node2.name)), arrow = arrow(type = "closed", length = unit(4, "mm")), color = "gray") +
+  geom_node_point(aes(color = name %in% edges$vessel), size = 5) + 
+  geom_node_text(aes(label = name), vjust = 1.5, size = 3) +
+  labs(title = "Network Graph of Vessels and Linked Cargo") +
+  theme_void() +
+  theme(legend.position = "none", plot.title = element_text(hjust = 0.5, face = "bold"))
+```
+
+# 6. Qn 2 - Illegal Activities for SouthSeafood Express Corp (SEC)
+
+## 6.1 Identify Vessels belonging to SEC 
+
+```{r}
+SEC_vessel <- vessel_list %>%
+  filter (company == "SouthSeafood Express Corp")
+  
+```
+
+We found only 2 vessels linked to SEC:
+
+-   Snapper Snatcher - a small 100 ton vessel
+
+-   Roach Robber - a 11700 ton bigger vessel
+
+## 6.2 Introducing the Geospatial Data to help in visualising
+
+```{r}
+pacman::p_load(sf)
+```
+
+Importing the geographical data in geojson file format
+
+```{r}
+OceanusGeography = st_read("data/OceanusGeography.geojson") %>%
+  st_transform(crs = 4326)
+```
+
+Visualising the geojson:
+
+```{r}
+ggplot(data = OceanusGeography) +
+  geom_sf()
+```
+
+```{r}
+write_rds(OceanusGeography, "data/rds/OceanusGeography.rds")
+```
+
+## 6.3 **Importing Geographical Data in ESRI shapefile format**
+
+```{r}
+OceanusLocations <- st_read(dsn = "data/shp",
+  layer = "Oceanus Geography")
+```
+
+```{r}
+ggplot(data = OceanusLocations) +
+  geom_sf()
+```
+
+```{r}
+write_rds(OceanusLocations, "data/rds/OceanusLocations.rds")
+```
+
+## 6.4 Visualising Vessel Movement Data 
+
+```{r}
+vessel_movement_data <- mc2_edges %>%
+  filter(event3 == "TransponderPing") %>%
+  select(time, dwell, source, target)
+```
+
+```{r}
+unique(vessel_movement_data$source)
+```
+
+```{r}
+unique(OceanusLocations$Name)
+```
+
+We note that the vessel movement data's name of the location did not match the OceanusLocations. So we need to match.
+
+```{r}
+vessel_movement_data <- vessel_movement_data%>%
+  mutate(source = gsub("^City of", "", source)) %>%
+  mutate(source = gsub("^\\s+", "", source))
+```
+
+```{r}
+coords <- st_coordinates(OceanusLocations)
+```
+
+```{r}
+OceanusLocations_df <- OceanusLocations %>%
+  st_drop_geometry()
+```
+
+```{r}
+OceanusLocations_df$XCOORD <- coords[, "X"]
+OceanusLocations_df$YCOORD <- coords[, "Y"]
+```
+
+```{r}
+OceanusLocations_df <- OceanusLocations_df %>%
+  select(Name, X.Kind, XCOORD, YCOORD) %>%
+  rename(Loc_Type = X.Kind)
+```
+
+```{r}
+vessel_movement_data <- vessel_movement_data %>%
+  left_join(OceanusLocations_df,
+            by = c("source" = "Name"))
+```
+
+```{r}
+write_rds(vessel_movement_data, "data/rds/vessel_movement_data.rds")
+```
+
+### 6.4.1
+
+In this section, you will learn how to convert the vessel movement data into vessel trajectory data. A trajectory is a sequence of observations in time and space, for examples, the path formed by fishing vessels.
+
+In the code chunk below, `st_as_sf()` of **sf** package is used to convert *vessel_movement_data* data.frame into sf point data.frame by using values in XCOORD and YCOORD columns. The output is an sf data.frame called *vessel_movement_sf*.
+
+```{r}
+vessel_movement_sf <- vessel_movement_data %>%
+  st_as_sf(coords = c("XCOORD", "YCOORD"), 
+           crs = 4326)
+```
+
+```{r}
+vessel_movement_sf <- vessel_movement_sf %>%
+  arrange(target, time)
+```
+
+```{r}
+vessel_trajectory <- vessel_movement_sf %>%
+  group_by(target) %>%
+  summarize(do_union = FALSE) %>%
+  st_cast("LINESTRING")
+```
+
+```{r}
+vessel_trajectory_selected <- vessel_trajectory %>%
+  filter(target == "snappersnatcher7be")
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = OceanusGeography) +
+  geom_sf(data = vessel_trajectory_selected, 
+          aes(color = factor(target)), 
+          size = 1) +
+  theme_minimal() +
+  labs(title = "Trajectories of Snapper Snatcher", 
+  x = "Longitude", y = "Latitude", color = "ID")
+```
+
+```{r}
+points_data <- vessel_movement_sf %>%
+  group_by(target, geometry) %>%
+  summarize(dwell_time = sum(dwell))
+
+# Ensure the geometry column is retained as a 'geometry' class
+st_geometry(points_data) <- points_data$geometry
+
+# Print the resulting points data
+print(points_data)
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = OceanusGeography) +
+  geom_sf(data = vessel_trajectory_selected, 
+          aes(color = factor(target)), 
+          size = 1) +
+  geom_point(data = points_data, 
+             aes(x = st_coordinates(geometry)[, "X"], 
+                 y = st_coordinates(geometry)[, "Y"], 
+                 size = dwell_time), 
+             color = "black", alpha = 0.7) +  # Add points with size based on dwell time
+  scale_size_continuous(name = "Dwell Time") +  # Customize size legend
+  theme_minimal() +
+  labs(title = "Trajectories of albacoreangler47d and Dwell Time", 
+       x = "Longitude", y = "Latitude", color = "ID")
 ```

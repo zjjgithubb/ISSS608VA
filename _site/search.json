@@ -81,7 +81,7 @@
     "href": "index.html#in-class-exercise",
     "title": "Visual Analytics and Applications",
     "section": "In Class Exercise",
-    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn Class Ex 01\n\n\n\nCheng Chun Chieh\n\n\nApr 13, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 02\n\n\n\nCheng Chun Chieh\n\n\nApr 20, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Ex 3\n\n\n\nCheng Chun Chieh\n\n\nApr 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 4\n\n\n\nCheng Chun Chieh\n\n\nMay 4, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 5 - Text Analytics\n\n\n\nCheng Chun Chieh\n\n\nMay 11, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 6\n\n\n\nCheng Chun Chieh\n\n\nMay 18, 2024\n\n\n\n\n\n\n\n\nNo matching items"
+    "text": "In Class Exercise\n\n\n\n\n\n\n\n\n\nIn Class Ex 01\n\n\n\nCheng Chun Chieh\n\n\nApr 13, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 02\n\n\n\nCheng Chun Chieh\n\n\nApr 20, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn-Class Ex 3\n\n\n\nCheng Chun Chieh\n\n\nApr 24, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 4\n\n\n\nCheng Chun Chieh\n\n\nMay 4, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 5 - Text Analytics\n\n\n\nCheng Chun Chieh\n\n\nMay 11, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex 6\n\n\n\nCheng Chun Chieh\n\n\nMay 18, 2024\n\n\n\n\n\n\n\n\n\n\n\n\nIn Class Ex - Geospatial\n\n\n\nCheng Chun Chieh\n\n\nJun 8, 2024\n\n\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "index.html#take-home-exercise",
@@ -1573,5 +1573,54 @@
     "title": "Visualising Geospatial Data",
     "section": "Data wrangling",
     "text": "Data wrangling\n\ndplyr\nTidy data\ntidyr: Easily Tidy Data with ‘spread()’ and ‘gather()’ Functions"
+  },
+  {
+    "objectID": "InClassEx/Ex08/inclassex8.html",
+    "href": "InClassEx/Ex08/inclassex8.html",
+    "title": "In Class Ex - Geospatial",
+    "section": "",
+    "text": "Prepare the data using Tableau - using the drag and drop function to union the various datasets\n\nMay have issues - sometimes adjust the number of rows to overcome the issue of 0 rows.\n\nTableau can auto detect the postal code and set as zipcode/postcode geographical data.\nDrag and drop the postal code into the center:\n\n\n\nThere can be unknown postal code - as the SLA records are real -time and some postal codes could have been deleted. Will need to download the postal code and search via Google (they maintain the historical data).\n\n\n\n\n\n\nInclude filters to the map:\n\n\n\nTableau can auto-recognise the planning areas - but may not be 100% correct.\nRight click and select Geographical Role -&gt; Province / State.\n\n\n\n\n\nhttps://public.tableau.com/app/profile/chun.chieh.cheng/viz/PropertyExplorer_17178269666590/Dashboard1?publish=yes"
+  },
+  {
+    "objectID": "InClassEx/Ex08/inclassex8.html#using-realis-2023-data",
+    "href": "InClassEx/Ex08/inclassex8.html#using-realis-2023-data",
+    "title": "In Class Ex - Geospatial",
+    "section": "",
+    "text": "Prepare the data using Tableau - using the drag and drop function to union the various datasets\n\nMay have issues - sometimes adjust the number of rows to overcome the issue of 0 rows.\n\nTableau can auto detect the postal code and set as zipcode/postcode geographical data.\nDrag and drop the postal code into the center:\n\n\n\nThere can be unknown postal code - as the SLA records are real -time and some postal codes could have been deleted. Will need to download the postal code and search via Google (they maintain the historical data)."
+  },
+  {
+    "objectID": "InClassEx/Ex08/inclassex8.html#looking-at-the-median-price-etc",
+    "href": "InClassEx/Ex08/inclassex8.html#looking-at-the-median-price-etc",
+    "title": "In Class Ex - Geospatial",
+    "section": "",
+    "text": "Include filters to the map:"
+  },
+  {
+    "objectID": "InClassEx/Ex08/inclassex8.html#chloropleth-maps",
+    "href": "InClassEx/Ex08/inclassex8.html#chloropleth-maps",
+    "title": "In Class Ex - Geospatial",
+    "section": "",
+    "text": "Tableau can auto-recognise the planning areas - but may not be 100% correct.\nRight click and select Geographical Role -&gt; Province / State."
+  },
+  {
+    "objectID": "InClassEx/Ex08/inclassex8.html#creating-the-dashboard",
+    "href": "InClassEx/Ex08/inclassex8.html#creating-the-dashboard",
+    "title": "In Class Ex - Geospatial",
+    "section": "",
+    "text": "https://public.tableau.com/app/profile/chun.chieh.cheng/viz/PropertyExplorer_17178269666590/Dashboard1?publish=yes"
+  },
+  {
+    "objectID": "TakehomeEx/ex03/data/shp/Oceanus Geography.html",
+    "href": "TakehomeEx/ex03/data/shp/Oceanus Geography.html",
+    "title": "Visual Analytics",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
+  },
+  {
+    "objectID": "InClassEx/Ex08/data/shp/Oceanus Geography.html",
+    "href": "InClassEx/Ex08/data/shp/Oceanus Geography.html",
+    "title": "Visual Analytics",
+    "section": "",
+    "text": "&lt;!DOCTYPE qgis PUBLIC ‘http://mrcc.com/qgis.dtd’ ‘SYSTEM’&gt;     dataset\n\n\n       GEOGCRS[“WGS 84”,ENSEMBLE[“World Geodetic System 1984 ensemble”,MEMBER[“World Geodetic System 1984 (Transit)”],MEMBER[“World Geodetic System 1984 (G730)”],MEMBER[“World Geodetic System 1984 (G873)”],MEMBER[“World Geodetic System 1984 (G1150)”],MEMBER[“World Geodetic System 1984 (G1674)”],MEMBER[“World Geodetic System 1984 (G1762)”],MEMBER[“World Geodetic System 1984 (G2139)”],ELLIPSOID[“WGS 84”,6378137,298.257223563,LENGTHUNIT[“metre”,1]],ENSEMBLEACCURACY[2.0]],PRIMEM[“Greenwich”,0,ANGLEUNIT[“degree”,0.0174532925199433]],CS[ellipsoidal,2],AXIS[“geodetic latitude (Lat)”,north,ORDER[1],ANGLEUNIT[“degree”,0.0174532925199433]],AXIS[“geodetic longitude (Lon)”,east,ORDER[2],ANGLEUNIT[“degree”,0.0174532925199433]],USAGE[SCOPE[“Horizontal component of 3D system.”],AREA[“World.”],BBOX[-90,-180,90,180]],ID[“EPSG”,4326]] +proj=longlat +datum=WGS84 +no_defs 3452 4326 EPSG:4326 WGS 84 longlat EPSG:7030 true"
   }
 ]
