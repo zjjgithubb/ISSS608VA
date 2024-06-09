@@ -1,0 +1,154 @@
+---
+title: "In Class Ex 5 - Text Analytics"
+
+author: "Cheng Chun Chieh"
+
+date: "11 May 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+  
+editor: visual
+---
+
+# 1. Overview and Getting Started
+
+```{r}
+pacman::p_load(tidytext, tidyverse, readtext, quanteda, ggwordcloud)
+```
+
+Can refer to the following links for info about the packages:
+
+-   quanteda - <https://quanteda.io/articles/quickstart.html>
+
+-   readtext - <https://readtext.quanteda.io/articles/readtext_vignette.html>
+
+## 1.1 Importing Text Data using readtext
+
+```{r}
+articles <- "data/articles/*"
+```
+
+```{r}
+text_data <- readtext(articles)
+```
+
+## 1.2 Corpus
+
+### **1.2.1 Working with a quanteda corpus**
+
+#### **Corpus principles**
+
+A corpus is designed to be a “library” of original documents that have been converted to plain, UTF-8 encoded text, and stored along with meta-data at the corpus level and at the document-level. We have a special name for document-level meta-data: *docvars*. These are variables or features that describe attributes of each document.
+
+A corpus is designed to be a more or less static container of texts with respect to processing and analysis. This means that the texts in corpus are not designed to be changed internally through (for example) cleaning or pre-processing steps, such as stemming or removing punctuation. Rather, texts can be extracted from the corpus as part of processing, and assigned to new objects, but the idea is that the corpus will remain as an original reference copy so that other analyses – for instance those in which stems and punctuation were required, such as analysing a reading ease index – can be performed on the same corpus.
+
+A corpus is a special form of character vector, meaning most functions that work with a character input will also work on a corpus. But a corpus object (as do other **quanteda** core objects) has its own convenient print method.
+
+```{r}
+corpus_text <- corpus(text_data)
+summary(corpus_text,5)
+```
+
+## 1.3 Cleaning Text
+
+```{r}
+
+usenet_words <- text_data %>%
+  unnest_tokens(word, text) %>%
+  filter(str_detect(word, "[a-z']$"),
+         !word %in% stop_words$word)
+```
+
+Doing a word count:
+
+```{r}
+usenet_words %>%
+  count(word, sort = TRUE)
+```
+
+```{r}
+words_by_doc_id <- usenet_words %>%
+  count(doc_id, word, sort = TRUE) %>%
+  ungroup()
+```
+
+## 1.4 Splitting up the doc_id
+
+```{r}
+text_data_split <- text_data %>%
+  mutate(Company = str_extract(doc_id, "^[^_]+"),
+         News_Agencies = str_extract(doc_id, "(?<=__)[^_]+(?=\\.txt)"))
+```
+
+-   **`(?<=__)`** is a positive lookbehind assertion that ensures the match occurs after "\_\_".
+
+-   **`[^_]+`** matches one or more characters that are not underscores, representing the news agency.
+
+-   **`(?=\\.txt)`** is a positive lookahead assertion that ensures the match occurs before ".txt".
+
+```{r}
+text_data_splitted <- text_data %>%
+  separate_wider_delim("doc_id",
+                       delim="__0__",
+                       names = c("X","Y"),
+                       too_few = "align_end"
+  )
+
+```
+
+```{r}
+usenet_words1 <- text_data_split %>%
+  unnest_tokens(word, text) %>%
+  filter(str_detect(word, "[a-z']$"),
+         !word %in% stop_words$word)
+
+words_by_news_agencies <- usenet_words1 %>%
+  count(News_Agencies, word, sort = TRUE) %>%
+  ungroup()
+```
+
+# 2. Importing json files
+
+```{r}
+pacman::p_load(jsonlite, tidygraph, ggraph, visNetwork, graphlayouts, ggforce, skimr, tidytext, tidyverse, tidyr)
+```
+
+```{r}
+mc1_data <- fromJSON ("data/mc1.json")
+```
+
+```{r}
+mc2_data <- fromJSON ("data/mc2.json")
+```
+
+```{r}
+mc1_data_node <- mc1_data[["nodes"]]
+
+mc1_data_links <- mc1_data[["links"]]
+```
+
+## 2.2 Importing mc3 data
+
+```{r}
+# Specify the file paths
+input_file <- "data/mc3.json"
+output_file <- "data/mc3_processed.json"
+
+# Read the JSON file
+json_data <- readLines(input_file)
+
+# Replace NaN with null
+json_data <- gsub("NaN", "null", json_data)
+
+# Write the updated JSON data back to a file
+writeLines(json_data, con = output_file)
+
+# Now you can read the processed JSON file into R
+mc3_data <- fromJSON(output_file)
+```

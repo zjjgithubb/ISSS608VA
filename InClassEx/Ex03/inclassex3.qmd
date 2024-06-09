@@ -1,0 +1,105 @@
+---
+title: "In-Class Ex 3"
+
+author: "Cheng Chun Chieh"
+
+date: "24 Apr 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+  
+editor: visual
+---
+
+# In Class Ex 3 - Using Tableu
+
+## 1. Drawing a scatterplot
+
+-   can futher use the quick table calculation to spread the data
+
+![](images/clipboard-2159299747.png)
+
+![](images/clipboard-1343391694.png)
+
+## 2. Changing to a Bubbleplot
+
+Drop the variables into the "Marks" field
+
+-   Select Size for Sum(Sales)
+
+-   Select Colour Sum(Profit)
+
+![](images/clipboard-567102119.png)
+
+Change the shape to circle - then it will be fill circles
+
+The colors can also be further adjusted - together with the range
+
+![](images/clipboard-328024653.png){width="403"}
+
+Using annotate area to annotate the four quadrants:
+
+![](images/clipboard-1012670450.png){width="374"}
+
+Creating filter interactivity - expose the interface for the filters (checkbox)
+
+![](images/clipboard-3180733057.png){width="235"}
+
+Adjusting the title of the graph - click on the insert button (to select the fields to show)
+
+![](images/clipboard-3267659400.png){width="432"}
+
+## 3. Creating a Custom Tooltip
+
+Create a second worksheet
+
+-   use of dual-axis (select from the row button)
+
+-   adjust the color range (to be red for below 0, and blue for above 0)
+
+-   ![](images/clipboard-3288263302.png){width="122"} add in the sum(profit) into the color - then adjust the color range
+
+-   ![](images/clipboard-3052122614.png){width="323"}
+
+![](images/clipboard-3761338806.png){width="357"}
+
+Use the edit tooltip on the first worksheet, click the insert button to insert from worksheet 2
+
+![](images/clipboard-1516646176.png){width="426"}
+
+## 4. Profit Loss Dashboard
+
+![](images/clipboard-732298976.png)
+
+<https://public.tableau.com/app/profile/chun.chieh.cheng/viz/ProfitLoss_17141962081520/Dashboard1?publish=yes>
+
+## 5. Creating animation from time
+
+Instead of dropping the Order_Date into filter -\> drop them into pages
+
+![](images/clipboard-2861924153.png){width="188"}
+
+![](images/clipboard-3468966478.png)
+
+It will show the animation pane on the right hand side.
+
+Next we adjust the timeframe to show by quarters instead.
+
+## 6. Creating Coordinated Link View
+
+Create the graphs to show in Tableu
+
+-   Here we are using the Maths and Science data from Exam_Data
+
+Then we will use the "Actions" under Dashboard menu item to create this.
+
+![](images/clipboard-1878796588.png){width="340"}
+
+![](images/clipboard-1442121878.png){width="329"}
+
+-   Need to use ID under the scatterplot to sort of link the data up together

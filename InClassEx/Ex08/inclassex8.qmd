@@ -1,0 +1,83 @@
+---
+title: "In Class Ex - Geospatial"
+
+author: "Cheng Chun Chieh"
+
+date: "8 Jun 2024"
+date-modified: "last-modified"
+
+format: html
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+ 
+editor: visual
+---
+
+# 1. Using Tableau
+
+## 1.1 Using Realis 2023 Data
+
+Prepare the data using Tableau - using the drag and drop function to union the various datasets
+
+![](images/clipboard-639216314.png)
+
+May have issues - sometimes adjust the number of rows to overcome the issue of 0 rows.
+
+![](images/clipboard-1639856077.png)
+
+Tableau can auto detect the postal code and set as zipcode/postcode geographical data.
+
+Drag and drop the postal code into the center:
+
+![There can be unknown postal code - as the SLA records are real -time and some postal codes could have been deleted. Will need to download the postal code and search via Google (they maintain the historical data).](images/clipboard-3434141215.png)
+
+## 1.2 Looking at the median price etc
+
+![](images/clipboard-3710222943.png)
+
+Include filters to the map:
+
+## 1.3. Chloropleth Maps
+
+Tableau can auto-recognise the planning areas - but may not be 100% correct.
+
+Right click and select Geographical Role -\> Province / State.
+
+![](images/clipboard-1531611624.png)
+
+## 1.4 Creating the Dashboard
+
+![](images/clipboard-389948112.png)
+
+<https://public.tableau.com/app/profile/chun.chieh.cheng/viz/PropertyExplorer_17178269666590/Dashboard1?publish=yes>
+
+## 
+
+# 2. Deploying of Shiny Apps
+
+Install rsconnect package
+
+Sign up account at shinyapps.io
+
+Follow steps to connect the rsconnect to the project.
+
+```{r}
+#| eval: false
+
+library(rsconnect)
+
+rsconnect::deployApp('prototype02/')
+```
+
+Or click through the Publish button after you run the app in Rstudio.
+
+The apps will be published:
+
+ <https://zjjgithub.shinyapps.io/prototype02/>
+
+The data has to go together with the deployment.
+
+Packages must be available through RCRAN - otherwise cannot use!

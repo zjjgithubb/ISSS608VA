@@ -1,0 +1,70 @@
+project:
+  type: website
+
+website:
+  title: "Visual Analytics"
+  navbar:
+    left:
+      - text: Hands-On Ex
+        menu: 
+          - text: Hands-On Ex 1 - ggplot2 
+            href: HandsOnEx/HandsOnEx1/handson_ex01.html
+          - text: Hands-On Ex 2 - Beyond ggplot2
+            href: HandsOnEx/HandsOnEx2/handson_ex02.html
+          - text: Hands-On Ex 3 - Interactive Graphs
+            href: HandsOnEx/HandsOnEx3/handson_ex03.html
+          - text: Hands-On Ex 3.2 - Using Animation
+            href: HandsOnEx/HandsOnEx3-2/handson_ex3-2.html
+          - text: Hands-On Ex 4 - Fundamentals of Visual Analytics
+            href: HandsOnEx/HandsOnEx4/handsonex4.html
+          - text: Hands-On Ex 5 - Visualising and Analysing Text Data with R
+            href: HandsOnEx/HandsOnEx5/handsonex5.html
+          - text: Hands-On Ex 6 - Network Data Analytics
+            href: HandsOnEx/HandsOnEx6/handsonex6.html
+          - text: Hands-On Ex 7 - Time-Oriented Data
+            href: HandsOnEx/HandsOnEx7/handsonex7.html
+          - text: Hands-On Ex 8 - Visualising Geospatial Data
+            href: HandsOnEx/HandsOnEx8/handsonex8.html
+      - text: In-Class Ex
+        menu: 
+          - text: In-Class Ex 01 - ggplot2 basics 
+            href: InClassEx/Ex01/inclassex01.html
+          - text: In-Class Ex 02 - data visualisation
+            href: InClassEx/Ex02/inclassex02.html
+          - text: In-Class Ex 03 - Tableu Interactivity
+            href: InClassEx/Ex03/inclassex3.html
+          - text: In-Class Ex 04 - Visual Analytics
+            href: InClassEx/Ex04/inclassex4.html
+          - text: In-Class Ex 05 - Text Analytics
+            href: InClassEx/Ex05/inclassex5.html
+          - text: In-Class Ex 06 - 
+            href: InClassEx/Ex06/inclassex6.html
+          - text: In-Class Ex 08 - Geospatial 
+            href: InClassEx/Ex08/inclassex8.html
+            
+      - text: Take-Home Ex
+        menu: 
+          - text: Take-Home Ex 01 - Real Estate Transaction Prices in Singapore
+            href: TakehomeEx/ex01/takehomeex1.html
+          - text: Take-Home Ex 02 - Data Visualisation Make-over 
+            href: TakehomeEx/ex02/takehomeex2.html
+          - text: Take-Home Ex 03 - VAST CHallenge Mini-Case 2 
+            href: TakehomeEx/ex03/takehomeex3.html
+    right:
+      - href: index.qmd
+        text: Home 
+      - icon: bar-chart-fill
+        href: https://public.tableau.com/app/profile/chun.chieh.cheng/vizzes
+        aria-label: Tableau Public Profile
+      - icon: envelope-fill
+        href: mailto:cc.cheng.2023@mitb.smu.edu.sg
+        aria-label: Email
+      
+format:
+  html:
+    theme: sandstone
+    css: styles.css
+    toc: true
+
+editor: visual
+
