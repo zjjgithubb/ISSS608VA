@@ -25,6 +25,8 @@ website:
             href: HandsOnEx/HandsOnEx7/handsonex7.html
           - text: Hands-On Ex 8 - Visualising Geospatial Data
             href: HandsOnEx/HandsOnEx8/handsonex8.html
+          - text: Hands-On Ex 9 - Visualising Multivariate Data
+            href: HandsOnEx/HandsOnEx9/handsonex9.html
       - text: In-Class Ex
         menu: 
           - text: In-Class Ex 01 - ggplot2 basics 
