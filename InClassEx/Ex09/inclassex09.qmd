@@ -1,0 +1,116 @@
+---
+title: "In Class Ex 9 - Interactive Multivariate"
+
+author: "Cheng Chun Chieh"
+
+date: "15 Jun 2024"
+date-modified: "last-modified"
+
+format: 
+  html:
+    code-fold: true
+    code-tools: true
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+ 
+editor: visual
+---
+
+# Use of ScatterPlotMatrix
+
+<https://cran.r-project.org/web/packages/scatterPlotMatrix/vignettes/introduction-to-scatterplotmatrix.html>
+
+Using widgets instead of wrapping
+
+```{r}
+pacman::p_load(scatterPlotMatrix, parallelPlot, cluster, factoextra, tidyverse)
+```
+
+We will be using the wine data from the hands on exercise.
+
+```{r}
+wine <- read_csv("data/wine_quality.csv")
+```
+
+```{r}
+ggplot(data = wine,
+       aes(x=type)) +
+  geom_bar()
+```
+
+```{r}
+whitewine <- wine %>%
+  filter(type== "white") %>%
+  select (1:11)
+```
+
+These widgets usually need a special definition of the size of the container, i.e. width and height = 500 = pixels.
+
+```{r}
+scatterPlotMatrix(whitewine,
+                  corrPlotType = "Text",
+                  distribType = 1,
+                  width = 700,
+                  height = 700)
+```
+
+Using the interactive tools - we can use visual inspection to check on the outliers. For example, here we can select the outlier and see that the point is outliers for other factors as well. Then we can choose to investigate further into the data. (**Point** **2782**)
+
+![](images/clipboard-2027485638.png)
+
+This package is available for use with Shiny - but need to read the documentation carefully. The code may be different, for example here: `scatterPlotMatrixOutput` and at the server end: `renderScatterPlotMatrix`, instead of the typical code in R.
+
+# Clustering
+
+```{r}
+#| eval: false
+set.seed(1234)
+
+gap.stat <- clusGap(whitewine, 
+                    FUNcluster = kmeans, 
+                    K.max = 8)
+
+fviz_gap_stat(gap.stat)
+```
+
+![](images/000012.png)
+
+```{r}
+set.seed(123)
+kmeans4 <- kmeans(whitewine,4, nstart =25)
+
+print(kmeans4)
+```
+
+```{r}
+fviz_cluster(kmeans4,data = whitewine)
+```
+
+```{r}
+whitewine <- whitewine %>%
+  mutate (Cluster = kmeans4$cluster)
+```
+
+```{r}
+whitewine$Cluster <- as.factor(whitewine$Cluster)
+```
+
+```{r}
+histoVisibility <- rep(TRUE, ncol(whitewine))
+
+whitewine %>%
+  parallelPlot(whitewine,
+              rotateTitle = TRUE,
+              histoVisibility = histoVisibility)
+```
+
+Parallel Plot is also available for Shiny - refer to the documentation!
+
+`parallelPlotOutput()`
+
+`renderParallelPlot()`
+
+# Shiny App Built
