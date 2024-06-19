@@ -165,6 +165,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx8/handsonex8.html">
  <span class="dropdown-text">Hands-On Ex 8 - Visualising Geospatial Data</span></a>
   </li>  
+        <li>
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx9/handsonex9.html">
+ <span class="dropdown-text">Hands-On Ex 9 - Visualising Multivariate Data</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../HandsOnEx/HandsOnEx9/handsonex10.html">
+ <span class="dropdown-text">Hands-On Ex 10 - Info Dashboard</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -199,6 +207,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="../../InClassEx/Ex08/inclassex8.html">
  <span class="dropdown-text">In-Class Ex 08 - Geospatial</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="../../InClassEx/Ex09/inclassex09.html">
+ <span class="dropdown-text">In-Class Ex 09 - MultiVariate</span></a>
   </li>  
     </ul>
   </li>
@@ -360,7 +372,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Modified</div>
     <div class="quarto-title-meta-contents">
-      <p class="date-modified">June 9, 2024</p>
+      <p class="date-modified">June 19, 2024</p>
     </div>
   </div>
     
@@ -4854,6 +4866,23 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 <span id="cb143-1964"><a href="#cb143-1964" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Kickstarter 3: Working with Geographic Data</span><span class="co">](https://isss608-ay2023-24apr.netlify.app/vast/kickstarter3)</span></span>
 <span id="cb143-1965"><a href="#cb143-1965" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb143-1966"><a href="#cb143-1966" aria-hidden="true" tabindex="-1"></a><span class="ss">-   </span><span class="co">[</span><span class="ot">Transhipment: Issues and Responses in the FCWC Region</span><span class="co">](https://stopillegalfishing.com/publications/transhipment-issues-and-responses-in-the-fcwc-region/#:~:text=Transhipment%3A%20Issues%20and%20Responses%20in%20the%20FCWC%20Region%20aims%20to,and%20the%20trade%20in%20fish.)</span></span>
+<span id="cb143-1967"><a href="#cb143-1967" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-1968"><a href="#cb143-1968" aria-hidden="true" tabindex="-1"></a><span class="fu"># 9. Data Preparation for Shiny App</span></span>
+<span id="cb143-1969"><a href="#cb143-1969" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-1970"><a href="#cb143-1970" aria-hidden="true" tabindex="-1"></a><span class="fu">## List of Vessel Names </span></span>
+<span id="cb143-1971"><a href="#cb143-1971" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-1974"><a href="#cb143-1974" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb143-1975"><a href="#cb143-1975" aria-hidden="true" tabindex="-1"></a>vessel_list <span class="ot">&lt;-</span> mc2_nodes <span class="sc">%&gt;%</span></span>
+<span id="cb143-1976"><a href="#cb143-1976" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(type <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"Entity.Vessel.FishingVessel"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb143-1977"><a href="#cb143-1977" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">type =</span> <span class="fu">case_when</span>(</span>
+<span id="cb143-1978"><a href="#cb143-1978" aria-hidden="true" tabindex="-1"></a>    type <span class="sc">==</span> <span class="st">"Entity.Vessel.FishingVessel"</span> <span class="sc">~</span> <span class="st">"FishingVessel"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb143-1979"><a href="#cb143-1979" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(type, Name, id, flag_country, tonnage, length_overall, company) <span class="sc">%&gt;%</span></span>
+<span id="cb143-1980"><a href="#cb143-1980" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">vessel =</span> id)</span>
+<span id="cb143-1981"><a href="#cb143-1981" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb143-1982"><a href="#cb143-1982" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb143-1985"><a href="#cb143-1985" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb143-1986"><a href="#cb143-1986" aria-hidden="true" tabindex="-1"></a><span class="fu">write_rds</span> (vessel_list, <span class="st">"data/rds/vessel_list.rds"</span>)</span>
+<span id="cb143-1987"><a href="#cb143-1987" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->
