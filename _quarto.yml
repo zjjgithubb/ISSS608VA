@@ -43,6 +43,8 @@ website:
             href: InClassEx/Ex06/inclassex6.html
           - text: In-Class Ex 08 - Geospatial 
             href: InClassEx/Ex08/inclassex8.html
+          - text: In-Class Ex 09 - MultiVariate 
+            href: InClassEx/Ex09/inclassex9.html
             
       - text: Take-Home Ex
         menu: 
