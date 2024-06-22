@@ -2084,5 +2084,26 @@
     "title": "Hands On Ex 10 - Info Dashboard",
     "section": "3.6 Changing from sparkline to sparkbar",
     "text": "3.6 Changing from sparkline to sparkbar\nInstead of displaying the values as sparklines, we can display them as sparkbars as shiwn below.\n\n\nCode\nreactable(\n  report,\n  defaultPageSize = 13,\n  columns = list(\n    Product = colDef(maxWidth = 200),\n    `Monthly Sales` = colDef(\n      cell = react_sparkbar(\n        report,\n        highlight_bars = highlight_bars(\n          min = \"red\", max = \"blue\"),\n        bandline = \"innerquartiles\",\n        statline = \"mean\")\n    )\n  )\n)"
+  },
+  {
+    "objectID": "InClassEx/Ex10/inclassex10.html",
+    "href": "InClassEx/Ex10/inclassex10.html",
+    "title": "In Class Ex 10 - Dashboard",
+    "section": "",
+    "text": "We are using the coffee chain access data - and loading it into Tableau.\nTableau automatically shows a CoffeeChain Query.\n\n\n\n\n\n\n\n\nBullet graph is part of the selection under Show Me.\nNeed to swap the reference line field - so that the bar shows the budget sales.\n\n\n\n\nDrawing line graph,\n\nCombined to build dashboad."
+  },
+  {
+    "objectID": "InClassEx/Ex10/inclassex10.html#drawing-bullet-graphs",
+    "href": "InClassEx/Ex10/inclassex10.html#drawing-bullet-graphs",
+    "title": "In Class Ex 10 - Dashboard",
+    "section": "",
+    "text": "Bullet graph is part of the selection under Show Me.\nNeed to swap the reference line field - so that the bar shows the budget sales."
+  },
+  {
+    "objectID": "InClassEx/Ex10/inclassex10.html#creating-sparklines",
+    "href": "InClassEx/Ex10/inclassex10.html#creating-sparklines",
+    "title": "In Class Ex 10 - Dashboard",
+    "section": "",
+    "text": "Drawing line graph,\n\nCombined to build dashboad."
   }
 ]
