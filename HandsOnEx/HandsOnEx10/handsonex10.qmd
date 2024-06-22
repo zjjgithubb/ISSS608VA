@@ -29,7 +29,7 @@ By the end of this hands-on exercise, we will be able to:
 
 -   build industry standard dashboard by using R Shiny.
 
-## 1.1 Getting Started 
+## 1.1 Getting Started
 
 ```{r}
 pacman::p_load(lubridate, ggthemes, reactable, reactablefmtr, gt, gtExtras, svglite, tidyverse)
@@ -41,7 +41,7 @@ pacman::p_load(lubridate, ggthemes, reactable, reactablefmtr, gt, gtExtras, svgl
 
 -   [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) provides various features to streamline and enhance the styling of interactive reactable tables with easy-to-use and highly-customizable functions and themes.
 
-## 1.2 Importing Data from Microsoft Access 
+## 1.2 Importing Data from Microsoft Access
 
 For the purpose of this study, a personal database in Microsoft Access mdb format called *Coffee Chain* will be used.
 
@@ -63,7 +63,7 @@ odbcClose(con)
 coffeechain <- read_rds("data/rds/CoffeeChain.rds")
 ```
 
-## 1.4 Aggregate Data 
+## 1.4 Aggregate Data
 
 The code chunk below is used to aggregate Sales and Budgeted Sales at the Product level.
 
@@ -160,7 +160,15 @@ ggplot(sales_report, aes(x=Month, y=Sales)) +
 
 # 2. **Static Information Dashboard Design: gt and gtExtras methods**
 
-In this section, we will learn how to create static information dashboard by using [gt](https://gt.rstudio.com/) and [gtExtras](https://jthomasmock.github.io/gtExtras/) packages. Before getting started, it is highly recommended for you to visit the webpage of these two packages and review all the materials provided on the webpages at least once. You done not have to understand and remember everything provided but at least have an overview of the purposes and functions provided by them.
+In this section, we will learn how to create static information dashboard by using [gt](https://gt.rstudio.com/) and [gtExtras](https://jthomasmock.github.io/gtExtras/) packages.
+
+Very useful packages to help to depict data.
+
+![](images/clipboard-1347164691.png)
+
+Plotting with gtextras:
+
+<https://jthomasmock.github.io/gtExtras/articles/plotting-with-gtExtras.html>
 
 ## 2.1 Simple Bullet Chart
 
@@ -200,7 +208,7 @@ report %>%
             .groups = "drop")
 ```
 
-### 2.2.2 Plotting Coffeechain Sales Report 
+### 2.2.2 Plotting Coffeechain Sales Report
 
 ```{r}
 report %>%
@@ -212,7 +220,7 @@ report %>%
                     same_limit = FALSE)
 ```
 
-### 2.2.3 Adding Statistics 
+### 2.2.3 Adding Statistics
 
 ```{r}
 report %>% 
@@ -244,7 +252,7 @@ sales <- report %>%
 sales_data = left_join(sales, spark)
 ```
 
-### 2.2.5 Plotting 
+### 2.2.5 Plotting
 
 ```{r}
 sales_data %>%
@@ -283,7 +291,7 @@ sales_data %>%
 
 # 3. **Interactive Information Dashboard Design: reactable and reactablefmtr methods**
 
-In this section, you will learn how to create interactive information dashboard by using [reactable](https://glin.github.io/reactable/) and [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) packages. Before getting started, it is highly recommended for you to visit the webpage of these two packages and review all the materials provided on the webpages at least once. You done not have to understand and remember everything provided but at least have an overview of the purposes and functions provided by them.
+In this section, you will learn how to create interactive information dashboard by using [reactable](https://glin.github.io/reactable/) and [reactablefmtr](https://kcuilla.github.io/reactablefmtr/) packages.
 
 In order to build an interactive sparklines, we need to install dataui R package by using the code chunk below.
 
@@ -359,7 +367,7 @@ reactable(
 )
 ```
 
-## 3.4 Adding reference line 
+## 3.4 Adding reference line
 
 In the code chunk below `statline` argument is used to show the mean line.
 

@@ -1,0 +1,58 @@
+---
+title: "In Class Ex 10 - Dashboard"
+
+author: "Cheng Chun Chieh"
+
+date: "22 Jun 2024"
+date-modified: "last-modified"
+
+format: 
+  html:
+    code-fold: true
+    code-tools: true
+execute: 
+  echo: true
+  eval: true
+  warning: false
+  freeze: true
+ 
+editor: visual
+---
+
+# Using Tableau with Access 
+
+We are using the coffee chain access data - and loading it into Tableau.
+
+Tableau automatically shows a CoffeeChain Query.
+
+![](images/clipboard-3661790962.png)
+
+## Imported into Tableau
+
+![](images/clipboard-4009107741.png)
+
+## Drawing Bullet Graphs
+
+![](images/clipboard-23945125.png)
+
+Bullet graph is part of the selection under Show Me.
+
+Need to swap the reference line field - so that the bar shows the budget sales.
+
+![](images/clipboard-3225536765.png)
+
+## Creating Sparklines
+
+Drawing line graph,
+
+![](images/clipboard-434152048.png)
+
+Combined to build dashboad.
+
+# Quarto Dashboard 
+
+<https://quarto.org/docs/dashboards/>
+
+Examples:
+
+![](images/clipboard-513597815.png)

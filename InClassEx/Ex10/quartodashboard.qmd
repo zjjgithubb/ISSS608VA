@@ -1,0 +1,24 @@
+---
+title: "Quarto Dashboard"
+
+format:
+  dashboard:
+    nav-buttons:
+      - icon: website
+        href: https://zjjisss608va.netlify.app/
+      - icon: github
+        href: https://github.com/zjjgithubb/
+---
+
+## Row {height=70%}
+
+```{r}
+```
+
+## Row {height=30%}
+
+```{r}
+```
+
+```{r}
+```

@@ -1388,7 +1388,7 @@ ggplot() +
   scale_size_continuous(name = "Dwell Time (mins)") +  
   scale_color_gradient(name = "Dwell Time (mins)", low = "lavender", high = "mediumpurple4") +  
   theme_minimal() +
-  labs(title = "Snapper Snatcher spent substantial time within Ghouti Preserve", 
+  labs(title = "Snapper Snatcher spent substantial time within Ghoti Preserve", 
        x = "Longitude", y = "Latitude")
 
 
@@ -1503,7 +1503,7 @@ ggplot(monthly_summary, aes(x = month)) +
     name = "Number of Unique Vessels",
     sec.axis = sec_axis(~./10, name = "Mean Stay Duration (hours)")  # Adjust secondary axis scale
   ) +
-  labs(title = "Monthly Trespass into Ghouti Preserve",
+  labs(title = "Monthly Trespass into Ghoti Preserve",
        x = "Month",
        y = "Number of Unique Vessels") +
   theme_minimal()
@@ -1718,7 +1718,7 @@ Refer to the kickstarter provided for by Dr T.S. Kam:
 
 # 9. Data Preparation for Shiny App
 
-## List of Vessel Names 
+## List of Vessel Names
 
 ```{r}
 vessel_list <- mc2_nodes %>%

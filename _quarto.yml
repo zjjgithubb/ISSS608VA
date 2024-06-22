@@ -28,7 +28,8 @@ website:
           - text: Hands-On Ex 9 - Visualising Multivariate Data
             href: HandsOnEx/HandsOnEx9/handsonex9.html
           - text: Hands-On Ex 10 - Info Dashboard
-            href: HandsOnEx/HandsOnEx9/handsonex10.html
+            href: HandsOnEx/HandsOnEx10/handsonex10.html
+          
       - text: In-Class Ex
         menu: 
           - text: In-Class Ex 01 - ggplot2 basics 
@@ -47,6 +48,10 @@ website:
             href: InClassEx/Ex08/inclassex8.html
           - text: In-Class Ex 09 - MultiVariate 
             href: InClassEx/Ex09/inclassex09.html
+          - text: In-Class Ex 10 - Dashboard 
+            href: InClassEx/Ex1o/inclassex10.html
+          - text: In-Class Ex 10 - Quarto Dashboard 
+            href: InClassEx/Ex10/quartodashboard.html
             
       - text: Take-Home Ex
         menu: 
