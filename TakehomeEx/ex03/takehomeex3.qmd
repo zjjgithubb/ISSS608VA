@@ -1716,19 +1716,4 @@ Refer to the kickstarter provided for by Dr T.S. Kam:
 
 -   [Transhipment: Issues and Responses in the FCWC Region](https://stopillegalfishing.com/publications/transhipment-issues-and-responses-in-the-fcwc-region/#:~:text=Transhipment%3A%20Issues%20and%20Responses%20in%20the%20FCWC%20Region%20aims%20to,and%20the%20trade%20in%20fish.)
 
-# 9. Data Preparation for Shiny App
-
-## List of Vessel Names
-
-```{r}
-vessel_list <- mc2_nodes %>%
-  filter(type %in% c("Entity.Vessel.FishingVessel")) %>%
-  mutate(type = case_when(
-    type == "Entity.Vessel.FishingVessel" ~ "FishingVessel")) %>%
-  select(type, Name, id, flag_country, tonnage, length_overall, company) %>%
-  rename(vessel = id)
-```
-
-```{r}
-write_rds (vessel_list, "data/rds/vessel_list.rds")
-```
+# 
